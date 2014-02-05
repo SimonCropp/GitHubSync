@@ -48,6 +48,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MapperFixture.cs" />
     <Compile Include="PartsFixture.cs" />
+    <Compile Include="DiffFixture.cs" />
+    <Compile Include="Helper.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

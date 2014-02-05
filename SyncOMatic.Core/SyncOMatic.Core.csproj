@@ -46,6 +46,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Parts.cs" />
     <Compile Include="Mapper.cs" />
+    <Compile Include="GitHubGateway.cs" />
+    <Compile Include="LogEntry.cs" />
+    <Compile Include="MissingSourceException.cs" />
+    <Compile Include="SyncOMatic.cs" />
     <Compile Include="TreeEntryTargetType.cs" />
   </ItemGroup>
   <ItemGroup>
