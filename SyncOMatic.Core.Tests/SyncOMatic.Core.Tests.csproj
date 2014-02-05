@@ -50,6 +50,7 @@
     <Compile Include="PartsFixture.cs" />
     <Compile Include="DiffFixture.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="SyncFixture.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -3,9 +3,11 @@ namespace SyncOMatic.Core
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.IO;
     using System.Linq;
     using System.Net;
     using System.Net.Http.Headers;
+    using System.Text;
     using Octokit;
     using Octokit.Internal;
 
@@ -18,6 +20,7 @@ namespace SyncOMatic.Core
         readonly IDictionary<string, IList<string>> knownBlobsPerRepository = new Dictionary<string, IList<string>>();
         readonly IDictionary<string, IList<string>> knownTreesPerRepository = new Dictionary<string, IList<string>>();
         readonly IDictionary<string, GitHubClient> clientsPerOwnerRepository = new Dictionary<string, GitHubClient>();
+        readonly string blobStoragePath;
         const string DEFAULT_CREDENTIALS_KEY = "Default";
 
         public GitHubGateway(IEnumerable<Tuple<Credentials, string>> credentialsPerRepos, IWebProxy proxy, Action<LogEntry> logCallBack)
@@ -25,6 +28,12 @@ namespace SyncOMatic.Core
             SetupClientCache(credentialsPerRepos, Credentials.Anonymous, proxy);
 
             this.logCallBack = logCallBack;
+
+            blobStoragePath = Path.Combine(Path.GetTempPath(), "SyncOMatic-" + Guid.NewGuid());
+            Directory.CreateDirectory(blobStoragePath);
+
+            log("Ctor - Create temp blob storage '{0}'.",
+                blobStoragePath);
         }
 
         public GitHubGateway(Credentials defaultCredentials, IWebProxy proxy, Action<LogEntry> logCallBack)
@@ -32,6 +41,12 @@ namespace SyncOMatic.Core
             SetupClientCache(Enumerable.Empty<Tuple<Credentials, string>>(), defaultCredentials, proxy);
 
             this.logCallBack = logCallBack;
+
+            blobStoragePath = Path.Combine(Path.GetTempPath(), "SyncOMatic-" + Guid.NewGuid());
+            Directory.CreateDirectory(blobStoragePath);
+
+            log("Ctor - Create temp blob storage '{0}'.",
+                blobStoragePath);
         }
 
         void SetupClientCache(IEnumerable<Tuple<Credentials, string>> credentialsPerRepos, Credentials defaultCredentials, IWebProxy proxy)
@@ -90,7 +105,7 @@ namespace SyncOMatic.Core
             logCallBack(new LogEntry(message, values));
         }
 
-        Commit RootCommitFrom(Parts source)
+        public Commit RootCommitFrom(Parts source)
         {
             Commit commit;
             var orb = source.Owner + "/" + source.Repository + "/" + source.Branch;
@@ -289,8 +304,102 @@ namespace SyncOMatic.Core
             return dic;
         }
 
+        public string CreateCommit(string treeSha, string destOwner, string destRepository, string parentCommitSha)
+        {
+            var newCommit = new NewCommit("SyncOMatic update", treeSha, new[] { parentCommitSha });
+
+            var client = ClientFor(destOwner, destRepository);
+            var createdCommit = client.GitDatabase.Commit.Create(destOwner, destRepository, newCommit).Result;
+
+            log("API Query - Create commit '{0}' in '{1}/{2}'. -> https://github.com/{1}/{2}/commit/{3}",
+                createdCommit.Sha.Substring(0, 7), destOwner, destRepository, createdCommit.Sha);
+
+            return createdCommit.Sha;
+        }
+
+        public string CreateTree(NewTree newTree, string destOwner, string destRepository)
+        {
+            var client = ClientFor(destOwner, destRepository);
+            var createdTree = client.GitDatabase.Tree.Create(destOwner, destRepository, newTree).Result;
+
+            log("API Query - Create tree '{0}' in '{1}/{2}'.",
+                createdTree.Sha.Substring(0, 7), destOwner, destRepository);
+
+            AddToKnown<TreeResponse>(createdTree.Sha, destOwner, destRepository);
+
+            return createdTree.Sha;
+        }
+
+        public void CreateBlob(string owner, string repository, string sha)
+        {
+            var blobPath = Path.Combine(blobStoragePath, sha);
+
+            var buf = File.ReadAllBytes(blobPath);
+            var base64String = Convert.ToBase64String(buf);
+
+            var newBlob = new NewBlob
+            {
+                Encoding = EncodingType.Base64,
+                Content = base64String
+            };
+
+            log("API Query - Create blob '{0}' in '{1}/{2}'.",
+                sha.Substring(0, 7), owner, repository);
+
+            var client = ClientFor(owner, repository);
+            var createdBlob = client.GitDatabase.Blob.Create(owner, repository, newBlob).Result;
+            Debug.Assert(sha == createdBlob.Sha);
+
+            AddToKnown<Blob>(sha, owner, repository);
+        }
+
+        public void FetchBlob(string owner, string repository, string sha)
+        {
+            var blobPath = Path.Combine(blobStoragePath, sha);
+
+            if (File.Exists(blobPath))
+                return;
+
+            log("API Query - Retrieve blob '{0}' details from '{1}/{2}'.",
+                sha.Substring(0, 7), owner, repository);
+
+            var client = ClientFor(owner, repository);
+            var blob = client.GitDatabase.Blob.Get(owner, repository, sha).Result;
+
+            switch (blob.Encoding)
+            {
+                case EncodingType.Utf8:
+                    File.WriteAllText(blobPath, blob.Content, Encoding.UTF8);
+                    break;
+
+                case EncodingType.Base64:
+                    var buf = Convert.FromBase64String(blob.Content);
+                    File.WriteAllBytes(blobPath, buf);
+                    break;
+
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+
+        public string CreateBranch(string owner, string repository, string branchName, string commitSha)
+        {
+            var newRef = new NewReference("refs/heads/" + branchName, commitSha);
+
+            log("API Query - Create reference '{0}' in '{1}/{2}'.",
+                newRef.Ref, owner, repository);
+
+            var client = ClientFor(owner, repository);
+            var reference = client.GitDatabase.Reference.Create(owner, repository, newRef).Result;
+            return reference.Ref.Substring("refs/heads/".Length);
+        }
+
         public void Dispose()
         {
+            Directory.Delete(blobStoragePath, true);
+
+            log("Dispose - Remove temp blob storage '{0}'.",
+                blobStoragePath);
         }
     }
 }

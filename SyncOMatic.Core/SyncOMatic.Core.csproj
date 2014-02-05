@@ -50,6 +50,8 @@
     <Compile Include="LogEntry.cs" />
     <Compile Include="MissingSourceException.cs" />
     <Compile Include="SyncOMatic.cs" />
+    <Compile Include="SyncOutput.cs" />
+    <Compile Include="TargetTree.cs" />
     <Compile Include="TreeEntryTargetType.cs" />
   </ItemGroup>
   <ItemGroup>
