@@ -45,12 +45,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DefaultTemplateRepo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MapperFixture.cs" />
     <Compile Include="PartsFixture.cs" />
     <Compile Include="DiffFixture.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="RepoToSync.cs" />
     <Compile Include="SyncFixture.cs" />
+    <Compile Include="SyncItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
