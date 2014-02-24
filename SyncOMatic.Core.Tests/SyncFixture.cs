@@ -87,7 +87,7 @@ namespace SyncOMatic.Core.Tests
 
                 
 
-                foreach (var url in som.Sync(diff, SyncOutput.CreateCommit))
+                foreach (var url in som.Sync(diff, SyncOutput.CreateBranch))
                 {
                     Console.WriteLine(url);
                 }
