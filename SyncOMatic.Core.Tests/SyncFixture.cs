@@ -2,6 +2,7 @@ namespace SyncOMatic.Core.Tests
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using NUnit.Framework;
 
     [TestFixture]
@@ -37,9 +38,16 @@ namespace SyncOMatic.Core.Tests
                 var diff = som.Diff(toSync.GetMapper(itemsToSync));
                 Assert.NotNull(diff);
 
-                foreach (var url in som.Sync(diff, SyncOutput.CreateBranch))
+                var createdSyncBranch = som.Sync(diff, SyncOutput.CreateBranch).FirstOrDefault();
+
+
+                if (string.IsNullOrEmpty(createdSyncBranch))
                 {
-                    Console.WriteLine(url);
+                    Console.Out.WriteLine("Repo {0} is in sync",repoName);
+                }
+                else
+                {
+                    Console.Out.WriteLine("Sync branch created for {0}, please click here to create a pull: {1}", repoName, createdSyncBranch);
                 }
             }
         }
