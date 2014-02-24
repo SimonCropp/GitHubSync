@@ -164,5 +164,26 @@
                 Assert.Throws<MissingSourceException>(() => som.Diff(map));
             }
         }
+
+        [Test]
+        public void CanDetectBlobCreationWhenTargetTreeFolderDoesNotExist()
+        {
+            var sourceBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "new-file.txt");
+            var destBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "IDoNotExist/MeNeither/new-file.txt");
+
+            var map = new Mapper()
+                .Add(sourceBlob, destBlob);
+
+            Diff diff;
+            using (var som = BuildSUT())
+            {
+                diff = som.Diff(map);
+            }
+
+            Assert.AreEqual(1, diff.Count());
+            Assert.NotNull(diff.Single().Key.Sha);
+            Assert.AreEqual(1, diff.Single().Value.Count());
+            Assert.Null(diff.Single().Value.Single().Sha);
+        }
     }
 }
