@@ -230,6 +230,14 @@ namespace SyncOMatic.Core
 
             var parent = TreeFrom(source.ParentTreePart, throwsIfNotFound);
 
+            if (parent == null)
+            {
+                if (throwsIfNotFound)
+                    throw new MissingSourceException(string.Format("[{0}: {1}] doesn't exist.", source.ParentTreePart.Type, source.ParentTreePart.Url));
+
+                return null;
+            }
+
             var blobName = source.Path.Split('/').Last();
             var blobEntry = parent.Item2.Tree.FirstOrDefault(ti => ti.Type == TreeType.Blob && ti.Path == blobName);
 

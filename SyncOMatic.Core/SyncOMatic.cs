@@ -128,7 +128,18 @@
 
         string BuildTargetTree(TargetTree tt)
         {
-            var newTree = BuildNewTreeFrom(gw.TreeFrom(tt.Current, true).Item2);
+            var treeFrom = gw.TreeFrom(tt.Current, false);
+
+            NewTree newTree;
+            if (treeFrom != null)
+            {
+                var destParentTree = treeFrom.Item2;
+                newTree = BuildNewTreeFrom(destParentTree);
+            }
+            else
+            {
+                newTree = new NewTree();
+            }
 
             foreach (var st in tt.SubTreesToUpdate.Values)
             {
