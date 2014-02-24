@@ -1,5 +1,7 @@
 namespace SyncOMatic.Core.Tests
 {
+    using System;
+    using System.Collections.Generic;
     using NUnit.Framework;
 
     [TestFixture]
@@ -53,5 +55,45 @@ namespace SyncOMatic.Core.Tests
                 }
             }
         }
+
+
+        [TestCase("ServiceMatrix","develop","src",null,null)]
+        public void PerformRepoSync(string repoName,string defaultBranch,string srcRoot, string solutionName, List<SyncItem> itemsToSync)
+        {
+            if (itemsToSync == null)
+            {
+                itemsToSync = DefaultTemplateRepo.ItemsToSync;
+            }
+
+            if (solutionName == null)
+            {
+                solutionName = repoName;
+            }
+
+            var toSync = new RepoToSync
+            {
+                Name = repoName,
+                Branch = defaultBranch,
+                SolutionName = solutionName,
+                SrcRoot = srcRoot
+            };
+
+
+
+            using (var som = BuildSUT())
+            {
+                var diff = som.Diff(toSync.GetMapper(itemsToSync));
+                Assert.NotNull(diff);
+
+                
+
+                foreach (var url in som.Sync(diff, SyncOutput.CreateCommit))
+                {
+                    Console.WriteLine(url);
+                }
+            }
+        }
+
+
     }
 }
