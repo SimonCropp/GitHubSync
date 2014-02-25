@@ -8,10 +8,19 @@ namespace SyncOMatic.Core.Tests
     [TestFixture]
     public class SyncFixture
     {
-        [TestCase("ServiceMatrix","develop","src",null,null)]
-        [TestCase("NServiceBus", "develop", "src", null, null)]
-        [TestCase("ServiceInsight", "develop", "src", null, null)]
-        public void PerformRepoSync(string repoName, string defaultBranch, string srcRoot, string solutionName, List<SyncItem> itemsToSync)
+        [Test]
+        [Explicit]
+        public void Sync()
+        {
+            using (var som = new SyncOMatic(Helper.Credentials, Helper.Proxy, DiffFixture.ConsoleLogger))
+            {
+                PerformRepoSync(som, "ServiceMatrix", "develop", "src", null, null);
+                PerformRepoSync(som, "NServiceBus", "develop", "src", null, null);
+                PerformRepoSync(som, "ServiceInsight", "develop", "src", null, null);
+            }
+        }
+
+        void PerformRepoSync(SyncOMatic som, string repoName, string defaultBranch, string srcRoot, string solutionName, List<SyncItem> itemsToSync)
         {
             if (itemsToSync == null)
             {
@@ -31,27 +40,20 @@ namespace SyncOMatic.Core.Tests
                 SrcRoot = srcRoot
             };
 
+            var diff = som.Diff(toSync.GetMapper(itemsToSync));
+            Assert.NotNull(diff);
+
+            var createdSyncBranch = som.Sync(diff, SyncOutput.CreateBranch).FirstOrDefault();
 
 
-            using (var som = new SyncOMatic(Helper.Credentials, Helper.Proxy, DiffFixture.ConsoleLogger))
+            if (string.IsNullOrEmpty(createdSyncBranch))
             {
-                var diff = som.Diff(toSync.GetMapper(itemsToSync));
-                Assert.NotNull(diff);
-
-                var createdSyncBranch = som.Sync(diff, SyncOutput.CreateBranch).FirstOrDefault();
-
-
-                if (string.IsNullOrEmpty(createdSyncBranch))
-                {
-                    Console.Out.WriteLine("Repo {0} is in sync",repoName);
-                }
-                else
-                {
-                    Console.Out.WriteLine("Sync branch created for {0}, please click here to create a pull: {1}", repoName, createdSyncBranch);
-                }
+                Console.Out.WriteLine("Repo {0} is in sync",repoName);
+            }
+            else
+            {
+                Console.Out.WriteLine("Sync branch created for {0}, please click here to create a pull: {1}", repoName, createdSyncBranch);
             }
         }
-
-
     }
 }
