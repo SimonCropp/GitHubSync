@@ -3,6 +3,7 @@ namespace SyncOMatic.Core
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -400,6 +401,19 @@ namespace SyncOMatic.Core
             var client = ClientFor(owner, repository);
             var reference = client.GitDatabase.Reference.Create(owner, repository, newRef).Result;
             return reference.Ref.Substring("refs/heads/".Length);
+        }
+
+
+        public string CreatePullRequest(string owner, string repository, string branchName, string targetBranchName)
+        {
+            var client = ClientFor(owner, repository);
+            var newPullRequest = new NewPullRequest("SyncOMatic update", branchName, targetBranchName);
+            var pullRequest = client.Repository.PullRequest.Create(owner, repository, newPullRequest).Result;
+
+            log("API Query - Create pull request '#{0}' in '{1}/{2}'. -> https://github.com/{1}/{2}/pull/{0}",
+                pullRequest.Number, owner, repository);
+
+            return pullRequest.Number.ToString(CultureInfo.InvariantCulture);
         }
 
         public void Dispose()

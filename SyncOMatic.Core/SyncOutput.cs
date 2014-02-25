@@ -4,5 +4,6 @@ namespace SyncOMatic.Core
     {
         CreateCommit,
         CreateBranch,
+        CreatePullRequest,
     }
 }
