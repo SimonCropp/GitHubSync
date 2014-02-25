@@ -115,6 +115,12 @@
                         yield return "https://github.com/" + root.Owner + "/" + root.Repository + "/compare/" + UrlSanitize(root.Branch) + "..." + UrlSanitize(branchName);
                         break;
 
+                    case SyncOutput.CreatePullRequest:
+                        branchName = gw.CreateBranch(root.Owner, root.Repository, branchName, c);
+                        var prNumber = gw.CreatePullRequest(root.Owner, root.Repository, branchName, root.Branch);
+                        yield return "https://github.com/" + root.Owner + "/" + root.Repository + "/pull/" + prNumber;
+                        break;
+
                     default:
                         throw new NotSupportedException();
                 }
