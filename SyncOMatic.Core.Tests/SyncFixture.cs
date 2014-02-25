@@ -9,6 +9,7 @@ namespace SyncOMatic.Core.Tests
     public class SyncFixture
     {
         [Test]
+        [Explicit]
         public void Sync()
         {
             using (var som = new SyncOMatic(Helper.Credentials, Helper.Proxy, DiffFixture.ConsoleLogger))
