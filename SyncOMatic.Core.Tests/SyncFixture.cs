@@ -14,9 +14,11 @@ namespace SyncOMatic.Core.Tests
         {
             using (var som = new SyncOMatic(Helper.Credentials, Helper.Proxy, DiffFixture.ConsoleLogger))
             {
+                PerformRepoSync(som, "Operations.LicenseGenerator", "master", "src", null, null);
                 PerformRepoSync(som, "ServiceMatrix", "develop", "src", null, null);
                 PerformRepoSync(som, "NServiceBus", "develop", "src", null, null);
                 PerformRepoSync(som, "ServiceInsight", "develop", "src", null, null);
+                PerformRepoSync(som, "NServiceBus.Azure", "develop", "src", null, null);
             }
         }
 
@@ -43,7 +45,7 @@ namespace SyncOMatic.Core.Tests
             var diff = som.Diff(toSync.GetMapper(itemsToSync));
             Assert.NotNull(diff);
 
-            var createdSyncBranch = som.Sync(diff, SyncOutput.CreateBranch).FirstOrDefault();
+            var createdSyncBranch = som.Sync(diff, SyncOutput.CreatePullRequest).FirstOrDefault();
 
 
             if (string.IsNullOrEmpty(createdSyncBranch))
