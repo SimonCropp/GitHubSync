@@ -15,6 +15,7 @@ namespace SyncOMatic.Core.Tests
             using (var som = new SyncOMatic(Helper.Credentials, Helper.Proxy, DiffFixture.ConsoleLogger))
             {
                 PerformRepoSync(som, "NServiceBus.SqlServer", "develop", "src", null, null);
+                PerformRepoSync(som, "NServiceBus.NHibernate", "develop", "src", null, null);
                 PerformRepoSync(som, "Operations.LicenseGenerator", "master", "src", null, null);
                 PerformRepoSync(som, "ServiceMatrix", "develop", "src", null, null);
                 PerformRepoSync(som, "NServiceBus", "develop", "src", null, null);
