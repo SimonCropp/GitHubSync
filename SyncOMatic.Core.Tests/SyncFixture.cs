@@ -14,6 +14,7 @@ namespace SyncOMatic.Core.Tests
         {
             using (var som = new SyncOMatic(Helper.Credentials, Helper.Proxy, DiffFixture.ConsoleLogger))
             {
+                PerformRepoSync(som, "NServiceBus.SqlServer", "develop", "src", null, null);
                 PerformRepoSync(som, "Operations.LicenseGenerator", "master", "src", null, null);
                 PerformRepoSync(som, "ServiceMatrix", "develop", "src", null, null);
                 PerformRepoSync(som, "NServiceBus", "develop", "src", null, null);
@@ -54,7 +55,7 @@ namespace SyncOMatic.Core.Tests
             }
             else
             {
-                Console.Out.WriteLine("Sync branch created for {0}, please click here to create a pull: {1}", repoName, createdSyncBranch);
+                Console.Out.WriteLine("Pull created for {0}, click here to review and pull: {1}", repoName, createdSyncBranch);
             }
         }
     }
