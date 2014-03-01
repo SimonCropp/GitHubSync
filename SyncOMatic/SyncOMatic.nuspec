@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>SyncOMatic</id>
+    <version>$version$</version>
+    <title>SyncOMatic</title>
+    <authors>Particular Software</authors>
+    <owners>Particular Software</owners>
+    <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
+    <projectUrl>https://github.com/Particular/SyncOMatic/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <iconUrl>https://raw.github.com/Particular/SyncOMatic/master/Icons/package_icon.png</iconUrl>
+    <description>A tool to help synchronizing specific files and folders across repositories.</description>
+    <language>en-AU</language>
+    <tags>Git</tags>
+    <dependencies>
+      <dependency id="Octokit"/>
+    </dependencies>
+  </metadata>
+</package>

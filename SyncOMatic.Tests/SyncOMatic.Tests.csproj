@@ -46,7 +46,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DefaultTemplateRepo.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MapperFixture.cs" />
     <Compile Include="PartsFixture.cs" />
     <Compile Include="DiffFixture.cs" />
@@ -59,17 +58,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SyncOMatic.Core\SyncOMatic.Core.csproj">
+    <ProjectReference Include="..\SyncOMatic\SyncOMatic.csproj">
       <Project>{FA94AA77-F599-4740-BE67-0A2EE629047E}</Project>
-      <Name>SyncOMatic.Core</Name>
+      <Name>SyncOMatic</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>
