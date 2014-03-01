@@ -51,7 +51,7 @@
     <Compile Include="GitHubGateway.cs" />
     <Compile Include="LogEntry.cs" />
     <Compile Include="MissingSourceException.cs" />
-    <Compile Include="SyncOMatic.cs" />
+    <Compile Include="Syncer.cs" />
     <Compile Include="SyncOutput.cs" />
     <Compile Include="TargetTree.cs" />
     <Compile Include="TreeEntryTargetType.cs" />

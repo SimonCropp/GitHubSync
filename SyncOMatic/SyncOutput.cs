@@ -1,4 +1,4 @@
-namespace SyncOMatic.Core
+namespace SyncOMatic
 {
     public enum SyncOutput
     {

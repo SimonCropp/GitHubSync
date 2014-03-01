@@ -1,45 +1,43 @@
-namespace SyncOMatic.Core.Tests
+using System.Collections.Generic;
+using SyncOMatic;
+
+public class RepoToSync
 {
-    using System.Collections.Generic;
+    public string Name { get; set; }
+    public string Branch { get; set; }
 
-    public class RepoToSync
+    public string SrcRoot { get; set; }
+
+
+    public string SolutionName { get; set; }
+
+    public Mapper GetMapper(List<SyncItem> syncItems)
     {
-        public string Name { get; set; }
-        public string Branch{ get; set; }
-
-        public string SrcRoot { get; set; }
+        var mapper = new Mapper();
 
 
-        public string SolutionName { get; set; }
-
-        public Mapper GetMapper(List<SyncItem> syncItems)
+        foreach (var syncItem in syncItems)
         {
-            var mapper = new Mapper();
+            var toPart = new Parts("Particular/" + Name, syncItem.Parts.Type, Branch, ApplyTargetPathTemplate(syncItem));
 
-
-            foreach (var syncItem in syncItems)
-            {
-                var toPart = new Parts("Particular/" + Name, syncItem.Parts.Type, Branch, ApplyTargetPathTemplate(syncItem));
-
-                mapper.Add(syncItem.Parts, toPart);
-            }
-
-
-            return mapper;
-
+            mapper.Add(syncItem.Parts, toPart);
         }
 
-        string ApplyTargetPathTemplate(SyncItem syncItem)
+
+        return mapper;
+
+    }
+
+    string ApplyTargetPathTemplate(SyncItem syncItem)
+    {
+        if (string.IsNullOrEmpty(syncItem.Target))
         {
-            if (string.IsNullOrEmpty(syncItem.Target))
-            {
-                return syncItem.Parts.Path;
-            }
-
-
-            return syncItem.Target
-                .Replace("{{src.root}}", SrcRoot)
-                .Replace("{{solution.name}}", SolutionName);
+            return syncItem.Parts.Path;
         }
+
+
+        return syncItem.Target
+            .Replace("{{src.root}}", SrcRoot)
+            .Replace("{{solution.name}}", SolutionName);
     }
 }
