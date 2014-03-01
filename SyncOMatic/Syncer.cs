@@ -1,4 +1,4 @@
-﻿namespace SyncOMatic.Core
+﻿namespace SyncOMatic
 {
     using System;
     using System.Collections.Generic;
@@ -7,7 +7,7 @@
     using System.Net;
     using Octokit;
 
-    public class SyncOMatic : IDisposable
+    public class Syncer : IDisposable
     {
         GitHubGateway gw;
         Action<LogEntry> logCallBack;
@@ -15,7 +15,7 @@
         // TODO: Maybe expose api rate info per connection?
         // TODO: Add SyncResult (BranchCreated, PullRequestCreated, PullRequestMerged) + url
 
-        public SyncOMatic(
+        public Syncer(
             IEnumerable<Tuple<Credentials, string>> credentialsPerRepos,
             IWebProxy proxy = null,
             Action<LogEntry> loggerCallback = null)
@@ -25,7 +25,7 @@
             gw = new GitHubGateway(credentialsPerRepos, proxy, logCallBack);
         }
 
-        public SyncOMatic(
+        public Syncer(
             Credentials defaultCredentials,
             IWebProxy proxy = null,
             Action<LogEntry> loggerCallback = null)
