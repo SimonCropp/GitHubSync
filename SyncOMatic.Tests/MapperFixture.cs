@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using NUnit.Framework;
+using SyncOMatic;
 
 [TestFixture]
 public class MapperFixture
