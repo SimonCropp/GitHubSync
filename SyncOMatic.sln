@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
-MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncOMatic.Core", "SyncOMatic.Core\SyncOMatic.Core.csproj", "{FA94AA77-F599-4740-BE67-0A2EE629047E}"
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncOMatic", "SyncOMatic\SyncOMatic.csproj", "{FA94AA77-F599-4740-BE67-0A2EE629047E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncOMatic.Core.Tests", "SyncOMatic.Core.Tests\SyncOMatic.Core.Tests.csproj", "{8169A350-6F30-464D-87BE-145905F9B80B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncOMatic.Tests", "SyncOMatic.Tests\SyncOMatic.Tests.csproj", "{8169A350-6F30-464D-87BE-145905F9B80B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

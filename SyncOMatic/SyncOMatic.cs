@@ -9,8 +9,8 @@
 
     public class SyncOMatic : IDisposable
     {
-        readonly GitHubGateway gw;
-        readonly Action<LogEntry> logCallBack;
+        GitHubGateway gw;
+        Action<LogEntry> logCallBack;
 
         // TODO: Maybe expose api rate info per connection?
         // TODO: Add SyncResult (BranchCreated, PullRequestCreated, PullRequestMerged) + url

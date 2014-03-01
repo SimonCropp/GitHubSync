@@ -7,8 +7,8 @@
     <ProjectGuid>{FA94AA77-F599-4740-BE67-0A2EE629047E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncOMatic.Core</RootNamespace>
-    <AssemblyName>SyncOMatic.Core</AssemblyName>
+    <RootNamespace>SyncOMatic</RootNamespace>
+    <AssemblyName>SyncOMatic</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\SyncOMatic.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\SyncOMatic.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Octokit, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -43,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Parts.cs" />
     <Compile Include="Mapper.cs" />
     <Compile Include="GitHubGateway.cs" />
@@ -55,14 +57,21 @@
     <Compile Include="TreeEntryTargetType.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="SyncOMatic.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
+  <UsingTask TaskName="PepitaPackage.CreatePackageTask" AssemblyFile="$(SolutionDir)Tools\PepitaPackage.dll" />
   <Target Name="AfterBuild">
+    <ItemGroup>
+      <FilesToDelete Include="$(SolutionDir)NuGetBuild\**\*.*" />
+    </ItemGroup>
+    <Delete Files="@(FilesToDelete)" />
+    <MakeDir Directories="$(SolutionDir)NuGetBuild" />
+    <Copy SourceFiles="$(TargetDir)SyncOMatic.dll" DestinationFolder="$(SolutionDir)NuGetBuild\Lib\net45" />
+    <Copy SourceFiles="$(TargetDir)SyncOMatic.pdb" DestinationFolder="$(SolutionDir)NuGetBuild\Lib\net45" />
+    <Copy SourceFiles="$(TargetDir)SyncOMatic.xml" DestinationFolder="$(SolutionDir)NuGetBuild\Lib\net45" />
+    <Copy SourceFiles="$(ProjectDir)SyncOMatic.nuspec" DestinationFolder="$(SolutionDir)NuGetBuild" />
+    <PepitaPackage.CreatePackageTask NuGetBuildDirectory="$(SolutionDir)NuGetBuild" MetadataAssembly="$(TargetPath)" />
   </Target>
-  -->
 </Project>

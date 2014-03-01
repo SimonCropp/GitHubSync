@@ -1,6 +1,8 @@
 SyncOMatic
 ==========
 
+![Icon](https://raw.github.com/Particular/sync/master/Icons/package_icon.png)
+
 A tool to help synchronizing specific files and folders across repositories
 
 
@@ -16,3 +18,11 @@ To run
 To update/add more files to sync
 
 * https://github.com/Particular/SyncOMatic/blob/master/SyncOMatic.Core.Tests/DefaultTemplateRepo.cs
+
+
+
+## Icon 
+
+<a href="http://thenounproject.com/term/sync/290/" target="_blank">Sync</a> designed by <a href="http://www.thenounproject.com/edward" target="_blank">Edward Boatman</a> from The Noun Project
+
+
