@@ -10,8 +10,8 @@
     <projectUrl>https://github.com/Particular/SyncOMatic/</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <iconUrl>https://raw.github.com/Particular/SyncOMatic/master/Icons/package_icon.png</iconUrl>
-    <description>A tool to help synchronizing specific files and folders across repositories.</description>
-    <language>en-AU</language>
+    <description>A tool to help synchronizing specific files and folders across GitHub hosted repositories.</description>
+    <language>en-US</language>
     <tags>Git</tags>
     <dependencies>
       <dependency id="Octokit"/>
