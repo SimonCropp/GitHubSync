@@ -15,6 +15,10 @@ public class SyncFixture
         {
             PerformRepoSync(som, "NServiceBus.SqlServer", "develop", "src", null, null);
             PerformRepoSync(som, "NServiceBus.NHibernate", "develop", "src", null, null);
+            PerformRepoSync(som, "NServiceBus.RabbitMQ", "develop", "src", null, null);
+            PerformRepoSync(som, "NServiceBus.RavenDB", "develop", "src", null, null);
+            PerformRepoSync(som, "ServicePulse", "develop", "src", null, null);
+            PerformRepoSync(som, "ServiceControl", "develop", "src", null, null);
             PerformRepoSync(som, "Operations.LicenseGenerator", "master", "src", null, null);
             PerformRepoSync(som, "ServiceMatrix", "develop", "src", null, null);
             PerformRepoSync(som, "NServiceBus", "develop", "src", null, null);
