@@ -19,7 +19,7 @@ public class SyncFixture
             PerformRepoSync(som, "NServiceBus.RavenDB", "develop", "src", null, null);
             PerformRepoSync(som, "ServicePulse", "develop", "src", null, null);
             PerformRepoSync(som, "ServiceControl", "develop", "src", null, null);
-            PerformRepoSync(som, "Operations.LicenseGenerator", "master", "src", null, null);
+            PerformRepoSync(som, "Operations.Licensing", "master", "src", null, null);
             PerformRepoSync(som, "ServiceMatrix", "develop", "src", null, null);
             PerformRepoSync(som, "NServiceBus", "develop", "src", null, null);
             PerformRepoSync(som, "ServiceInsight", "develop", "src", null, null);
