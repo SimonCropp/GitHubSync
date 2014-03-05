@@ -23,7 +23,6 @@ public static class DefaultTemplateRepo
             Parts = new Parts("Particular/RepoStandards", TreeEntryTargetType.Tree, "master", "buildsupport")
         });
 
-
         ItemsToSync.Add(new SyncItem
         {
             Target = "{{src.root}}/{{solution.name}}.sln.DotSettings",
