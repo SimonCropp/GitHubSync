@@ -13,6 +13,8 @@ public class SyncFixture
     {
         using (var som = new Syncer(Helper.Credentials, Helper.Proxy, DiffFixture.ConsoleLogger))
         {
+
+            PerformRepoSync(som, "NServiceBus.Gateway", "develop", "src", null, null); 
             PerformRepoSync(som, "PlatformInstaller", "master", "src", null, null); 
             PerformRepoSync(som, "NServiceBus.SqlServer", "develop", "src", null, null);
             PerformRepoSync(som, "NServiceBus.NHibernate", "develop", "src", null, null);
