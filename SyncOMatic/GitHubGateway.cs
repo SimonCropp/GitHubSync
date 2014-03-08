@@ -3,7 +3,6 @@ namespace SyncOMatic
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using System.Globalization;
     using System.IO;
     using System.Linq;
     using System.Net;
@@ -403,8 +402,7 @@ namespace SyncOMatic
             return reference.Ref.Substring("refs/heads/".Length);
         }
 
-
-        public string CreatePullRequest(string owner, string repository, string branchName, string targetBranchName)
+        public int CreatePullRequest(string owner, string repository, string branchName, string targetBranchName)
         {
             var client = ClientFor(owner, repository);
             var newPullRequest = new NewPullRequest("SyncOMatic update", branchName, targetBranchName);
@@ -413,7 +411,7 @@ namespace SyncOMatic
             log("API Query - Create pull request '#{0}' in '{1}/{2}'. -> https://github.com/{1}/{2}/pull/{0}",
                 pullRequest.Number, owner, repository);
 
-            return pullRequest.Number.ToString(CultureInfo.InvariantCulture);
+            return pullRequest.Number;
         }
 
         public void Dispose()
@@ -422,6 +420,17 @@ namespace SyncOMatic
 
             log("Dispose - Remove temp blob storage '{0}'.",
                 blobStoragePath);
+        }
+
+        public void ApplyLabels(string owner, string repository, int issueNumber, string[] labels)
+        {
+            Debug.Assert(labels != null);
+
+            log("API Query - Apply labels '{3}' to request '#{0}' in '{1}/{2}'.",
+                issueNumber, owner, repository, string.Join(", ", labels));
+
+            var client = ClientFor(owner, repository);
+            var r = client.Issue.Labels.AddToIssue(owner, repository, issueNumber, labels).Result;
         }
     }
 }
