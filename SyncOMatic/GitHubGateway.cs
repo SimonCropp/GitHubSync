@@ -24,6 +24,8 @@ namespace SyncOMatic
         readonly string blobStoragePath;
         const string DEFAULT_CREDENTIALS_KEY = "Default";
 
+        static NewTreeItemComparer newTreeItemComparer = new NewTreeItemComparer();
+
         public GitHubGateway(IEnumerable<Tuple<Credentials, string>> credentialsPerRepos, IWebProxy proxy, Action<LogEntry> logCallBack)
         {
             SetupClientCache(credentialsPerRepos, Credentials.Anonymous, proxy);
@@ -330,6 +332,11 @@ namespace SyncOMatic
         {
             var client = ClientFor(destOwner, destRepository);
             var createdTree = client.GitDatabase.Tree.Create(destOwner, destRepository, newTree).Result;
+
+            //TODO: Remove when GitHub tree creation is fixed
+            var sorted = new List<NewTreeItem>(newTree.Tree);
+            sorted.Sort(newTreeItemComparer);
+            newTree.Tree = sorted;
 
             log("API Query - Create tree '{0}' in '{1}/{2}'.",
                 createdTree.Sha.Substring(0, 7), destOwner, destRepository);
