@@ -46,6 +46,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="NewTreeItemComparer.cs" />
     <Compile Include="Parts.cs" />
     <Compile Include="Mapper.cs" />
     <Compile Include="GitHubGateway.cs" />
