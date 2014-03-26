@@ -53,7 +53,7 @@ public class SyncFixture
         var diff = som.Diff(toSync.GetMapper(itemsToSync));
         Assert.NotNull(diff);
 
-        var createdSyncBranch = som.Sync(diff, SyncOutput.CreatePullRequest).FirstOrDefault();
+        var createdSyncBranch = som.Sync(diff, SyncOutput.CreatePullRequest, new[] { "Internal refactoring" }).FirstOrDefault();
 
 
         if (string.IsNullOrEmpty(createdSyncBranch))
