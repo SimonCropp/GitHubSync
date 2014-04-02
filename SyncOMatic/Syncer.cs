@@ -82,12 +82,12 @@
 
         public IEnumerable<string> Sync(Diff diff, SyncOutput expectedOutput, IEnumerable<string> labelsToApplyOnPullRequests = null)
         {
-            if (labelsToApplyOnPullRequests != null && expectedOutput != SyncOutput.CreatePullRequest)
+            var labels = labelsToApplyOnPullRequests == null ? new string[]{ } : labelsToApplyOnPullRequests.ToArray();
+
+            if (labels.Any() && expectedOutput != SyncOutput.CreatePullRequest)
             {
                 throw new InvalidOperationException(string.Format("Labels can only be applied in '{0}' mode.", SyncOutput.CreatePullRequest));
             }
-
-            var labels = labelsToApplyOnPullRequests.ToArray();
 
             var t = diff.Transpose();
             var branchName = "SyncOMatic-" + DateTimeOffset.UtcNow.ToString("yyyyMMdd-HHmmss");
