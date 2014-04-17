@@ -9,9 +9,9 @@ A tool to help synchronizing specific files and folders across repositories
 To run 
 
 
-1. Make sure that the repo you want to sync is configured https://github.com/Particular/SyncOMatic/blob/master/SyncOMatic.Core.Tests/SyncFixture.cs#L61
-2. Run the relevant test case. This will give you a url to branch with the proposed changes
-3. If ok, click "Create pull request"
+1. Make sure that the repo you want to sync is configured https://github.com/Particular/SyncOMatic/blob/master/SyncOMatic.Tests/SyncFixture.cs
+2. Run the test (comment out the others if you want to sync just your repo)
+3. If ok, a pull request will be created for you
 
 
 
