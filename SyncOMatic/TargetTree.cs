@@ -16,18 +16,18 @@ namespace SyncOMatic
             LeavesToCreate = new Dictionary<string, Tuple<Parts, Parts>>();
         }
 
-        public void Add(Parts dest, Parts source)
+        public void Add(Parts destination, Parts source)
         {
-            Add(dest, source, 0);
+            Add(destination, source, 0);
         }
 
-        void Add(Parts dest, Parts source, int level)
+        void Add(Parts destination, Parts source, int level)
         {
-            var s = dest.SegmentPartsByNestingLevel(level);
+            var s = destination.SegmentPartsByNestingLevel(level);
 
-            if (dest.NumberOfPathSegments == level + 1)
+            if (destination.NumberOfPathSegments == level + 1)
             {
-                var Leaf = new Tuple<Parts, Parts>(dest, source);
+                var Leaf = new Tuple<Parts, Parts>(destination, source);
                 LeavesToCreate.Add(s.Name, Leaf);
                 return;
             }
@@ -40,7 +40,7 @@ namespace SyncOMatic
                 SubTreesToUpdate.Add(s.Name, sb);
             }
 
-            sb.Add(dest, source, ++level);
+            sb.Add(destination, source, ++level);
         }
     }
 }

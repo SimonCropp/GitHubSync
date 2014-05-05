@@ -1,8 +1,8 @@
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using NUnit.Framework;
-    using SyncOMatic;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using NUnit.Framework;
+using SyncOMatic;
 
 [TestFixture]
 public class SyncFixture
@@ -27,6 +27,9 @@ public class SyncFixture
             PerformRepoSync(som, "NServiceBus", "develop", "src", null, null);
             PerformRepoSync(som, "ServiceInsight", "develop", "src", null, null);
             PerformRepoSync(som, "NServiceBus.Azure", "develop", "src", null, null);
+            PerformRepoSync(som, "NServiceBus.PowerShell", "develop", "src", null, null);
+            PerformRepoSync(som, "NServiceBus.Unity", "develop", "src", null, null);
+            
         }
     }
 

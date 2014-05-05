@@ -55,25 +55,25 @@
 
                 var richSource = EnrichWithShas(source, true);
 
-                foreach (var dest in kvp.Value)
+                foreach (var destination in kvp.Value)
                 {
                     log("Diff - Analyze {0} target '{1}'.",
-                        source.Type, dest.Url);
+                        source.Type, destination.Url);
 
-                    var richDest = EnrichWithShas(dest, false);
+                    var richDestination = EnrichWithShas(destination, false);
 
-                    if (richSource.Sha == richDest.Sha)
+                    if (richSource.Sha == richDestination.Sha)
                     {
                         log("Diff - No sync required. Matching sha ({0}) between target '{1}' and source '{2}.",
-                            richSource.Sha.Substring(0, 7), dest.Url, source.Url);
+                            richSource.Sha.Substring(0, 7), destination.Url, source.Url);
 
                         continue;
                     }
 
                     log("Diff - {4} required. Non-matching sha ({0} vs {1}) between target '{2}' and source '{3}.",
-                        richSource.Sha.Substring(0, 7), richDest.Sha == null ? "NULL" : richDest.Sha.Substring(0, 7), dest.Url, source.Url, richDest.Sha == null ? "Creation" : "Updation");
+                        richSource.Sha.Substring(0, 7), richDestination.Sha == null ? "NULL" : richDestination.Sha.Substring(0, 7), destination.Url, source.Url, richDestination.Sha == null ? "Creation" : "Updation");
 
-                    outMapper.Add(richSource, richDest);
+                    outMapper.Add(richSource, richDestination);
                 }
             }
 
@@ -100,9 +100,9 @@
                 foreach (var change in updatesPerOwnerRepositoryBranch)
                 {
                     var source = change.Item2;
-                    var dest = change.Item1;
+                    var destination = change.Item1;
 
-                    tt.Add(dest, source);
+                    tt.Add(destination, source);
                 }
 
                 var btt = BuildTargetTree(tt);
@@ -147,8 +147,8 @@
             NewTree newTree;
             if (treeFrom != null)
             {
-                var destParentTree = treeFrom.Item2;
-                newTree = BuildNewTreeFrom(destParentTree);
+                var destinationParentTree = treeFrom.Item2;
+                newTree = BuildNewTreeFrom(destinationParentTree);
             }
             else
             {
@@ -164,22 +164,22 @@
 
             foreach (var l in tt.LeavesToCreate.Values)
             {
-                var dest = l.Item1;
+                var destination = l.Item1;
                 var source = l.Item2;
 
-                RemoveTreeItemFrom(newTree, dest.Name);
+                RemoveTreeItemFrom(newTree, destination.Name);
 
-                SyncLeaf(source, dest);
+                SyncLeaf(source, destination);
 
                 switch (source.Type)
                 {
                     case TreeEntryTargetType.Blob:
                         var sourceBlobItem = gw.BlobFrom(source, true).Item2;
-                        newTree.Tree.Add(new NewTreeItem { Mode = sourceBlobItem.Mode, Path = dest.Name, Sha = source.Sha, Type = TreeType.Blob });
+                        newTree.Tree.Add(new NewTreeItem { Mode = sourceBlobItem.Mode, Path = destination.Name, Sha = source.Sha, Type = TreeType.Blob });
                         break;
 
                     case TreeEntryTargetType.Tree:
-                        newTree.Tree.Add(new NewTreeItem { Mode = "040000", Path = dest.Name, Sha = source.Sha, Type = TreeType.Tree });
+                        newTree.Tree.Add(new NewTreeItem { Mode = "040000", Path = destination.Name, Sha = source.Sha, Type = TreeType.Tree });
                         break;
 
                     default:
@@ -190,22 +190,22 @@
             return gw.CreateTree(newTree, tt.Current.Owner, tt.Current.Repository);
         }
 
-        void SyncLeaf(Parts source, Parts dest)
+        void SyncLeaf(Parts source, Parts destination)
         {
             switch (source.Type)
             {
                 case TreeEntryTargetType.Blob:
                     log("Sync - Determine if Blob '{0}' requires to be created in '{1}/{2}'.",
-                        source.Sha.Substring(0, 7), dest.Owner, dest.Repository);
+                        source.Sha.Substring(0, 7), destination.Owner, destination.Repository);
 
-                    SyncBlob(source.Owner, source.Repository, source.Sha, dest.Owner, dest.Repository);
+                    SyncBlob(source.Owner, source.Repository, source.Sha, destination.Owner, destination.Repository);
                     break;
 
                 case TreeEntryTargetType.Tree:
                     log("Sync - Determine if Tree '{0}' requires to be created in '{1}/{2}'.",
-                        source.Sha.Substring(0, 7), dest.Owner, dest.Repository);
+                        source.Sha.Substring(0, 7), destination.Owner, destination.Repository);
 
-                    SyncTree(source, dest.Owner, dest.Repository);
+                    SyncTree(source, destination.Owner, destination.Repository);
                     break;
 
                 default:
@@ -225,11 +225,11 @@
             tree.Tree.Remove(existing);
         }
 
-        static NewTree BuildNewTreeFrom(TreeResponse destParentTree)
+        static NewTree BuildNewTreeFrom(TreeResponse destinationParentTree)
         {
             var newTree = new NewTree();
 
-            foreach (var treeItem in destParentTree.Tree)
+            foreach (var treeItem in destinationParentTree.Tree)
             {
                 var newTreeItem = new NewTreeItem
                                   {
@@ -245,18 +245,18 @@
             return newTree;
         }
 
-        void SyncBlob(string sourceOwner, string sourceRepository, string sha, string destOwner, string destRepository)
+        void SyncBlob(string sourceOwner, string sourceRepository, string sha, string destinationOwner, string destinationRepository)
         {
-            if (gw.IsKnownBy<Blob>(sha, destOwner, destRepository))
+            if (gw.IsKnownBy<Blob>(sha, destinationOwner, destinationRepository))
                 return;
 
             gw.FetchBlob(sourceOwner, sourceRepository, sha);
-            gw.CreateBlob(destOwner, destRepository, sha);
+            gw.CreateBlob(destinationOwner, destinationRepository, sha);
         }
 
-        void SyncTree(Parts source, string destOwner, string destRepository)
+        void SyncTree(Parts source, string destinationOwner, string destinationRepository)
         {
-            if (gw.IsKnownBy<TreeResponse>(source.Sha, destOwner, destRepository))
+            if (gw.IsKnownBy<TreeResponse>(source.Sha, destinationOwner, destinationRepository))
                 return;
 
             var treeFrom = gw.TreeFrom(source, true);
@@ -268,11 +268,11 @@
                 switch (i.Type)
                 {
                     case TreeType.Blob:
-                        SyncBlob(source.Owner, source.Repository, i.Sha, destOwner, destRepository);
+                        SyncBlob(source.Owner, source.Repository, i.Sha, destinationOwner, destinationRepository);
                         break;
 
                     case TreeType.Tree:
-                        SyncTree(treeFrom.Item1.Combine(TreeEntryTargetType.Tree, i.Path, i.Sha), destOwner, destRepository);
+                        SyncTree(treeFrom.Item1.Combine(TreeEntryTargetType.Tree, i.Path, i.Sha), destinationOwner, destinationRepository);
                         break;
 
                     default:
@@ -288,7 +288,7 @@
                 });
             }
 
-            var sha = gw.CreateTree(newTree, destOwner, destRepository);
+            var sha = gw.CreateTree(newTree, destinationOwner, destinationRepository);
 
             Debug.Assert(source.Sha == sha);
         }

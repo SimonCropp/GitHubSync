@@ -37,10 +37,10 @@ public class DiffFixture
     public void CanDetectBlobUpdation()
     {
         var sourceBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "file.txt");
-        var destBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "file.txt");
+        var destinationBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "file.txt");
 
         var map = new Mapper()
-            .Add(sourceBlob, destBlob);
+            .Add(sourceBlob, destinationBlob);
 
         Diff diff;
         using (var som = BuildSUT())
@@ -58,10 +58,10 @@ public class DiffFixture
     public void CanDetectBlobCreation()
     {
         var sourceBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "new-file.txt");
-        var destBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "new-file.txt");
+        var destinationBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "new-file.txt");
 
         var map = new Mapper()
-            .Add(sourceBlob, destBlob);
+            .Add(sourceBlob, destinationBlob);
 
         Diff diff;
         using (var som = BuildSUT())
@@ -79,10 +79,10 @@ public class DiffFixture
     public void ThrowsWhenSourceBlobDoesNotExist()
     {
         var sourceBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "IDoNotExist.txt");
-        var destBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "file.txt");
+        var destinationBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "file.txt");
 
         var map = new Mapper()
-            .Add(sourceBlob, destBlob);
+            .Add(sourceBlob, destinationBlob);
 
         using (var som = BuildSUT())
         {
@@ -111,10 +111,10 @@ public class DiffFixture
     public void CanDetectTreeUpdation()
     {
         var sourceTree = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "folder");
-        var destTree = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "consumer-one", "folder");
+        var destinationTree = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "consumer-one", "folder");
 
         var map = new Mapper()
-            .Add(sourceTree, destTree);
+            .Add(sourceTree, destinationTree);
 
         Diff diff;
         using (var som = BuildSUT())
@@ -132,10 +132,10 @@ public class DiffFixture
     public void CanDetectTreeCreation()
     {
         var sourceTree = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "folder/sub2");
-        var destTree = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "consumer-one", "folder/sub2");
+        var destinationTree = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "consumer-one", "folder/sub2");
 
         var map = new Mapper()
-            .Add(sourceTree, destTree);
+            .Add(sourceTree, destinationTree);
 
         Diff diff;
         using (var som = BuildSUT())
@@ -153,10 +153,10 @@ public class DiffFixture
     public void ThrowsWhenSourceTreeDoesNotExist()
     {
         var sourceTree = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "IDoNotExist/folder/sub2");
-        var destTree = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "consumer-one", "folder/sub2");
+        var destinationTree = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "consumer-one", "folder/sub2");
 
         var map = new Mapper()
-            .Add(sourceTree, destTree);
+            .Add(sourceTree, destinationTree);
 
         using (var som = BuildSUT())
         {
@@ -168,10 +168,10 @@ public class DiffFixture
     public void CanDetectBlobCreationWhenTargetTreeFolderDoesNotExist()
     {
         var sourceBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "new-file.txt");
-        var destBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "IDoNotExist/MeNeither/new-file.txt");
+        var destinationBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "IDoNotExist/MeNeither/new-file.txt");
 
         var map = new Mapper()
-            .Add(sourceBlob, destBlob);
+            .Add(sourceBlob, destinationBlob);
 
         Diff diff;
         using (var som = BuildSUT())

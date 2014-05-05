@@ -312,28 +312,28 @@ namespace SyncOMatic
             return dic;
         }
 
-        public string CreateCommit(string treeSha, string destOwner, string destRepository, string parentCommitSha)
+        public string CreateCommit(string treeSha, string destinationOwner, string destinationRepository, string parentCommitSha)
         {
             var newCommit = new NewCommit("SyncOMatic update", treeSha, new[] { parentCommitSha });
 
-            var client = ClientFor(destOwner, destRepository);
-            var createdCommit = client.GitDatabase.Commit.Create(destOwner, destRepository, newCommit).Result;
+            var client = ClientFor(destinationOwner, destinationRepository);
+            var createdCommit = client.GitDatabase.Commit.Create(destinationOwner, destinationRepository, newCommit).Result;
 
             log("API Query - Create commit '{0}' in '{1}/{2}'. -> https://github.com/{1}/{2}/commit/{3}",
-                createdCommit.Sha.Substring(0, 7), destOwner, destRepository, createdCommit.Sha);
+                createdCommit.Sha.Substring(0, 7), destinationOwner, destinationRepository, createdCommit.Sha);
 
             return createdCommit.Sha;
         }
 
-        public string CreateTree(NewTree newTree, string destOwner, string destRepository)
+        public string CreateTree(NewTree newTree, string destinationOwner, string destinationRepository)
         {
-            var client = ClientFor(destOwner, destRepository);
-            var createdTree = client.GitDatabase.Tree.Create(destOwner, destRepository, newTree).Result;
+            var client = ClientFor(destinationOwner, destinationRepository);
+            var createdTree = client.GitDatabase.Tree.Create(destinationOwner, destinationRepository, newTree).Result;
 
             log("API Query - Create tree '{0}' in '{1}/{2}'.",
-                createdTree.Sha.Substring(0, 7), destOwner, destRepository);
+                createdTree.Sha.Substring(0, 7), destinationOwner, destinationRepository);
 
-            AddToKnown<TreeResponse>(createdTree.Sha, destOwner, destRepository);
+            AddToKnown<TreeResponse>(createdTree.Sha, destinationOwner, destinationRepository);
 
             return createdTree.Sha;
         }

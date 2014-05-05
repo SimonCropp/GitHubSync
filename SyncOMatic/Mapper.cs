@@ -110,9 +110,9 @@
             {
                 var source = kvp.Key;
 
-                foreach (var dest in kvp.Value)
+                foreach (var destination in kvp.Value)
                 {
-                    var orb = dest.Owner + "/" + dest.Repository + "/" + dest.Branch;
+                    var orb = destination.Owner + "/" + destination.Repository + "/" + destination.Branch;
 
                     IList<Tuple<Parts, Parts>> items;
 
@@ -122,7 +122,7 @@
                         d.Add(orb, items);
                     }
 
-                    items.Add(new Tuple<Parts, Parts>(dest, source));
+                    items.Add(new Tuple<Parts, Parts>(destination, source));
                 }
             }
 
