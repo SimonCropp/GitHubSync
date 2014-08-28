@@ -20,7 +20,7 @@ public static class DefaultTemplateRepo
 
         ItemsToSync.Add(new SyncItem
         {
-            Parts = new Parts("Particular/RepoStandards", TreeEntryTargetType.Tree, "master", "buildsupport")
+            Parts = new Parts("Particular/RepoStandards", TreeEntryTargetType.Blob, "master", "src/nuget.config")
         });
 
         ItemsToSync.Add(new SyncItem

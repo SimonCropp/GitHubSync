@@ -33,6 +33,16 @@ public class SyncFixture
         }
     }
 
+    [Test]
+    [Explicit]
+    public void SyncOneRepoi()
+    {
+        using (var som = new Syncer(Helper.Credentials, Helper.Proxy, DiffFixture.ConsoleLogger))
+        {
+            PerformRepoSync(som, "GitHubReleaseNotes", "master", "src", null, null);
+        }
+    }
+
     void PerformRepoSync(Syncer som, string repoName, string defaultBranch, string srcRoot, string solutionName, List<SyncItem> itemsToSync)
     {
         if (itemsToSync == null)
