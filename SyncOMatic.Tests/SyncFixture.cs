@@ -39,7 +39,8 @@ public class SyncFixture
     {
         using (var som = new Syncer(Helper.Credentials, Helper.Proxy, DiffFixture.ConsoleLogger))
         {
-            PerformRepoSync(som, "GitHubReleaseNotes", "master", "src", null, null);
+            PerformRepoSync(som, "OctopusConfigUpdater", "master", "src", null, null);
+            //PerformRepoSync(som, "OctopusConfigUpdater", "master", "src", null, null);
         }
     }
 
