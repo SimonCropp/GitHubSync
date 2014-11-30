@@ -10,6 +10,7 @@ namespace SyncOMatic
     using System.Text;
     using Octokit;
     using Octokit.Internal;
+    using ProductHeaderValue = Octokit.ProductHeaderValue;
 
     class GitHubGateway : IDisposable
     {
