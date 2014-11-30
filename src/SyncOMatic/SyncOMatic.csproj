@@ -7,8 +7,8 @@
     <ProjectGuid>{FA94AA77-F599-4740-BE67-0A2EE629047E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SyncOMatic.Core</RootNamespace>
-    <AssemblyName>SyncOMatic.Core</AssemblyName>
+    <RootNamespace>SyncOMatic</RootNamespace>
+    <AssemblyName>SyncOMatic</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -20,6 +20,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\SyncOMatic.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -28,6 +29,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\SyncOMatic.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Octokit, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">
@@ -49,22 +51,14 @@
     <Compile Include="GitHubGateway.cs" />
     <Compile Include="LogEntry.cs" />
     <Compile Include="MissingSourceException.cs" />
-    <Compile Include="SyncOMatic.cs" />
+    <Compile Include="Syncer.cs" />
     <Compile Include="SyncOutput.cs" />
     <Compile Include="TargetTree.cs" />
     <Compile Include="TreeEntryTargetType.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="SyncOMatic.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <UsingTask TaskName="PepitaPackage.CreatePackageTask" AssemblyFile="$(SolutionDir)Tools\PepitaPackage.dll" />
-  <Target Name="AfterBuild">
-    <ItemGroup>
-      <FilesToDelete Include="$(SolutionDir)NuGetBuild\**\*.*" />
-    </ItemGroup>
-    <Delete Files="@(FilesToDelete)" />
-    <MakeDir Directories="$(SolutionDir)NuGetBuild" />
-    <Copy SourceFiles="$(OutputDir)SyncOMatic.dll" DestinationFolder="$(SolutionDir)NuGetBuild\Lib\net45" />
-  </Target>
 </Project>
