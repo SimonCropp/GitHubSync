@@ -14,7 +14,7 @@
     <language>en-US</language>
     <tags>Git</tags>
     <dependencies>
-      <dependency id="Octokit"/>
+      <dependency id="Octokit" version="0.2.1"/>
     </dependencies>
   </metadata>
 </package>
