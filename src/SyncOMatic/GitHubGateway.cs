@@ -6,7 +6,6 @@ namespace SyncOMatic
     using System.IO;
     using System.Linq;
     using System.Net;
-    using System.Net.Http.Headers;
     using System.Text;
     using Octokit;
     using Octokit.Internal;
@@ -356,6 +355,7 @@ namespace SyncOMatic
                 sha.Substring(0, 7), owner, repository);
 
             var client = ClientFor(owner, repository);
+// ReSharper disable once RedundantAssignment
             var createdBlob = client.GitDatabase.Blob.Create(owner, repository, newBlob).Result;
             Debug.Assert(sha == createdBlob.Sha);
 
@@ -431,7 +431,8 @@ namespace SyncOMatic
                 issueNumber, owner, repository, string.Join(", ", labels));
 
             var client = ClientFor(owner, repository);
-            var r = client.Issue.Labels.AddToIssue(owner, repository, issueNumber, labels).Result;
+            client.Issue.Labels.AddToIssue(owner, repository, issueNumber, labels)
+                .Wait();
         }
     }
 }

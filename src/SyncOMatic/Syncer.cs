@@ -288,6 +288,7 @@
                 });
             }
 
+// ReSharper disable once RedundantAssignment
             var sha = gw.CreateTree(newTree, destinationOwner, destinationRepository);
 
             Debug.Assert(source.Sha == sha);

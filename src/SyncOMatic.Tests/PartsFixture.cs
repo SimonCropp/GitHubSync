@@ -72,6 +72,7 @@ public class PartsFixture
         Assert.AreEqual(null, parts.Name);
         Assert.AreEqual("https://github.com/Particular/NServiceBus/tree/develop", parts.Url);
 
+// ReSharper disable once UnusedVariable
         Assert.Throws<InvalidOperationException>(() => { var parent = parts.ParentTreePart; });
     }
 }
