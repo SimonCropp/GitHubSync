@@ -17,7 +17,7 @@ To run
 
 To update/add more files to sync
 
-* https://github.com/Particular/SyncOMatic/blob/master/SyncOMatic.Core.Tests/DefaultTemplateRepo.cs
+* https://github.com/Particular/SyncOMatic/blob/master/src/SyncOMatic.Tests/DefaultTemplateRepo.cs
 
 
 
