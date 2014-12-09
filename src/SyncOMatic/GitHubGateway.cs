@@ -7,6 +7,7 @@ namespace SyncOMatic
     using System.Linq;
     using System.Net;
     using System.Text;
+    using System.Threading.Tasks;
     using Octokit;
     using Octokit.Internal;
     using ProductHeaderValue = Octokit.ProductHeaderValue;
@@ -59,7 +60,6 @@ namespace SyncOMatic
             var client = ClientFrom(defaultCredentials, proxy);
 
             clientsPerOwnerRepository.Add(DEFAULT_CREDENTIALS_KEY, client);
-
         }
 
         void SetupClientCache(Tuple<Credentials, string> credentialsPerRepo, IWebProxy proxy)
@@ -105,7 +105,7 @@ namespace SyncOMatic
             logCallBack(new LogEntry(message, values));
         }
 
-        public Commit RootCommitFrom(Parts source)
+        public async Task<Commit> RootCommitFrom(Parts source)
         {
             Commit commit;
             var orb = source.Owner + "/" + source.Repository + "/" + source.Branch;
@@ -116,12 +116,12 @@ namespace SyncOMatic
                 "heads/" + source.Branch, source.Owner, source.Repository);
 
             var client = ClientFor(source.Owner, source.Repository);
-            var refBranch = client.GitDatabase.Reference.Get(source.Owner, source.Repository, "heads/" + source.Branch).Result;
+            var refBranch = await client.GitDatabase.Reference.Get(source.Owner, source.Repository, "heads/" + source.Branch).IgnoreWaitContext();
 
             log("API Query - Retrieve commit '{0}' details from '{1}/{2}'.",
                 refBranch.Object.Sha.Substring(0, 7), source.Owner, source.Repository);
 
-            commit = client.GitDatabase.Commit.Get(source.Owner, source.Repository, refBranch.Object.Sha).Result;
+            commit = await client.GitDatabase.Commit.Get(source.Owner, source.Repository, refBranch.Object.Sha).IgnoreWaitContext();
 
             commitCachePerOwnerRepositoryBranch.Add(orb, commit);
             return commit;
@@ -151,7 +151,7 @@ namespace SyncOMatic
             return treeFrom;
         }
 
-        public Tuple<Parts, TreeResponse> TreeFrom(Parts source, bool throwsIfNotFound)
+        public async Task<Tuple<Parts, TreeResponse>> TreeFrom(Parts source, bool throwsIfNotFound)
         {
             Debug.Assert(source.Type == TreeEntryTargetType.Tree);
 
@@ -163,14 +163,14 @@ namespace SyncOMatic
 
             if (source.Path == null)
             {
-                var commit = RootCommitFrom(source);
+                var commit = await RootCommitFrom(source).IgnoreWaitContext();
 
                 sha = commit.Tree.Sha;
             }
             else
             {
                 var parentTreePart = source.ParentTreePart;
-                var parentTreeResponse = TreeFrom(parentTreePart, throwsIfNotFound);
+                var parentTreeResponse = await TreeFrom(parentTreePart, throwsIfNotFound).IgnoreWaitContext();
                 if (parentTreeResponse == null)
                     return null;
 
@@ -192,7 +192,7 @@ namespace SyncOMatic
                 sha.Substring(0, 7), source.Owner, source.Repository, source.Url);
 
             var client = ClientFor(source.Owner, source.Repository);
-            var tree = client.GitDatabase.Tree.Get(source.Owner, source.Repository, sha).Result;
+            var tree = await client.GitDatabase.Tree.Get(source.Owner, source.Repository, sha).IgnoreWaitContext();
             var parts = new Parts(source.Owner, source.Repository, TreeEntryTargetType.Tree, source.Branch, source.Path, tree.Sha);
 
             var treeFrom = AddToPathCache(parts, tree);
@@ -220,7 +220,7 @@ namespace SyncOMatic
             return treeFrom;
         }
 
-        public Tuple<Parts, TreeItem> BlobFrom(Parts source, bool throwsIfNotFound)
+        public async Task<Tuple<Parts, TreeItem>> BlobFrom(Parts source, bool throwsIfNotFound)
         {
             Debug.Assert(source.Type == TreeEntryTargetType.Blob);
 
@@ -228,7 +228,7 @@ namespace SyncOMatic
             if (blobCachePerPath.TryGetValue(source.Url, out blobResponse))
                 return blobResponse;
 
-            var parent = TreeFrom(source.ParentTreePart, throwsIfNotFound);
+            var parent = await TreeFrom(source.ParentTreePart, throwsIfNotFound).IgnoreWaitContext();
 
             if (parent == null)
             {
@@ -312,12 +312,12 @@ namespace SyncOMatic
             return dic;
         }
 
-        public string CreateCommit(string treeSha, string destinationOwner, string destinationRepository, string parentCommitSha)
+        public async Task<string> CreateCommit(string treeSha, string destinationOwner, string destinationRepository, string parentCommitSha)
         {
             var newCommit = new NewCommit("SyncOMatic update", treeSha, new[] { parentCommitSha });
 
             var client = ClientFor(destinationOwner, destinationRepository);
-            var createdCommit = client.GitDatabase.Commit.Create(destinationOwner, destinationRepository, newCommit).Result;
+            var createdCommit = await client.GitDatabase.Commit.Create(destinationOwner, destinationRepository, newCommit).IgnoreWaitContext();
 
             log("API Query - Create commit '{0}' in '{1}/{2}'. -> https://github.com/{1}/{2}/commit/{3}",
                 createdCommit.Sha.Substring(0, 7), destinationOwner, destinationRepository, createdCommit.Sha);
@@ -325,10 +325,10 @@ namespace SyncOMatic
             return createdCommit.Sha;
         }
 
-        public string CreateTree(NewTree newTree, string destinationOwner, string destinationRepository)
+        public async Task<string> CreateTree(NewTree newTree, string destinationOwner, string destinationRepository)
         {
             var client = ClientFor(destinationOwner, destinationRepository);
-            var createdTree = client.GitDatabase.Tree.Create(destinationOwner, destinationRepository, newTree).Result;
+            var createdTree = await client.GitDatabase.Tree.Create(destinationOwner, destinationRepository, newTree).IgnoreWaitContext();
 
             log("API Query - Create tree '{0}' in '{1}/{2}'.",
                 createdTree.Sha.Substring(0, 7), destinationOwner, destinationRepository);
@@ -338,7 +338,7 @@ namespace SyncOMatic
             return createdTree.Sha;
         }
 
-        public void CreateBlob(string owner, string repository, string sha)
+        public async Task CreateBlob(string owner, string repository, string sha)
         {
             var blobPath = Path.Combine(blobStoragePath, sha);
 
@@ -355,14 +355,14 @@ namespace SyncOMatic
                 sha.Substring(0, 7), owner, repository);
 
             var client = ClientFor(owner, repository);
-// ReSharper disable once RedundantAssignment
-            var createdBlob = client.GitDatabase.Blob.Create(owner, repository, newBlob).Result;
+            // ReSharper disable once RedundantAssignment
+            var createdBlob = await client.GitDatabase.Blob.Create(owner, repository, newBlob).IgnoreWaitContext();
             Debug.Assert(sha == createdBlob.Sha);
 
             AddToKnown<Blob>(sha, owner, repository);
         }
 
-        public void FetchBlob(string owner, string repository, string sha)
+        public async Task FetchBlob(string owner, string repository, string sha)
         {
             var blobPath = Path.Combine(blobStoragePath, sha);
 
@@ -373,7 +373,7 @@ namespace SyncOMatic
                 sha.Substring(0, 7), owner, repository);
 
             var client = ClientFor(owner, repository);
-            var blob = client.GitDatabase.Blob.Get(owner, repository, sha).Result;
+            var blob = await client.GitDatabase.Blob.Get(owner, repository, sha).IgnoreWaitContext();
 
             switch (blob.Encoding)
             {
@@ -391,7 +391,7 @@ namespace SyncOMatic
             }
         }
 
-        public string CreateBranch(string owner, string repository, string branchName, string commitSha)
+        public async Task<string> CreateBranch(string owner, string repository, string branchName, string commitSha)
         {
             var newRef = new NewReference("refs/heads/" + branchName, commitSha);
 
@@ -399,15 +399,15 @@ namespace SyncOMatic
                 newRef.Ref, owner, repository);
 
             var client = ClientFor(owner, repository);
-            var reference = client.GitDatabase.Reference.Create(owner, repository, newRef).Result;
+            var reference = await client.GitDatabase.Reference.Create(owner, repository, newRef).IgnoreWaitContext();
             return reference.Ref.Substring("refs/heads/".Length);
         }
 
-        public int CreatePullRequest(string owner, string repository, string branchName, string targetBranchName)
+        public async Task<int> CreatePullRequest(string owner, string repository, string branchName, string targetBranchName)
         {
             var client = ClientFor(owner, repository);
             var newPullRequest = new NewPullRequest("SyncOMatic update", branchName, targetBranchName);
-            var pullRequest = client.Repository.PullRequest.Create(owner, repository, newPullRequest).Result;
+            var pullRequest = await client.Repository.PullRequest.Create(owner, repository, newPullRequest).IgnoreWaitContext();
 
             log("API Query - Create pull request '#{0}' in '{1}/{2}'. -> https://github.com/{1}/{2}/pull/{0}",
                 pullRequest.Number, owner, repository);

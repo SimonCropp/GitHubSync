@@ -21,6 +21,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\SyncOMatic.xml</DocumentationFile>
+    <WarningsAsErrors>4014</WarningsAsErrors>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -30,6 +32,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\SyncOMatic.xml</DocumentationFile>
+    <WarningsAsErrors>4014</WarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Octokit, Version=0.5.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -47,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="TaskExtensions.cs" />
     <Compile Include="Parts.cs" />
     <Compile Include="Mapper.cs" />
     <Compile Include="GitHubGateway.cs" />

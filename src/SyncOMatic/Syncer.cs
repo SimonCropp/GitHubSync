@@ -5,6 +5,7 @@
     using System.Diagnostics;
     using System.Linq;
     using System.Net;
+    using System.Threading.Tasks;
     using Octokit;
 
     public class Syncer : IDisposable
@@ -42,7 +43,7 @@
             logCallBack(new LogEntry(message, values));
         }
 
-        public Diff Diff(Mapper input)
+        public async Task<Diff> Diff(Mapper input)
         {
             var outMapper = new Diff();
 
@@ -53,14 +54,14 @@
                 log("Diff - Analyze {0} source '{1}'.",
                     source.Type, source.Url);
 
-                var richSource = EnrichWithShas(source, true);
+                var richSource = await EnrichWithShas(source, true).IgnoreWaitContext();
 
                 foreach (var destination in kvp.Value)
                 {
                     log("Diff - Analyze {0} target '{1}'.",
                         source.Type, destination.Url);
 
-                    var richDestination = EnrichWithShas(destination, false);
+                    var richDestination = await EnrichWithShas(destination, false).IgnoreWaitContext();
 
                     if (richSource.Sha == richDestination.Sha)
                     {
@@ -80,9 +81,9 @@
             return outMapper;
         }
 
-        public IEnumerable<string> Sync(Diff diff, SyncOutput expectedOutput, IEnumerable<string> labelsToApplyOnPullRequests = null)
+        public async Task<IEnumerable<string>> Sync(Diff diff, SyncOutput expectedOutput, IEnumerable<string> labelsToApplyOnPullRequests = null)
         {
-            var labels = labelsToApplyOnPullRequests == null ? new string[]{ } : labelsToApplyOnPullRequests.ToArray();
+            var labels = labelsToApplyOnPullRequests == null ? new string[] { } : labelsToApplyOnPullRequests.ToArray();
 
             if (labels.Any() && expectedOutput != SyncOutput.CreatePullRequest)
             {
@@ -91,6 +92,8 @@
 
             var t = diff.Transpose();
             var branchName = "SyncOMatic-" + DateTimeOffset.UtcNow.ToString("yyyyMMdd-HHmmss");
+
+            var results = new List<string>();
 
             foreach (var updatesPerOwnerRepositoryBranch in t.Values)
             {
@@ -105,34 +108,36 @@
                     tt.Add(destination, source);
                 }
 
-                var btt = BuildTargetTree(tt);
+                var btt = await BuildTargetTree(tt).IgnoreWaitContext();
 
-                var parentCommit = gw.RootCommitFrom(root);
+                var parentCommit = await gw.RootCommitFrom(root).IgnoreWaitContext();
 
-                var c = gw.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha);
+                var c = await gw.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha).IgnoreWaitContext();
 
                 switch (expectedOutput)
                 {
                     case SyncOutput.CreateCommit:
-                        yield return "https://github.com/" + root.Owner + "/" + root.Repository + "/commit/" + c;
+                        results.Add("https://github.com/" + root.Owner + "/" + root.Repository + "/commit/" + c);
                         break;
 
                     case SyncOutput.CreateBranch:
-                        branchName = gw.CreateBranch(root.Owner, root.Repository, branchName, c);
-                        yield return "https://github.com/" + root.Owner + "/" + root.Repository + "/compare/" + UrlSanitize(root.Branch) + "..." + UrlSanitize(branchName);
+                        branchName = await gw.CreateBranch(root.Owner, root.Repository, branchName, c).IgnoreWaitContext();
+                        results.Add("https://github.com/" + root.Owner + "/" + root.Repository + "/compare/" + UrlSanitize(root.Branch) + "..." + UrlSanitize(branchName));
                         break;
 
                     case SyncOutput.CreatePullRequest:
-                        branchName = gw.CreateBranch(root.Owner, root.Repository, branchName, c);
-                        var prNumber = gw.CreatePullRequest(root.Owner, root.Repository, branchName, root.Branch);
+                        branchName = await gw.CreateBranch(root.Owner, root.Repository, branchName, c).IgnoreWaitContext();
+                        var prNumber = await gw.CreatePullRequest(root.Owner, root.Repository, branchName, root.Branch).IgnoreWaitContext();
                         gw.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
-                        yield return "https://github.com/" + root.Owner + "/" + root.Repository + "/pull/" + prNumber;
+                        results.Add("https://github.com/" + root.Owner + "/" + root.Repository + "/pull/" + prNumber);
                         break;
 
                     default:
                         throw new NotSupportedException();
                 }
             }
+
+            return results;
         }
 
         string UrlSanitize(string branch)
@@ -140,9 +145,9 @@
             return branch.Replace("/", ";");
         }
 
-        string BuildTargetTree(TargetTree tt)
+        async Task<string> BuildTargetTree(TargetTree tt)
         {
-            var treeFrom = gw.TreeFrom(tt.Current, false);
+            var treeFrom = await gw.TreeFrom(tt.Current, false).IgnoreWaitContext();
 
             NewTree newTree;
             if (treeFrom != null)
@@ -158,7 +163,7 @@
             foreach (var st in tt.SubTreesToUpdate.Values)
             {
                 RemoveTreeItemFrom(newTree, st.Current.Name);
-                var sha = BuildTargetTree(st);
+                var sha = await BuildTargetTree(st).IgnoreWaitContext();
                 newTree.Tree.Add(new NewTreeItem { Mode = "040000", Path = st.Current.Name, Sha = sha, Type = TreeType.Tree });
             }
 
@@ -169,12 +174,12 @@
 
                 RemoveTreeItemFrom(newTree, destination.Name);
 
-                SyncLeaf(source, destination);
+                await SyncLeaf(source, destination).IgnoreWaitContext();
 
                 switch (source.Type)
                 {
                     case TreeEntryTargetType.Blob:
-                        var sourceBlobItem = gw.BlobFrom(source, true).Item2;
+                        var sourceBlobItem = (await gw.BlobFrom(source, true).IgnoreWaitContext()).Item2;
                         newTree.Tree.Add(new NewTreeItem { Mode = sourceBlobItem.Mode, Path = destination.Name, Sha = source.Sha, Type = TreeType.Blob });
                         break;
 
@@ -187,10 +192,10 @@
                 }
             }
 
-            return gw.CreateTree(newTree, tt.Current.Owner, tt.Current.Repository);
+            return await gw.CreateTree(newTree, tt.Current.Owner, tt.Current.Repository).IgnoreWaitContext();
         }
 
-        void SyncLeaf(Parts source, Parts destination)
+        async Task SyncLeaf(Parts source, Parts destination)
         {
             switch (source.Type)
             {
@@ -198,14 +203,14 @@
                     log("Sync - Determine if Blob '{0}' requires to be created in '{1}/{2}'.",
                         source.Sha.Substring(0, 7), destination.Owner, destination.Repository);
 
-                    SyncBlob(source.Owner, source.Repository, source.Sha, destination.Owner, destination.Repository);
+                    await SyncBlob(source.Owner, source.Repository, source.Sha, destination.Owner, destination.Repository).IgnoreWaitContext();
                     break;
 
                 case TreeEntryTargetType.Tree:
                     log("Sync - Determine if Tree '{0}' requires to be created in '{1}/{2}'.",
                         source.Sha.Substring(0, 7), destination.Owner, destination.Repository);
 
-                    SyncTree(source, destination.Owner, destination.Repository);
+                    await SyncTree(source, destination.Owner, destination.Repository).IgnoreWaitContext();
                     break;
 
                 default:
@@ -245,21 +250,21 @@
             return newTree;
         }
 
-        void SyncBlob(string sourceOwner, string sourceRepository, string sha, string destinationOwner, string destinationRepository)
+        async Task SyncBlob(string sourceOwner, string sourceRepository, string sha, string destinationOwner, string destinationRepository)
         {
             if (gw.IsKnownBy<Blob>(sha, destinationOwner, destinationRepository))
                 return;
 
-            gw.FetchBlob(sourceOwner, sourceRepository, sha);
-            gw.CreateBlob(destinationOwner, destinationRepository, sha);
+            await gw.FetchBlob(sourceOwner, sourceRepository, sha);
+            await gw.CreateBlob(destinationOwner, destinationRepository, sha);
         }
 
-        void SyncTree(Parts source, string destinationOwner, string destinationRepository)
+        async Task SyncTree(Parts source, string destinationOwner, string destinationRepository)
         {
             if (gw.IsKnownBy<TreeResponse>(source.Sha, destinationOwner, destinationRepository))
                 return;
 
-            var treeFrom = gw.TreeFrom(source, true);
+            var treeFrom = await gw.TreeFrom(source, true);
 
             var newTree = new NewTree();
 
@@ -268,11 +273,11 @@
                 switch (i.Type)
                 {
                     case TreeType.Blob:
-                        SyncBlob(source.Owner, source.Repository, i.Sha, destinationOwner, destinationRepository);
+                        await SyncBlob(source.Owner, source.Repository, i.Sha, destinationOwner, destinationRepository).IgnoreWaitContext();
                         break;
 
                     case TreeType.Tree:
-                        SyncTree(treeFrom.Item1.Combine(TreeEntryTargetType.Tree, i.Path, i.Sha), destinationOwner, destinationRepository);
+                        await SyncTree(treeFrom.Item1.Combine(TreeEntryTargetType.Tree, i.Path, i.Sha), destinationOwner, destinationRepository).IgnoreWaitContext();
                         break;
 
                     default:
@@ -288,32 +293,34 @@
                 });
             }
 
-// ReSharper disable once RedundantAssignment
-            var sha = gw.CreateTree(newTree, destinationOwner, destinationRepository);
+            // ReSharper disable once RedundantAssignment
+            var sha = await gw.CreateTree(newTree, destinationOwner, destinationRepository);
 
             Debug.Assert(source.Sha == sha);
         }
 
-        Parts EnrichWithShas(Parts part, bool throwsIfNotFound)
+        async Task<Parts> EnrichWithShas(Parts part, bool throwsIfNotFound)
         {
             var outPart = part;
 
             switch (part.Type)
             {
                 case TreeEntryTargetType.Tree:
-                    var t = gw.TreeFrom(part, throwsIfNotFound);
+                    var t = await gw.TreeFrom(part, throwsIfNotFound).IgnoreWaitContext();
 
                     if (t != null)
                         outPart = t.Item1;
 
                     break;
+
                 case TreeEntryTargetType.Blob:
-                    var b = gw.BlobFrom(part, throwsIfNotFound);
+                    var b = await gw.BlobFrom(part, throwsIfNotFound).IgnoreWaitContext();
 
                     if (b != null)
                         outPart = b.Item1;
 
                     break;
+
                 default:
                     throw new NotSupportedException();
             }

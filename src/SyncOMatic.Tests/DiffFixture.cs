@@ -27,7 +27,7 @@ public class DiffFixture
         Diff diff;
         using (var som = BuildSUT())
         {
-            diff = som.Diff(map);
+            diff = som.Diff(map).Result;
         }
 
         Assert.AreEqual(0, diff.Count());
@@ -45,7 +45,7 @@ public class DiffFixture
         Diff diff;
         using (var som = BuildSUT())
         {
-            diff = som.Diff(map);
+            diff = som.Diff(map).Result;
         }
 
         Assert.AreEqual(1, diff.Count());
@@ -66,7 +66,7 @@ public class DiffFixture
         Diff diff;
         using (var som = BuildSUT())
         {
-            diff = som.Diff(map);
+            diff = som.Diff(map).Result;
         }
 
         Assert.AreEqual(1, diff.Count());
@@ -76,7 +76,7 @@ public class DiffFixture
     }
 
     [Test]
-    public void ThrowsWhenSourceBlobDoesNotExist()
+    public async void ThrowsWhenSourceBlobDoesNotExist()
     {
         var sourceBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "IDoNotExist.txt");
         var destinationBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "file.txt");
@@ -86,7 +86,7 @@ public class DiffFixture
 
         using (var som = BuildSUT())
         {
-            Assert.Throws<MissingSourceException>(() => som.Diff(map));
+            await AssertEx.ThrowsAsync<MissingSourceException>(async () => await som.Diff(map));
         }
     }
 
@@ -101,7 +101,7 @@ public class DiffFixture
         Diff diff;
         using (var som = BuildSUT())
         {
-            diff = som.Diff(map);
+            diff = som.Diff(map).Result;
         }
 
         Assert.AreEqual(0, diff.Count());
@@ -119,7 +119,7 @@ public class DiffFixture
         Diff diff;
         using (var som = BuildSUT())
         {
-            diff = som.Diff(map);
+            diff = som.Diff(map).Result;
         }
 
         Assert.AreEqual(1, diff.Count());
@@ -140,7 +140,7 @@ public class DiffFixture
         Diff diff;
         using (var som = BuildSUT())
         {
-            diff = som.Diff(map);
+            diff = som.Diff(map).Result;
         }
 
         Assert.AreEqual(1, diff.Count());
@@ -150,7 +150,7 @@ public class DiffFixture
     }
 
     [Test]
-    public void ThrowsWhenSourceTreeDoesNotExist()
+    public async void ThrowsWhenSourceTreeDoesNotExist()
     {
         var sourceTree = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "IDoNotExist/folder/sub2");
         var destinationTree = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "consumer-one", "folder/sub2");
@@ -160,7 +160,7 @@ public class DiffFixture
 
         using (var som = BuildSUT())
         {
-            Assert.Throws<MissingSourceException>(() => som.Diff(map));
+            await AssertEx.ThrowsAsync<MissingSourceException>(async () => await som.Diff(map));
         }
     }
 
@@ -176,7 +176,7 @@ public class DiffFixture
         Diff diff;
         using (var som = BuildSUT())
         {
-            diff = som.Diff(map);
+            diff = som.Diff(map).Result;
         }
 
         Assert.AreEqual(1, diff.Count());

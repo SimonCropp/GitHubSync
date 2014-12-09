@@ -29,7 +29,6 @@ public class SyncFixture
             PerformRepoSync(som, "NServiceBus.Azure", "develop", "src", null, null);
             PerformRepoSync(som, "NServiceBus.PowerShell", "develop", "src", null, null);
             PerformRepoSync(som, "NServiceBus.Unity", "develop", "src", null, null);
-            
         }
     }
 
@@ -64,11 +63,10 @@ public class SyncFixture
             SrcRoot = srcRoot
         };
 
-        var diff = som.Diff(toSync.GetMapper(itemsToSync));
+        var diff = som.Diff(toSync.GetMapper(itemsToSync)).Result;
         Assert.NotNull(diff);
 
-        var createdSyncBranch = som.Sync(diff, SyncOutput.CreatePullRequest, new[] { "Internal refactoring" }).FirstOrDefault();
-
+        var createdSyncBranch = som.Sync(diff, SyncOutput.CreatePullRequest, new[] { "Internal refactoring" }).Result.FirstOrDefault();
 
         if (string.IsNullOrEmpty(createdSyncBranch))
         {

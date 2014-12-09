@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Net;
+using System.Threading.Tasks;
+using NUnit.Framework;
 using Octokit;
 
 public static class Helper
@@ -33,13 +35,31 @@ public static class Helper
         get
         {
             return null;
-/*
-                return new WebProxy(
-                    new System.Uri("http://myproxy:42"),
-                    true,
-                    new string[] {},
-                    new NetworkCredential(@"domain\login", "password"));
-*/
+            /*
+                            return new WebProxy(
+                                new System.Uri("http://myproxy:42"),
+                                true,
+                                new string[] {},
+                                new NetworkCredential(@"domain\login", "password"));
+            */
         }
+    }
+}
+
+public static class AssertEx
+{
+    public static async Task ThrowsAsync<TException>(Func<Task> func)
+    {
+        var expected = typeof(TException);
+        Type actual = null;
+        try
+        {
+            await func();
+        }
+        catch (Exception e)
+        {
+            actual = e.GetType();
+        }
+        Assert.AreEqual(expected, actual);
     }
 }
