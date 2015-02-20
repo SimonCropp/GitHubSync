@@ -5,21 +5,27 @@ SyncOMatic
 
 A tool to help synchronizing specific files and folders across repositories
 
+### Run with a new repository
 
-To run 
+Use our friendly helper [pbot](https://github.com/Particular/PBot).
 
-
-1. Make sure that the repo you want to sync is configured https://github.com/Particular/SyncOMatic/blob/master/SyncOMatic.Tests/SyncFixture.cs
-2. Run the test (comment out the others if you want to sync just your repo)
+1. `pbot add repo reponame`
+2. `pbot sync reponame target branch branchname`
 3. If ok, a pull request will be created for you
 
+### Run on an existing repository
+1. `sync reponame target branch branchname`
+2. If ok, a pull request will be created for you
 
+### Update/add more files to sync
 
-To update/add more files to sync
+* Extend the [default repository template](https://github.com/Particular/PBot/blob/master/src/PBot/SyncOMatic/DefaultTemplateRepo.cs) inside the [pbot repo](https://github.com/Particular/PBot)
 
-* https://github.com/Particular/SyncOMatic/blob/master/src/SyncOMatic.Tests/DefaultTemplateRepo.cs
+Happy syncing!
 
+## Troubleshooting
 
+`pbot help` or `pbot help sync`
 
 ## Icon 
 
