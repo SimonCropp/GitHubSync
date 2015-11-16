@@ -8,10 +8,10 @@ public class DiffFixture
 {
     Syncer BuildSUT()
     {
-        return new Syncer(Helper.Credentials, Helper.Proxy, ConsoleLogger);
+        return new Syncer(Helper.Credentials, null, ConsoleLogger);
     }
 
-    internal static void ConsoleLogger(LogEntry obj)
+    static void ConsoleLogger(LogEntry obj)
     {
         Console.WriteLine("{0}\t{1}", obj.At.ToString("o"), obj.What);
     }

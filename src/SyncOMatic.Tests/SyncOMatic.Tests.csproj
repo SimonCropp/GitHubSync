@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssertEx.cs" />
     <Compile Include="MapperFixture.cs" />
     <Compile Include="PartsFixture.cs" />
     <Compile Include="DiffFixture.cs" />

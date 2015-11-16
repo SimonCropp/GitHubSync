@@ -14,14 +14,14 @@ namespace SyncOMatic
 
     class GitHubGateway : IDisposable
     {
-        readonly Action<LogEntry> logCallBack;
-        readonly IDictionary<string, Commit> commitCachePerOwnerRepositoryBranch = new Dictionary<string, Commit>();
-        readonly IDictionary<string, Tuple<Parts, TreeItem>> blobCachePerPath = new Dictionary<string, Tuple<Parts, TreeItem>>();
-        readonly IDictionary<string, Tuple<Parts, TreeResponse>> treeCachePerPath = new Dictionary<string, Tuple<Parts, TreeResponse>>();
-        readonly IDictionary<string, IList<string>> knownBlobsPerRepository = new Dictionary<string, IList<string>>();
-        readonly IDictionary<string, IList<string>> knownTreesPerRepository = new Dictionary<string, IList<string>>();
-        readonly IDictionary<string, GitHubClient> clientsPerOwnerRepository = new Dictionary<string, GitHubClient>();
-        readonly string blobStoragePath;
+        Action<LogEntry> logCallBack;
+        Dictionary<string, Commit> commitCachePerOwnerRepositoryBranch = new Dictionary<string, Commit>();
+        Dictionary<string, Tuple<Parts, TreeItem>> blobCachePerPath = new Dictionary<string, Tuple<Parts, TreeItem>>();
+        Dictionary<string, Tuple<Parts, TreeResponse>> treeCachePerPath = new Dictionary<string, Tuple<Parts, TreeResponse>>();
+        Dictionary<string, IList<string>> knownBlobsPerRepository = new Dictionary<string, IList<string>>();
+        Dictionary<string, IList<string>> knownTreesPerRepository = new Dictionary<string, IList<string>>();
+        Dictionary<string, GitHubClient> clientsPerOwnerRepository = new Dictionary<string, GitHubClient>();
+        string blobStoragePath;
         const string DEFAULT_CREDENTIALS_KEY = "Default";
 
         public GitHubGateway(IEnumerable<Tuple<Credentials, string>> credentialsPerRepos, IWebProxy proxy, Action<LogEntry> logCallBack)
@@ -33,8 +33,7 @@ namespace SyncOMatic
             blobStoragePath = Path.Combine(Path.GetTempPath(), "SyncOMatic-" + Guid.NewGuid());
             Directory.CreateDirectory(blobStoragePath);
 
-            log("Ctor - Create temp blob storage '{0}'.",
-                blobStoragePath);
+            log("Ctor - Create temp blob storage '{0}'.", blobStoragePath);
         }
 
         public GitHubGateway(Credentials defaultCredentials, IWebProxy proxy, Action<LogEntry> logCallBack)
@@ -46,8 +45,7 @@ namespace SyncOMatic
             blobStoragePath = Path.Combine(Path.GetTempPath(), "SyncOMatic-" + Guid.NewGuid());
             Directory.CreateDirectory(blobStoragePath);
 
-            log("Ctor - Create temp blob storage '{0}'.",
-                blobStoragePath);
+            log("Ctor - Create temp blob storage '{0}'.", blobStoragePath);
         }
 
         void SetupClientCache(IEnumerable<Tuple<Credentials, string>> credentialsPerRepos, Credentials defaultCredentials, IWebProxy proxy)
@@ -108,9 +106,11 @@ namespace SyncOMatic
         public async Task<Commit> RootCommitFrom(Parts source)
         {
             Commit commit;
-            var orb = source.Owner + "/" + source.Repository + "/" + source.Branch;
+            var orb = $"{source.Owner}/{source.Repository}/{source.Branch}";
             if (commitCachePerOwnerRepositoryBranch.TryGetValue(orb, out commit))
+            {
                 return commit;
+            }
 
             log("API Query - Retrieve reference '{0}' details from '{1}/{2}'.",
                 "heads/" + source.Branch, source.Owner, source.Repository);
@@ -132,7 +132,9 @@ namespace SyncOMatic
             Tuple<Parts, TreeItem> blobFrom;
 
             if (blobCachePerPath.TryGetValue(parts.Url, out blobFrom))
+            {
                 return blobFrom;
+            }
 
             blobFrom = new Tuple<Parts, TreeItem>(parts, blobEntry);
             blobCachePerPath.Add(parts.Url, blobFrom);
@@ -144,7 +146,9 @@ namespace SyncOMatic
             Tuple<Parts, TreeResponse> treeFrom;
 
             if (treeCachePerPath.TryGetValue(parts.Url, out treeFrom))
+            {
                 return treeFrom;
+            }
 
             treeFrom = new Tuple<Parts, TreeResponse>(parts, treeEntry);
             treeCachePerPath.Add(parts.Url, treeFrom);
@@ -157,7 +161,9 @@ namespace SyncOMatic
 
             Tuple<Parts, TreeResponse> treeResponse;
             if (treeCachePerPath.TryGetValue(source.Url, out treeResponse))
+            {
                 return treeResponse;
+            }
 
             string sha;
 
@@ -172,7 +178,9 @@ namespace SyncOMatic
                 var parentTreePart = source.ParentTreePart;
                 var parentTreeResponse = await TreeFrom(parentTreePart, throwsIfNotFound).IgnoreWaitContext();
                 if (parentTreeResponse == null)
+                {
                     return null;
+                }
 
                 var name = source.Path.Split('/').Last();
                 var treeItem = parentTreeResponse.Item2.Tree.FirstOrDefault(ti => ti.Type == TreeType.Tree && ti.Path == name);
@@ -180,7 +188,9 @@ namespace SyncOMatic
                 if (treeItem == null)
                 {
                     if (throwsIfNotFound)
-                        throw new MissingSourceException(string.Format("[{0}: {1}] doesn't exist.", source.Type, source.Url));
+                    {
+                        throw new MissingSourceException($"[{source.Type}: {source.Url}] doesn't exist.");
+                    }
 
                     return null;
                 }
@@ -226,14 +236,18 @@ namespace SyncOMatic
 
             Tuple<Parts, TreeItem> blobResponse;
             if (blobCachePerPath.TryGetValue(source.Url, out blobResponse))
+            {
                 return blobResponse;
+            }
 
             var parent = await TreeFrom(source.ParentTreePart, throwsIfNotFound).IgnoreWaitContext();
 
             if (parent == null)
             {
                 if (throwsIfNotFound)
-                    throw new MissingSourceException(string.Format("[{0}: {1}] doesn't exist.", source.ParentTreePart.Type, source.ParentTreePart.Url));
+                {
+                    throw new MissingSourceException($"[{source.ParentTreePart.Type}: {source.ParentTreePart.Url}] doesn't exist.");
+                }
 
                 return null;
             }
@@ -244,7 +258,9 @@ namespace SyncOMatic
             if (blobEntry == null)
             {
                 if (throwsIfNotFound)
-                    throw new MissingSourceException(string.Format("[{0}: {1}] doesn't exist.", source.Type, source.Url));
+                {
+                    throw new MissingSourceException($"[{source.Type}: {source.Url}] doesn't exist.");
+                }
 
                 return null;
             }
@@ -272,7 +288,9 @@ namespace SyncOMatic
             }
 
             if (l.Contains(or))
+            {
                 return;
+            }
 
             l.Add(or);
         }
@@ -351,8 +369,7 @@ namespace SyncOMatic
                 Content = base64String
             };
 
-            log("API Query - Create blob '{0}' in '{1}/{2}'.",
-                sha.Substring(0, 7), owner, repository);
+            log("API Query - Create blob '{0}' in '{1}/{2}'.", sha.Substring(0, 7), owner, repository);
 
             var client = ClientFor(owner, repository);
             // ReSharper disable once RedundantAssignment
@@ -369,8 +386,7 @@ namespace SyncOMatic
             if (File.Exists(blobPath))
                 return;
 
-            log("API Query - Retrieve blob '{0}' details from '{1}/{2}'.",
-                sha.Substring(0, 7), owner, repository);
+            log("API Query - Retrieve blob '{0}' details from '{1}/{2}'.", sha.Substring(0, 7), owner, repository);
 
             var client = ClientFor(owner, repository);
             var blob = await client.GitDatabase.Blob.Get(owner, repository, sha).IgnoreWaitContext();

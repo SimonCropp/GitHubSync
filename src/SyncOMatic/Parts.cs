@@ -66,12 +66,17 @@
         public string Branch { get; private set; }
         public string Path { get; private set; }
         public string Name { get; private set; }
-        public int NumberOfPathSegments { get; private set; } // This doesn't participate as an equality contributor on purpose
-        public string Url { get; private set; } // This doesn't participate as an equality contributor on purpose
-        public string Sha { get; private set; } // This doesn't participate as an equality contributor on purpose
+        // This doesn't participate as an equality contributor on purpose
+        public int NumberOfPathSegments { get; private set; } 
+        // This doesn't participate as an equality contributor on purpose
+        public string Url { get; private set; } 
+        // This doesn't participate as an equality contributor on purpose
+        public string Sha { get; private set; }
 
-        public Parts ParentTreePart { get { return parent.Value; } } // This doesn't participate as an equality contributor on purpose
-        public Parts RootTreePart { get { return root.Value; } } // This doesn't participate as an equality contributor on purpose
+        // This doesn't participate as an equality contributor on purpose
+        public Parts ParentTreePart => parent.Value;
+        // This doesn't participate as an equality contributor on purpose
+        public Parts RootTreePart => root.Value;
 
         internal Parts Combine(TreeEntryTargetType type, string name, string sha)
         {

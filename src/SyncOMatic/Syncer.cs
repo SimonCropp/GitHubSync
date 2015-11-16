@@ -83,11 +83,11 @@
 
         public async Task<IEnumerable<string>> Sync(Diff diff, SyncOutput expectedOutput, IEnumerable<string> labelsToApplyOnPullRequests = null)
         {
-            var labels = labelsToApplyOnPullRequests == null ? new string[] { } : labelsToApplyOnPullRequests.ToArray();
+            var labels = labelsToApplyOnPullRequests?.ToArray() ?? new string[] { };
 
             if (labels.Any() && expectedOutput != SyncOutput.CreatePullRequest)
             {
-                throw new InvalidOperationException(string.Format("Labels can only be applied in '{0}' mode.", SyncOutput.CreatePullRequest));
+                throw new InvalidOperationException($"Labels can only be applied in '{SyncOutput.CreatePullRequest}' mode.");
             }
 
             var t = diff.Transpose();

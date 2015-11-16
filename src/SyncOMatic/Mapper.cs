@@ -43,7 +43,7 @@
         {
             if (from.Type != to.Type)
             {
-                throw new ArgumentException(string.Format("Cannot map [{0}: {1}] to [{2}: {3}]. ", from.Type, from.Url, to.Type, to.Url));
+                throw new ArgumentException($"Cannot map [{@from.Type}: {@from.Url}] to [{to.Type}: {to.Url}]. ");
             }
 
             List<Parts> l;
