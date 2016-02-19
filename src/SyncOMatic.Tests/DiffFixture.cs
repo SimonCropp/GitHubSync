@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using NUnit.Framework;
 using SyncOMatic;
 
@@ -76,7 +77,7 @@ public class DiffFixture
     }
 
     [Test]
-    public async void ThrowsWhenSourceBlobDoesNotExist()
+    public async Task ThrowsWhenSourceBlobDoesNotExist()
     {
         var sourceBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "IDoNotExist.txt");
         var destinationBlob = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "file.txt");
@@ -150,7 +151,7 @@ public class DiffFixture
     }
 
     [Test]
-    public async void ThrowsWhenSourceTreeDoesNotExist()
+    public async Task ThrowsWhenSourceTreeDoesNotExist()
     {
         var sourceTree = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "IDoNotExist/folder/sub2");
         var destinationTree = new Parts("Particular/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "consumer-one", "folder/sub2");
