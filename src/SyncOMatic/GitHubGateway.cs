@@ -30,7 +30,7 @@ namespace SyncOMatic
 
             this.logCallBack = logCallBack;
 
-            blobStoragePath = Path.Combine(Path.GetTempPath(), "SyncOMatic-" + Guid.NewGuid());
+            blobStoragePath = Path.Combine(Path.GetTempPath(), $"SyncOMatic-{Guid.NewGuid()}");
             Directory.CreateDirectory(blobStoragePath);
 
             log("Ctor - Create temp blob storage '{0}'.", blobStoragePath);
@@ -42,7 +42,7 @@ namespace SyncOMatic
 
             this.logCallBack = logCallBack;
 
-            blobStoragePath = Path.Combine(Path.GetTempPath(), "SyncOMatic-" + Guid.NewGuid());
+            blobStoragePath = Path.Combine(Path.GetTempPath(), $"SyncOMatic-{Guid.NewGuid()}");
             Directory.CreateDirectory(blobStoragePath);
 
             log("Ctor - Create temp blob storage '{0}'.", blobStoragePath);
@@ -182,7 +182,7 @@ namespace SyncOMatic
                 {
                     if (throwsIfNotFound)
                     {
-                        throw new MissingSourceException($"[{source.Type}: {source.Url}] doesn't exist.");
+                        throw new Exception($"[{source.Type}: {source.Url}] doesn't exist.");
                     }
 
                     return null;
@@ -239,7 +239,7 @@ namespace SyncOMatic
             {
                 if (throwsIfNotFound)
                 {
-                    throw new MissingSourceException($"[{source.ParentTreePart.Type}: {source.ParentTreePart.Url}] doesn't exist.");
+                    throw new Exception($"[{source.ParentTreePart.Type}: {source.ParentTreePart.Url}] doesn't exist.");
                 }
 
                 return null;
@@ -252,7 +252,7 @@ namespace SyncOMatic
             {
                 if (throwsIfNotFound)
                 {
-                    throw new MissingSourceException($"[{source.Type}: {source.Url}] doesn't exist.");
+                    throw new Exception($"[{source.Type}: {source.Url}] doesn't exist.");
                 }
 
                 return null;

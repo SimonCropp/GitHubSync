@@ -43,7 +43,9 @@
         Parts BuildParent()
         {
             if (Path == null)
+            {
                 throw new InvalidOperationException("Cannot escape out of a Tree.");
+            }
 
             var indexOf = Path.LastIndexOf('/');
 
@@ -55,23 +57,25 @@
         Parts BuildRoot()
         {
             if (Path == null)
+            {
                 throw new InvalidOperationException("Cannot escape out of a Tree.");
+            }
 
             return new Parts(Owner, Repository, TreeEntryTargetType.Tree, Branch, null, null);
         }
 
-        public string Owner { get; private set; }
-        public string Repository { get; private set; }
-        public TreeEntryTargetType Type { get; private set; }
-        public string Branch { get; private set; }
-        public string Path { get; private set; }
-        public string Name { get; private set; }
+        public string Owner { get; }
+        public string Repository { get; }
+        public TreeEntryTargetType Type { get; }
+        public string Branch { get; }
+        public string Path { get; }
+        public string Name { get; }
         // This doesn't participate as an equality contributor on purpose
-        public int NumberOfPathSegments { get; private set; } 
+        public int NumberOfPathSegments { get; }
         // This doesn't participate as an equality contributor on purpose
-        public string Url { get; private set; } 
+        public string Url { get; }
         // This doesn't participate as an equality contributor on purpose
-        public string Sha { get; private set; }
+        public string Sha { get; }
 
         // This doesn't participate as an equality contributor on purpose
         public Parts ParentTreePart => parent.Value;
@@ -86,7 +90,9 @@
         internal Parts SegmentPartsByNestingLevel(int level)
         {
             if (Path == null)
+            {
                 throw new NotSupportedException();
+            }
 
             var s = Path.Split('/').Take(level + 1);
 

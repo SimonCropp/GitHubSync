@@ -87,7 +87,7 @@ public class DiffFixture
 
         using (var som = BuildSUT())
         {
-            await AssertEx.ThrowsAsync<MissingSourceException>(async () => await som.Diff(map).ConfigureAwait(false)).ConfigureAwait(false);
+            await AssertEx.ThrowsAsync<Exception>(async () => await som.Diff(map).ConfigureAwait(false)).ConfigureAwait(false);
         }
     }
 
@@ -161,7 +161,7 @@ public class DiffFixture
 
         using (var som = BuildSUT())
         {
-            await AssertEx.ThrowsAsync<MissingSourceException>(async () => await som.Diff(map).ConfigureAwait(false)).ConfigureAwait(false);
+            await AssertEx.ThrowsAsync<Exception>(async () => await som.Diff(map).ConfigureAwait(false)).ConfigureAwait(false);
         }
     }
 

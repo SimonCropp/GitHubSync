@@ -58,12 +58,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Mapper\Diff.cs" />
     <Compile Include="TaskExtensions.cs" />
     <Compile Include="Parts.cs" />
-    <Compile Include="Mapper.cs" />
+    <Compile Include="Mapper\Mapper.cs" />
     <Compile Include="GitHubGateway.cs" />
     <Compile Include="LogEntry.cs" />
-    <Compile Include="MissingSourceException.cs" />
     <Compile Include="Syncer.cs" />
     <Compile Include="SyncOutput.cs" />
     <Compile Include="TargetTree.cs" />

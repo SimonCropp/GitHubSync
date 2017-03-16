@@ -3,11 +3,11 @@ namespace SyncOMatic
     using System;
     using System.Collections.Generic;
 
-    internal class TargetTree
+    class TargetTree
     {
-        public Dictionary<string, TargetTree> SubTreesToUpdate { get; private set; }
-        public Dictionary<string, Tuple<Parts, Parts>> LeavesToCreate { get; private set; }
-        public Parts Current { get; private set; }
+        public readonly Dictionary<string, TargetTree> SubTreesToUpdate;
+        public readonly Dictionary<string, Tuple<Parts, Parts>> LeavesToCreate;
+        public readonly Parts Current;
 
         public TargetTree(Parts root)
         {

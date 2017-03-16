@@ -24,17 +24,6 @@
         }
     }
 
-    public class Diff : MapperBase
-    {
-        internal Diff()
-        { }
-
-        internal void Add(Parts from, Parts to)
-        {
-            Add_Internal(from, to);
-        }
-    }
-
     public abstract class MapperBase : IEnumerable<KeyValuePair<Parts, IEnumerable<Parts>>>
     {
         private Dictionary<Parts, List<Parts>> dic = new Dictionary<Parts, List<Parts>>();
@@ -112,7 +101,7 @@
 
                 foreach (var destination in kvp.Value)
                 {
-                    var orb = destination.Owner + "/" + destination.Repository + "/" + destination.Branch;
+                    var orb = $"{destination.Owner}/{destination.Repository}/{destination.Branch}";
 
                     IList<Tuple<Parts, Parts>> items;
 

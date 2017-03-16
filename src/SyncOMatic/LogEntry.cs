@@ -10,7 +10,7 @@
             What = string.Format(formatMessage, values);
         }
 
-        public DateTimeOffset At { get; private set; }
-        public string What { get; private set; }
+        public DateTimeOffset At { get; }
+        public string What { get; }
     }
 }

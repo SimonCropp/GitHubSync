@@ -72,7 +72,7 @@
                     }
 
                     log("Diff - {4} required. Non-matching sha ({0} vs {1}) between target '{2}' and source '{3}.",
-                        richSource.Sha.Substring(0, 7), richDestination.Sha == null ? "NULL" : richDestination.Sha.Substring(0, 7), destination.Url, source.Url, richDestination.Sha == null ? "Creation" : "Updation");
+                        richSource.Sha.Substring(0, 7), richDestination.Sha?.Substring(0, 7) ?? "NULL", destination.Url, source.Url, richDestination.Sha == null ? "Creation" : "Updation");
 
                     outMapper.Add(richSource, richDestination);
                 }
@@ -117,12 +117,12 @@
                 switch (expectedOutput)
                 {
                     case SyncOutput.CreateCommit:
-                        results.Add("https://github.com/" + root.Owner + "/" + root.Repository + "/commit/" + c);
+                        results.Add($"https://github.com/{root.Owner}/{root.Repository}/commit/{c}");
                         break;
 
                     case SyncOutput.CreateBranch:
                         branchName = await gw.CreateBranch(root.Owner, root.Repository, branchName, c).IgnoreWaitContext();
-                        results.Add("https://github.com/" + root.Owner + "/" + root.Repository + "/compare/" + UrlSanitize(root.Branch) + "..." + UrlSanitize(branchName));
+                        results.Add($"https://github.com/{root.Owner}/{root.Repository}/compare/{UrlSanitize(root.Branch)}...{UrlSanitize(branchName)}");
                         break;
 
                     case SyncOutput.CreatePullRequest:
