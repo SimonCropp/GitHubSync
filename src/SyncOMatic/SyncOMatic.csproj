@@ -9,9 +9,10 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SyncOMatic</RootNamespace>
     <AssemblyName>SyncOMatic</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>e949b342</NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,8 +23,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\SyncOMatic.xml</DocumentationFile>
-    <WarningsAsErrors>4014</WarningsAsErrors>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,7 +36,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\SyncOMatic.xml</DocumentationFile>
-    <WarningsAsErrors>4014</WarningsAsErrors>
+    <WarningsAsErrors>
+    </WarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <NoWarn>1591</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Octokit, Version=0.18.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -63,7 +69,9 @@
     <Compile Include="TreeEntryTargetType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <None Include="packages.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

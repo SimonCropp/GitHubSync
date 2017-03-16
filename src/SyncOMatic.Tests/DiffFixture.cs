@@ -14,7 +14,7 @@ public class DiffFixture
 
     static void ConsoleLogger(LogEntry obj)
     {
-        Console.WriteLine("{0}\t{1}", obj.At.ToString("o"), obj.What);
+        Console.WriteLine("{0:o}\t{1}", obj.At, obj.What);
     }
 
     [Test]
@@ -87,7 +87,7 @@ public class DiffFixture
 
         using (var som = BuildSUT())
         {
-            await AssertEx.ThrowsAsync<MissingSourceException>(async () => await som.Diff(map));
+            await AssertEx.ThrowsAsync<MissingSourceException>(async () => await som.Diff(map).ConfigureAwait(false)).ConfigureAwait(false);
         }
     }
 
@@ -161,7 +161,7 @@ public class DiffFixture
 
         using (var som = BuildSUT())
         {
-            await AssertEx.ThrowsAsync<MissingSourceException>(async () => await som.Diff(map));
+            await AssertEx.ThrowsAsync<MissingSourceException>(async () => await som.Diff(map).ConfigureAwait(false)).ConfigureAwait(false);
         }
     }
 

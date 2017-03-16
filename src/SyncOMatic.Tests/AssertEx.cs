@@ -10,7 +10,7 @@ public static class AssertEx
         Type actual = null;
         try
         {
-            await func();
+            await func().ConfigureAwait(false);
         }
         catch (Exception e)
         {

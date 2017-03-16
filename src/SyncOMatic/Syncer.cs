@@ -255,8 +255,8 @@
             if (gw.IsKnownBy<Blob>(sha, destinationOwner, destinationRepository))
                 return;
 
-            await gw.FetchBlob(sourceOwner, sourceRepository, sha);
-            await gw.CreateBlob(destinationOwner, destinationRepository, sha);
+            await gw.FetchBlob(sourceOwner, sourceRepository, sha).ConfigureAwait(false);
+            await gw.CreateBlob(destinationOwner, destinationRepository, sha).ConfigureAwait(false);
         }
 
         async Task SyncTree(Parts source, string destinationOwner, string destinationRepository)
@@ -264,7 +264,7 @@
             if (gw.IsKnownBy<TreeResponse>(source.Sha, destinationOwner, destinationRepository))
                 return;
 
-            var treeFrom = await gw.TreeFrom(source, true);
+            var treeFrom = await gw.TreeFrom(source, true).ConfigureAwait(false);
 
             var newTree = new NewTree();
 
@@ -294,7 +294,7 @@
             }
 
             // ReSharper disable once RedundantAssignment
-            var sha = await gw.CreateTree(newTree, destinationOwner, destinationRepository);
+            var sha = await gw.CreateTree(newTree, destinationOwner, destinationRepository).ConfigureAwait(false);
 
             Debug.Assert(source.Sha == sha);
         }

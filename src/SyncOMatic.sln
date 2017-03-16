@@ -1,16 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncOMatic", "SyncOMatic\SyncOMatic.csproj", "{FA94AA77-F599-4740-BE67-0A2EE629047E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SyncOMatic.Tests", "SyncOMatic.Tests\SyncOMatic.Tests.csproj", "{8169A350-6F30-464D-87BE-145905F9B80B}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{733EC439-CC37-4762-A020-12E602B7DEC2}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\packages.config = .nuget\packages.config
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{60FB9C77-9EA7-4F79-97E3-D9411F31CBBF}"
 	ProjectSection(SolutionItems) = preProject
