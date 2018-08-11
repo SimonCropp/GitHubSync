@@ -26,7 +26,7 @@
 
     public abstract class MapperBase : IEnumerable<KeyValuePair<Parts, IEnumerable<Parts>>>
     {
-        private Dictionary<Parts, List<Parts>> dic = new Dictionary<Parts, List<Parts>>();
+        Dictionary<Parts, List<Parts>> dic = new Dictionary<Parts, List<Parts>>();
 
         protected void Add_Internal(Parts from, Parts to)
         {

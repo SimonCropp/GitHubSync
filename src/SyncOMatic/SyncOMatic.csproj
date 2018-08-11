@@ -57,7 +57,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Mapper\Diff.cs" />
     <Compile Include="TaskExtensions.cs" />
     <Compile Include="Parts.cs" />

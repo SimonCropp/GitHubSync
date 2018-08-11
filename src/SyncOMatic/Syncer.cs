@@ -13,9 +13,6 @@
         GitHubGateway gw;
         Action<LogEntry> logCallBack;
 
-        // TODO: Maybe expose api rate info per connection?
-        // TODO: Add SyncResult (BranchCreated, PullRequestCreated, PullRequestMerged) + url
-
         public Syncer(
             IEnumerable<Tuple<Credentials, string>> credentialsPerRepos,
             IWebProxy proxy = null,
@@ -51,8 +48,7 @@
             {
                 var source = kvp.Key;
 
-                log("Diff - Analyze {0} source '{1}'.",
-                    source.Type, source.Url);
+                log("Diff - Analyze {0} source '{1}'.", source.Type, source.Url);
 
                 var richSource = await EnrichWithShas(source, true).IgnoreWaitContext();
 

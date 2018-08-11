@@ -4,12 +4,12 @@
     <id>SyncOMatic</id>
     <version>$version$</version>
     <title>SyncOMatic</title>
-    <authors>Particular Software</authors>
-    <owners>Particular Software</owners>
+    <authors>Simon Cropp</authors>
+    <owners>Simon Cropp</owners>
     <licenseUrl>http://www.opensource.org/licenses/mit-license.php</licenseUrl>
-    <projectUrl>https://github.com/Particular/SyncOMatic/</projectUrl>
+    <projectUrl>https://github.com/SimonCropp/SyncOMatic/</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <iconUrl>https://raw.github.com/Particular/SyncOMatic/master/Icons/package_icon.png</iconUrl>
+    <iconUrl>https://raw.github.com/SimonCropp/SyncOMatic/master/Icons/package_icon.png</iconUrl>
     <description>A tool to help synchronizing specific files and folders across GitHub hosted repositories.</description>
     <language>en-US</language>
     <tags>Git</tags>
