@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using NUnit.Framework;
 using SyncOMatic;
+using Xunit;
 
-[TestFixture]
 public class DiffFixture
 {
     Syncer BuildSUT()
@@ -17,7 +16,7 @@ public class DiffFixture
         Console.WriteLine("{0:o}\t{1}", obj.At, obj.What);
     }
 
-    [Test]
+    [Fact]
     public void NothingToUpdateWhenSourceBlobAndDestinationBlobHaveTheSameSha()
     {
         var blob = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "file.txt");
@@ -31,10 +30,10 @@ public class DiffFixture
             diff = som.Diff(map).Result;
         }
 
-        Assert.AreEqual(0, diff.Count());
+        Assert.Empty(diff);
     }
 
-    [Test]
+    [Fact]
     public void CanDetectBlobUpdation()
     {
         var sourceBlob = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "file.txt");
@@ -49,13 +48,13 @@ public class DiffFixture
             diff = som.Diff(map).Result;
         }
 
-        Assert.AreEqual(1, diff.Count());
+        Assert.Single(diff);
         Assert.NotNull(diff.Single().Key.Sha);
-        Assert.AreEqual(1, diff.Single().Value.Count());
+        Assert.Single(diff.Single().Value);
         Assert.NotNull(diff.Single().Value.Single().Sha);
     }
 
-    [Test]
+    [Fact]
     public void CanDetectBlobCreation()
     {
         var sourceBlob = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "new-file.txt");
@@ -70,13 +69,13 @@ public class DiffFixture
             diff = som.Diff(map).Result;
         }
 
-        Assert.AreEqual(1, diff.Count());
+        Assert.Single(diff);
         Assert.NotNull(diff.Single().Key.Sha);
-        Assert.AreEqual(1, diff.Single().Value.Count());
+        Assert.Single(diff.Single().Value);
         Assert.Null(diff.Single().Value.Single().Sha);
     }
 
-    [Test]
+    [Fact]
     public async Task ThrowsWhenSourceBlobDoesNotExist()
     {
         var sourceBlob = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "IDoNotExist.txt");
@@ -87,11 +86,11 @@ public class DiffFixture
 
         using (var som = BuildSUT())
         {
-            await AssertEx.ThrowsAsync<Exception>(async () => await som.Diff(map).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<Exception>(async () => await som.Diff(map).ConfigureAwait(false)).ConfigureAwait(false);
         }
     }
 
-    [Test]
+    [Fact]
     public void NothingToUpdateWhenSourceTreeAndDestinationTreeHaveTheSameSha()
     {
         var tree = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "folder");
@@ -105,10 +104,10 @@ public class DiffFixture
             diff = som.Diff(map).Result;
         }
 
-        Assert.AreEqual(0, diff.Count());
+        Assert.Empty(diff);
     }
 
-    [Test]
+    [Fact]
     public void CanDetectTreeUpdation()
     {
         var sourceTree = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "folder");
@@ -123,14 +122,14 @@ public class DiffFixture
             diff = som.Diff(map).Result;
         }
 
-        Assert.AreEqual(1, diff.Count());
+        Assert.Single(diff);
         var pair = diff.Single();
         Assert.NotNull(pair.Key.Sha);
-        Assert.AreEqual(1, pair.Value.Count());
+        Assert.Single(pair.Value);
         Assert.NotNull(pair.Value.Single().Sha);
     }
 
-    [Test]
+    [Fact]
     public void CanDetectTreeCreation()
     {
         var sourceTree = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "folder/sub2");
@@ -145,13 +144,13 @@ public class DiffFixture
             diff = som.Diff(map).Result;
         }
 
-        Assert.AreEqual(1, diff.Count());
+        Assert.Single(diff);
         Assert.NotNull(diff.Single().Key.Sha);
-        Assert.AreEqual(1, diff.Single().Value.Count());
+        Assert.Single(diff.Single().Value);
         Assert.Null(diff.Single().Value.Single().Sha);
     }
 
-    [Test]
+    [Fact]
     public async Task ThrowsWhenSourceTreeDoesNotExist()
     {
         var sourceTree = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "IDoNotExist/folder/sub2");
@@ -162,11 +161,11 @@ public class DiffFixture
 
         using (var som = BuildSUT())
         {
-            await AssertEx.ThrowsAsync<Exception>(async () => await som.Diff(map).ConfigureAwait(false)).ConfigureAwait(false);
+            await Assert.ThrowsAsync<Exception>(async () => await som.Diff(map).ConfigureAwait(false)).ConfigureAwait(false);
         }
     }
 
-    [Test]
+    [Fact]
     public void CanDetectBlobCreationWhenTargetTreeFolderDoesNotExist()
     {
         var sourceBlob = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "new-file.txt");
@@ -181,9 +180,9 @@ public class DiffFixture
             diff = som.Diff(map).Result;
         }
 
-        Assert.AreEqual(1, diff.Count());
+        Assert.Single(diff);
         Assert.NotNull(diff.Single().Key.Sha);
-        Assert.AreEqual(1, diff.Single().Value.Count());
+        Assert.Single(diff.Single().Value);
         Assert.Null(diff.Single().Value.Single().Sha);
     }
 }

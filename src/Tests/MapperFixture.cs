@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Linq;
-using NUnit.Framework;
 using SyncOMatic;
+using Xunit;
 
-[TestFixture]
 public class MapperFixture
 {
-    [Test]
+    [Fact]
     public void CanAddAndEnumerate()
     {
         var a = new Parts("o/r1", TreeEntryTargetType.Blob, "b1", "a");
@@ -21,16 +20,16 @@ public class MapperFixture
             .Add(a, two)
             .Add(c, three);
 
-        Assert.AreEqual(2, m.Count());
+        Assert.Equal(2, m.Count());
 
-        Assert.AreEqual(2, m[a].Count());
-        Assert.AreEqual(1, m[c].Count());
+        Assert.Equal(2, m[a].Count());
+        Assert.Single(m[c]);
 
         var b = new Uri("http://github.com/o/r1/blob/b1/b");
-        Assert.AreEqual(0, m[b].Count());
+        Assert.Empty(m[b]);
     }
 
-    [Test]
+    [Fact]
     public void CanOnlyMapCorrespondingTypes()
     {
         var blob = new Parts("o/r1", TreeEntryTargetType.Blob, "b1", "a");
@@ -42,7 +41,7 @@ public class MapperFixture
         Assert.Throws<ArgumentException>(() => m.Add(tree, blob));
     }
 
-    [Test]
+    [Fact]
     public void TransposeRegroupsPerTargetRepositoryAndBranch()
     {
         var m = new Mapper()
@@ -64,7 +63,7 @@ public class MapperFixture
         var orbs = t.Keys.ToList();
         orbs.Sort(StringComparer.Ordinal);
 
-        Assert.AreEqual(new[]
+        Assert.Equal(new[]
         {
             "o1/r2/b1",
             "o1/r2/b2",
