@@ -9,3 +9,4 @@ NuGetBuild
 
 [Bb]in
 [Oo]bj
+*.nupkg

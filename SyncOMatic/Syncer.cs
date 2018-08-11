@@ -237,7 +237,7 @@
                                       Mode = treeItem.Mode,
                                       Path = treeItem.Path,
                                       Sha = treeItem.Sha,
-                                      Type = treeItem.Type
+                                      Type = treeItem.Type.Value
                                   };
 
                 newTree.Tree.Add(newTreeItem);
@@ -266,7 +266,8 @@
 
             foreach (var i in treeFrom.Item2.Tree)
             {
-                switch (i.Type)
+                var value = i.Type.Value;
+                switch (value)
                 {
                     case TreeType.Blob:
                         await SyncBlob(source.Owner, source.Repository, i.Sha, destinationOwner, destinationRepository).IgnoreWaitContext();
@@ -282,7 +283,7 @@
 
                 newTree.Tree.Add(new NewTreeItem
                 {
-                    Type = i.Type,
+                    Type = value,
                     Path = i.Path,
                     Sha = i.Sha,
                     Mode = i.Mode

@@ -203,7 +203,7 @@ namespace SyncOMatic
 
             foreach (var i in tree.Tree)
             {
-                switch (i.Type)
+                switch (i.Type.Value)
                 {
                     case TreeType.Blob:
                         var p = parts.Combine(TreeEntryTargetType.Blob, i.Path, i.Sha);
@@ -384,7 +384,7 @@ namespace SyncOMatic
             var client = ClientFor(owner, repository);
             var blob = await client.Git.Blob.Get(owner, repository, sha).IgnoreWaitContext();
 
-            switch (blob.Encoding)
+            switch (blob.Encoding.Value)
             {
                 case EncodingType.Utf8:
                     File.WriteAllText(blobPath, blob.Content, Encoding.UTF8);

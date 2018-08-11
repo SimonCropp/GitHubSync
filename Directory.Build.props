@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <PropertyGroup>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <LangVersion>latest</LangVersion>
+    <NoWarn>CS1591;NU5104</NoWarn>
+    <Version>0.2.0</Version>
+    <Description>A tool to help synchronizing specific files and folders across GitHub hosted repositories.</Description>
+    <Authors>Simon Cropp</Authors>
+    <PackageLicenseUrl>http://www.opensource.org/licenses/mit-license.php</PackageLicenseUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <Copyright>Copyright $([System.DateTime]::UtcNow.ToString(yyyy)) Simon Cropp. All rights reserved</Copyright>
+    <PackageTags>GitHub</PackageTags>
+    <PackageIconUrl>https://raw.githubusercontent.com/SimonCropp/GraphQL.EntityFramework/master/icon.png</PackageIconUrl>
+    <PackageProjectUrl>http://github.com/SimonCropp/SyncOMatic</PackageProjectUrl>
+    <PackageOutputPath>..\nugets</PackageOutputPath>
+    <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludePDBsInPackage</TargetsForTfmSpecificContentInPackage>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+  </PropertyGroup>
+
+  <Target Name="IncludePDBsInPackage" Condition="'$(IncludeBuildOutput)' != 'false'">
+    <ItemGroup>
+      <TfmSpecificPackageFile Include="$(OutputPath)\$(AssemblyName).pdb" PackagePath="lib/$(TargetFramework)" />
+    </ItemGroup>
+  </Target>
+</Project>

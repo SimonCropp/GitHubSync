@@ -1,7 +1,7 @@
 SyncOMatic
 ==========
 
-![Icon](https://raw.github.com/Particular/SyncOMatic/master/Icons/package_icon.png)
+![Icon](https://raw.github.com/SimonCropp/SyncOMatic/master/icon.png)
 
 A tool to help synchronizing specific files and folders across repositories
 
