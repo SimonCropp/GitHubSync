@@ -10,7 +10,7 @@
 
     public class Syncer : IDisposable
     {
-        GitHubGateway gw;
+        GitHubGateway gateway;
         Action<LogEntry> logCallBack;
 
         public Syncer(
@@ -20,7 +20,7 @@
         {
             logCallBack = loggerCallback ?? NullLogger;
 
-            gw = new GitHubGateway(credentialsPerRepos, proxy, logCallBack);
+            gateway = new GitHubGateway(credentialsPerRepos, proxy, logCallBack);
         }
 
         public Syncer(
@@ -30,12 +30,12 @@
         {
             logCallBack = loggerCallback ?? NullLogger;
 
-            gw = new GitHubGateway(defaultCredentials, proxy, logCallBack);
+            gateway = new GitHubGateway(defaultCredentials, proxy, logCallBack);
         }
 
         static Action<LogEntry> NullLogger = _ => { };
 
-        private void log(string message, params object[] values)
+        void log(string message, params object[] values)
         {
             logCallBack(new LogEntry(message, values));
         }
@@ -106,9 +106,9 @@
 
                 var btt = await BuildTargetTree(tt).IgnoreWaitContext();
 
-                var parentCommit = await gw.RootCommitFrom(root).IgnoreWaitContext();
+                var parentCommit = await gateway.RootCommitFrom(root).IgnoreWaitContext();
 
-                var c = await gw.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha).IgnoreWaitContext();
+                var c = await gateway.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha).IgnoreWaitContext();
 
                 switch (expectedOutput)
                 {
@@ -117,14 +117,14 @@
                         break;
 
                     case SyncOutput.CreateBranch:
-                        branchName = await gw.CreateBranch(root.Owner, root.Repository, branchName, c).IgnoreWaitContext();
+                        branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).IgnoreWaitContext();
                         results.Add($"https://github.com/{root.Owner}/{root.Repository}/compare/{UrlSanitize(root.Branch)}...{UrlSanitize(branchName)}");
                         break;
 
                     case SyncOutput.CreatePullRequest:
-                        branchName = await gw.CreateBranch(root.Owner, root.Repository, branchName, c).IgnoreWaitContext();
-                        var prNumber = await gw.CreatePullRequest(root.Owner, root.Repository, branchName, root.Branch).IgnoreWaitContext();
-                        gw.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
+                        branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).IgnoreWaitContext();
+                        var prNumber = await gateway.CreatePullRequest(root.Owner, root.Repository, branchName, root.Branch).IgnoreWaitContext();
+                        gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
                         results.Add("https://github.com/" + root.Owner + "/" + root.Repository + "/pull/" + prNumber);
                         break;
 
@@ -143,7 +143,7 @@
 
         async Task<string> BuildTargetTree(TargetTree tt)
         {
-            var treeFrom = await gw.TreeFrom(tt.Current, false).IgnoreWaitContext();
+            var treeFrom = await gateway.TreeFrom(tt.Current, false).IgnoreWaitContext();
 
             NewTree newTree;
             if (treeFrom != null)
@@ -175,7 +175,7 @@
                 switch (source.Type)
                 {
                     case TreeEntryTargetType.Blob:
-                        var sourceBlobItem = (await gw.BlobFrom(source, true).IgnoreWaitContext()).Item2;
+                        var sourceBlobItem = (await gateway.BlobFrom(source, true).IgnoreWaitContext()).Item2;
                         newTree.Tree.Add(new NewTreeItem { Mode = sourceBlobItem.Mode, Path = destination.Name, Sha = source.Sha, Type = TreeType.Blob });
                         break;
 
@@ -188,7 +188,7 @@
                 }
             }
 
-            return await gw.CreateTree(newTree, tt.Current.Owner, tt.Current.Repository).IgnoreWaitContext();
+            return await gateway.CreateTree(newTree, tt.Current.Owner, tt.Current.Repository).IgnoreWaitContext();
         }
 
         async Task SyncLeaf(Parts source, Parts destination)
@@ -248,19 +248,19 @@
 
         async Task SyncBlob(string sourceOwner, string sourceRepository, string sha, string destinationOwner, string destinationRepository)
         {
-            if (gw.IsKnownBy<Blob>(sha, destinationOwner, destinationRepository))
+            if (gateway.IsKnownBy<Blob>(sha, destinationOwner, destinationRepository))
                 return;
 
-            await gw.FetchBlob(sourceOwner, sourceRepository, sha).ConfigureAwait(false);
-            await gw.CreateBlob(destinationOwner, destinationRepository, sha).ConfigureAwait(false);
+            await gateway.FetchBlob(sourceOwner, sourceRepository, sha).ConfigureAwait(false);
+            await gateway.CreateBlob(destinationOwner, destinationRepository, sha).ConfigureAwait(false);
         }
 
         async Task SyncTree(Parts source, string destinationOwner, string destinationRepository)
         {
-            if (gw.IsKnownBy<TreeResponse>(source.Sha, destinationOwner, destinationRepository))
+            if (gateway.IsKnownBy<TreeResponse>(source.Sha, destinationOwner, destinationRepository))
                 return;
 
-            var treeFrom = await gw.TreeFrom(source, true).ConfigureAwait(false);
+            var treeFrom = await gateway.TreeFrom(source, true).ConfigureAwait(false);
 
             var newTree = new NewTree();
 
@@ -291,7 +291,7 @@
             }
 
             // ReSharper disable once RedundantAssignment
-            var sha = await gw.CreateTree(newTree, destinationOwner, destinationRepository).ConfigureAwait(false);
+            var sha = await gateway.CreateTree(newTree, destinationOwner, destinationRepository).ConfigureAwait(false);
 
             Debug.Assert(source.Sha == sha);
         }
@@ -303,7 +303,7 @@
             switch (part.Type)
             {
                 case TreeEntryTargetType.Tree:
-                    var t = await gw.TreeFrom(part, throwsIfNotFound).IgnoreWaitContext();
+                    var t = await gateway.TreeFrom(part, throwsIfNotFound).IgnoreWaitContext();
 
                     if (t != null)
                         outPart = t.Item1;
@@ -311,7 +311,7 @@
                     break;
 
                 case TreeEntryTargetType.Blob:
-                    var b = await gw.BlobFrom(part, throwsIfNotFound).IgnoreWaitContext();
+                    var b = await gateway.BlobFrom(part, throwsIfNotFound).IgnoreWaitContext();
 
                     if (b != null)
                         outPart = b.Item1;
@@ -327,7 +327,7 @@
 
         public void Dispose()
         {
-            gw.Dispose();
+            gateway.Dispose();
         }
     }
 }

@@ -1,46 +1,42 @@
-namespace SyncOMatic
+using System;
+using System.Collections.Generic;
+using SyncOMatic;
+
+class TargetTree
 {
-    using System;
-    using System.Collections.Generic;
+    public readonly Dictionary<string, TargetTree> SubTreesToUpdate;
+    public readonly Dictionary<string, Tuple<Parts, Parts>> LeavesToCreate;
+    public readonly Parts Current;
 
-    class TargetTree
+    public TargetTree(Parts root)
     {
-        public readonly Dictionary<string, TargetTree> SubTreesToUpdate;
-        public readonly Dictionary<string, Tuple<Parts, Parts>> LeavesToCreate;
-        public readonly Parts Current;
+        Current = root;
+        SubTreesToUpdate = new Dictionary<string, TargetTree>();
+        LeavesToCreate = new Dictionary<string, Tuple<Parts, Parts>>();
+    }
 
-        public TargetTree(Parts root)
+    public void Add(Parts destination, Parts source)
+    {
+        Add(destination, source, 0);
+    }
+
+    void Add(Parts destination, Parts source, int level)
+    {
+        var s = destination.SegmentPartsByNestingLevel(level);
+
+        if (destination.NumberOfPathSegments == level + 1)
         {
-            Current = root;
-            SubTreesToUpdate = new Dictionary<string, TargetTree>();
-            LeavesToCreate = new Dictionary<string, Tuple<Parts, Parts>>();
+            var leaf = new Tuple<Parts, Parts>(destination, source);
+            LeavesToCreate.Add(s.Name, leaf);
+            return;
         }
 
-        public void Add(Parts destination, Parts source)
+        if (!SubTreesToUpdate.TryGetValue(s.Name, out var targetTree))
         {
-            Add(destination, source, 0);
+            targetTree = new TargetTree(s);
+            SubTreesToUpdate.Add(s.Name, targetTree);
         }
 
-        void Add(Parts destination, Parts source, int level)
-        {
-            var s = destination.SegmentPartsByNestingLevel(level);
-
-            if (destination.NumberOfPathSegments == level + 1)
-            {
-                var Leaf = new Tuple<Parts, Parts>(destination, source);
-                LeavesToCreate.Add(s.Name, Leaf);
-                return;
-            }
-
-            TargetTree sb;
-
-            if (!SubTreesToUpdate.TryGetValue(s.Name, out sb))
-            {
-                sb = new TargetTree(s);
-                SubTreesToUpdate.Add(s.Name, sb);
-            }
-
-            sb.Add(destination, source, ++level);
-        }
+        targetTree.Add(destination, source, ++level);
     }
 }

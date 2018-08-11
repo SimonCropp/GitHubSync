@@ -1,7 +1,7 @@
-﻿namespace SyncOMatic
-{
-    using System;
+﻿using System;
 
+namespace SyncOMatic
+{
     public class LogEntry
     {
         internal LogEntry(string formatMessage, params object[] values)

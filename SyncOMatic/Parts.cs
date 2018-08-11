@@ -1,8 +1,8 @@
-﻿namespace SyncOMatic
-{
-    using System;
-    using System.Linq;
+﻿using System;
+using System.Linq;
 
+namespace SyncOMatic
+{
     public class Parts : IEquatable<Parts>
     {
         Lazy<Parts> parent;
@@ -23,17 +23,17 @@
 
             Url = string.Join("/", "https://github.com", owner, repository, type.ToString().ToLowerInvariant(), branch);
 
-            if (path != null)
+            if (path == null)
+            {
+                Name = null;
+                NumberOfPathSegments = 0;
+            }
+            else
             {
                 Url = string.Join("/", Url, path);
                 var segments = path.Split('/');
                 Name = segments.Last();
                 NumberOfPathSegments = segments.Length;
-            }
-            else
-            {
-                Name = null;
-                NumberOfPathSegments = 0;
             }
 
             parent = new Lazy<Parts>(BuildParent);
