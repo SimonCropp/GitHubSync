@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SyncOMatic\SyncOMatic.csproj" />
+    <ProjectReference Include="..\GitHubSync\GitHubSync.csproj" />
   </ItemGroup>
 
 

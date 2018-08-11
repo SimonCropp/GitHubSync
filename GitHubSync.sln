@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27703.2047
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SyncOMatic", "SyncOMatic\SyncOMatic.csproj", "{FA94AA77-F599-4740-BE67-0A2EE629047E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GitHubSync", "GitHubSync\GitHubSync.csproj", "{FA94AA77-F599-4740-BE67-0A2EE629047E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "Tests\Tests.csproj", "{8169A350-6F30-464D-87BE-145905F9B80B}"
 EndProject

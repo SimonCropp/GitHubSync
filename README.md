@@ -1,7 +1,7 @@
-SyncOMatic
+GitHubSync
 ==========
 
-![Icon](https://raw.github.com/SimonCropp/SyncOMatic/master/icon.png)
+![Icon](https://raw.github.com/SimonCropp/GitHubSync/master/icon.png)
 
 A tool to help synchronizing specific files and folders across repositories
 

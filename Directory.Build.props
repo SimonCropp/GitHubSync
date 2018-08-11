@@ -11,8 +11,8 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Copyright>Copyright $([System.DateTime]::UtcNow.ToString(yyyy)) Simon Cropp. All rights reserved</Copyright>
     <PackageTags>GitHub</PackageTags>
-    <PackageIconUrl>https://raw.githubusercontent.com/SimonCropp/SyncOMatic/master/icon.png</PackageIconUrl>
-    <PackageProjectUrl>http://github.com/SimonCropp/SyncOMatic</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/SimonCropp/GitHubSync/master/icon.png</PackageIconUrl>
+    <PackageProjectUrl>http://github.com/SimonCropp/GitHubSync</PackageProjectUrl>
     <PackageOutputPath>..\nugets</PackageOutputPath>
     <TargetsForTfmSpecificContentInPackage>$(TargetsForTfmSpecificContentInPackage);IncludePDBsInPackage</TargetsForTfmSpecificContentInPackage>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
