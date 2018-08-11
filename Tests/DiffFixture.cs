@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using SyncOMatic;
+using GitHubSync;
 using Xunit;
 
 public class DiffFixture
@@ -19,7 +19,7 @@ public class DiffFixture
     [Fact]
     public async Task NothingToUpdateWhenSourceBlobAndDestinationBlobHaveTheSameSha()
     {
-        var blob = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "file.txt");
+        var blob = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "file.txt");
 
         var map = new Mapper()
             .Add(blob, blob);
@@ -36,8 +36,8 @@ public class DiffFixture
     [Fact]
     public async Task CanDetectBlobUpdation()
     {
-        var sourceBlob = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "file.txt");
-        var destinationBlob = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "file.txt");
+        var sourceBlob = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "file.txt");
+        var destinationBlob = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "file.txt");
 
         var map = new Mapper()
             .Add(sourceBlob, destinationBlob);
@@ -57,8 +57,8 @@ public class DiffFixture
     [Fact]
     public async Task CanDetectBlobCreation()
     {
-        var sourceBlob = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "new-file.txt");
-        var destinationBlob = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "new-file.txt");
+        var sourceBlob = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "new-file.txt");
+        var destinationBlob = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "new-file.txt");
 
         var map = new Mapper()
             .Add(sourceBlob, destinationBlob);
@@ -78,8 +78,8 @@ public class DiffFixture
     [Fact]
     public async Task ThrowsWhenSourceBlobDoesNotExist()
     {
-        var sourceBlob = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "IDoNotExist.txt");
-        var destinationBlob = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "file.txt");
+        var sourceBlob = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "IDoNotExist.txt");
+        var destinationBlob = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "file.txt");
 
         var map = new Mapper()
             .Add(sourceBlob, destinationBlob);
@@ -93,7 +93,7 @@ public class DiffFixture
     [Fact]
     public async Task NothingToUpdateWhenSourceTreeAndDestinationTreeHaveTheSameSha()
     {
-        var tree = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "folder");
+        var tree = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "folder");
 
         var map = new Mapper()
             .Add(tree, tree);
@@ -110,8 +110,8 @@ public class DiffFixture
     [Fact]
     public async Task CanDetectTreeUpdation()
     {
-        var sourceTree = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "folder");
-        var destinationTree = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "consumer-one", "folder");
+        var sourceTree = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "folder");
+        var destinationTree = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Tree, "consumer-one", "folder");
 
         var map = new Mapper()
             .Add(sourceTree, destinationTree);
@@ -132,8 +132,8 @@ public class DiffFixture
     [Fact]
     public async Task CanDetectTreeCreation()
     {
-        var sourceTree = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "folder/sub2");
-        var destinationTree = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "consumer-one", "folder/sub2");
+        var sourceTree = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "folder/sub2");
+        var destinationTree = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Tree, "consumer-one", "folder/sub2");
 
         var map = new Mapper()
             .Add(sourceTree, destinationTree);
@@ -153,8 +153,8 @@ public class DiffFixture
     [Fact]
     public async Task ThrowsWhenSourceTreeDoesNotExist()
     {
-        var sourceTree = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "IDoNotExist/folder/sub2");
-        var destinationTree = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Tree, "consumer-one", "folder/sub2");
+        var sourceTree = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Tree, "blessed-source", "IDoNotExist/folder/sub2");
+        var destinationTree = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Tree, "consumer-one", "folder/sub2");
 
         var map = new Mapper()
             .Add(sourceTree, destinationTree);
@@ -168,8 +168,8 @@ public class DiffFixture
     [Fact]
     public async Task CanDetectBlobCreationWhenTargetTreeFolderDoesNotExist()
     {
-        var sourceBlob = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "new-file.txt");
-        var destinationBlob = new Parts("SimonCropp/SyncOMatic.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "IDoNotExist/MeNeither/new-file.txt");
+        var sourceBlob = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Blob, "blessed-source", "new-file.txt");
+        var destinationBlob = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "IDoNotExist/MeNeither/new-file.txt");
 
         var map = new Mapper()
             .Add(sourceBlob, destinationBlob);

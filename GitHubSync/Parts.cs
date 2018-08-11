@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 
-namespace SyncOMatic
+namespace GitHubSync
 {
     public class Parts : IEquatable<Parts>
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SyncOMatic
+namespace GitHubSync
 {
     public class LogEntry
     {

@@ -1,5 +1,5 @@
 ﻿using System;
-using SyncOMatic;
+using GitHubSync;
 using Xunit;
 
 public class PartsFixture

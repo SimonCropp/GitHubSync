@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Octokit;
 using Octokit.Internal;
-using SyncOMatic;
+using GitHubSync;
 
 class GitHubGateway : IDisposable
 {
@@ -28,7 +28,7 @@ class GitHubGateway : IDisposable
 
         this.logCallBack = logCallBack;
 
-        blobStoragePath = Path.Combine(Path.GetTempPath(), $"SyncOMatic-{Guid.NewGuid()}");
+        blobStoragePath = Path.Combine(Path.GetTempPath(), $"GitHubSync-{Guid.NewGuid()}");
         Directory.CreateDirectory(blobStoragePath);
 
         log("Ctor - Create temp blob storage '{0}'.", blobStoragePath);
@@ -40,7 +40,7 @@ class GitHubGateway : IDisposable
 
         this.logCallBack = logCallBack;
 
-        blobStoragePath = Path.Combine(Path.GetTempPath(), $"SyncOMatic-{Guid.NewGuid()}");
+        blobStoragePath = Path.Combine(Path.GetTempPath(), $"GitHubSync-{Guid.NewGuid()}");
         Directory.CreateDirectory(blobStoragePath);
 
         log("Ctor - Create temp blob storage '{0}'.", blobStoragePath);
@@ -67,7 +67,7 @@ class GitHubGateway : IDisposable
 
     GitHubClient ClientFrom(Credentials credentials, IWebProxy proxy)
     {
-        var connection = new Connection(new ProductHeaderValue("SyncOMatic"),
+        var connection = new Connection(new ProductHeaderValue("GitHubSync"),
             new HttpClientAdapter(() => HttpMessageHandlerFactory.CreateDefault(proxy)));
         var client = new GitHubClient(connection)
         {
@@ -80,8 +80,7 @@ class GitHubGateway : IDisposable
     {
         var or = string.Join("/", owner, repository);
 
-        GitHubClient client;
-        if (!clientsPerOwnerRepository.TryGetValue(or, out client))
+        if (!clientsPerOwnerRepository.TryGetValue(or, out var client))
         {
             client = clientsPerOwnerRepository[DEFAULT_CREDENTIALS_KEY];
         }
@@ -96,9 +95,8 @@ class GitHubGateway : IDisposable
 
     public async Task<Commit> RootCommitFrom(Parts source)
     {
-        Commit commit;
         var orb = $"{source.Owner}/{source.Repository}/{source.Branch}";
-        if (commitCachePerOwnerRepositoryBranch.TryGetValue(orb, out commit))
+        if (commitCachePerOwnerRepositoryBranch.TryGetValue(orb, out var commit))
         {
             return commit;
         }
@@ -120,9 +118,7 @@ class GitHubGateway : IDisposable
 
     Tuple<Parts, TreeItem> AddToPathCache(Parts parts, TreeItem blobEntry)
     {
-        Tuple<Parts, TreeItem> blobFrom;
-
-        if (blobCachePerPath.TryGetValue(parts.Url, out blobFrom))
+        if (blobCachePerPath.TryGetValue(parts.Url, out var blobFrom))
         {
             return blobFrom;
         }
@@ -134,9 +130,7 @@ class GitHubGateway : IDisposable
 
     Tuple<Parts, TreeResponse> AddToPathCache(Parts parts, TreeResponse treeEntry)
     {
-        Tuple<Parts, TreeResponse> treeFrom;
-
-        if (treeCachePerPath.TryGetValue(parts.Url, out treeFrom))
+        if (treeCachePerPath.TryGetValue(parts.Url, out var treeFrom))
         {
             return treeFrom;
         }
@@ -150,8 +144,7 @@ class GitHubGateway : IDisposable
     {
         Debug.Assert(source.Type == TreeEntryTargetType.Tree);
 
-        Tuple<Parts, TreeResponse> treeResponse;
-        if (treeCachePerPath.TryGetValue(source.Url, out treeResponse))
+        if (treeCachePerPath.TryGetValue(source.Url, out var treeResponse))
         {
             return treeResponse;
         }
@@ -225,8 +218,7 @@ class GitHubGateway : IDisposable
     {
         Debug.Assert(source.Type == TreeEntryTargetType.Blob);
 
-        Tuple<Parts, TreeItem> blobResponse;
-        if (blobCachePerPath.TryGetValue(source.Url, out blobResponse))
+        if (blobCachePerPath.TryGetValue(source.Url, out var blobResponse))
         {
             return blobResponse;
         }
@@ -271,8 +263,7 @@ class GitHubGateway : IDisposable
 
         var or = owner + "/" + repository;
 
-        IList<string> l;
-        if (!dic.TryGetValue(sha, out l))
+        if (!dic.TryGetValue(sha, out var l))
         {
             l = new List<string>();
             dic.Add(sha, l);
@@ -290,8 +281,7 @@ class GitHubGateway : IDisposable
     {
         var dic = CacheFor<T>();
 
-        IList<string> l;
-        if (!dic.TryGetValue(sha, out l))
+        if (!dic.TryGetValue(sha, out var l))
         {
             return false;
         }
@@ -323,7 +313,7 @@ class GitHubGateway : IDisposable
 
     public async Task<string> CreateCommit(string treeSha, string destinationOwner, string destinationRepository, string parentCommitSha)
     {
-        var newCommit = new NewCommit("SyncOMatic update", treeSha, new[] {parentCommitSha});
+        var newCommit = new NewCommit("GitHubSync update", treeSha, new[] {parentCommitSha});
 
         var client = ClientFor(destinationOwner, destinationRepository);
         var createdCommit = await client.Git.Commit.Create(destinationOwner, destinationRepository, newCommit).IgnoreWaitContext();
@@ -413,7 +403,7 @@ class GitHubGateway : IDisposable
     public async Task<int> CreatePullRequest(string owner, string repository, string branchName, string targetBranchName)
     {
         var client = ClientFor(owner, repository);
-        var newPullRequest = new NewPullRequest("SyncOMatic update", branchName, targetBranchName);
+        var newPullRequest = new NewPullRequest("GitHubSync update", branchName, targetBranchName);
         var pullRequest = await client.Repository.PullRequest.Create(owner, repository, newPullRequest).IgnoreWaitContext();
 
         log("API Query - Create pull request '#{0}' in '{1}/{2}'. -> https://github.com/{1}/{2}/pull/{0}",

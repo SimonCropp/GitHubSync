@@ -5,7 +5,7 @@ public static class Helper
 {
     static readonly Lazy<Credentials> credentialsThunk = new Lazy<Credentials>(() =>
     {
-        var githubToken = Environment.GetEnvironmentVariable("OCTOKIT_OAUTHTOKEN");
+        var githubToken = Environment.GetEnvironmentVariable("Octokit_OAuthToken");
 
         if (githubToken != null)
         {

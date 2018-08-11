@@ -1,4 +1,4 @@
-﻿namespace SyncOMatic
+﻿namespace GitHubSync
 {
     using System;
     using System.Collections.Generic;
@@ -87,7 +87,7 @@
             }
 
             var t = diff.Transpose();
-            var branchName = "SyncOMatic-" + DateTimeOffset.UtcNow.ToString("yyyyMMdd-HHmmss");
+            var branchName = "GitHubSync-" + DateTimeOffset.UtcNow.ToString("yyyyMMdd-HHmmss");
 
             var results = new List<string>();
 

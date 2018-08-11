@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using SyncOMatic;
+using GitHubSync;
 using Xunit;
 
 public class MapperFixture

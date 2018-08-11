@@ -1,4 +1,4 @@
-﻿namespace SyncOMatic
+﻿namespace GitHubSync
 {
     public class Mapper : MapperBase
     {

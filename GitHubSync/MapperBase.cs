@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SyncOMatic
+namespace GitHubSync
 {
     public abstract class MapperBase : IEnumerable<KeyValuePair<Parts, IEnumerable<Parts>>>
     {
