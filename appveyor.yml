@@ -1,4 +1,7 @@
 version: 1.0.{build}
+environment:
+  OCTOKIT_OAUTHTOKEN:
+    secure: GTM2XFtnpFPq+Vp1eX4iCQMxWOOGL2ut9/zTEn5N91VnygVqdLJNm5n5u23rEWOo
 image: Visual Studio 2017
 configuration: Release
 platform: Any CPU
