@@ -1,13 +1,13 @@
-﻿namespace GitHubSync
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Diagnostics;
-    using System.Linq;
-    using System.Net;
-    using System.Threading.Tasks;
-    using Octokit;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using Octokit;
 
+namespace GitHubSync
+{
     public class Syncer : IDisposable
     {
         GitHubGateway gateway;
@@ -50,14 +50,14 @@
 
                 log("Diff - Analyze {0} source '{1}'.", source.Type, source.Url);
 
-                var richSource = await EnrichWithShas(source, true).IgnoreWaitContext();
+                var richSource = await EnrichWithShas(source, true).ConfigureAwait(false);
 
                 foreach (var destination in kvp.Value)
                 {
                     log("Diff - Analyze {0} target '{1}'.",
                         source.Type, destination.Url);
 
-                    var richDestination = await EnrichWithShas(destination, false).IgnoreWaitContext();
+                    var richDestination = await EnrichWithShas(destination, false).ConfigureAwait(false);
 
                     if (richSource.Sha == richDestination.Sha)
                     {
@@ -104,11 +104,11 @@
                     tt.Add(destination, source);
                 }
 
-                var btt = await BuildTargetTree(tt).IgnoreWaitContext();
+                var btt = await BuildTargetTree(tt).ConfigureAwait(false);
 
-                var parentCommit = await gateway.RootCommitFrom(root).IgnoreWaitContext();
+                var parentCommit = await gateway.RootCommitFrom(root).ConfigureAwait(false);
 
-                var c = await gateway.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha).IgnoreWaitContext();
+                var c = await gateway.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha).ConfigureAwait(false);
 
                 switch (expectedOutput)
                 {
@@ -117,13 +117,13 @@
                         break;
 
                     case SyncOutput.CreateBranch:
-                        branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).IgnoreWaitContext();
+                        branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).ConfigureAwait(false);
                         results.Add($"https://github.com/{root.Owner}/{root.Repository}/compare/{UrlSanitize(root.Branch)}...{UrlSanitize(branchName)}");
                         break;
 
                     case SyncOutput.CreatePullRequest:
-                        branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).IgnoreWaitContext();
-                        var prNumber = await gateway.CreatePullRequest(root.Owner, root.Repository, branchName, root.Branch).IgnoreWaitContext();
+                        branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).ConfigureAwait(false);
+                        var prNumber = await gateway.CreatePullRequest(root.Owner, root.Repository, branchName, root.Branch).ConfigureAwait(false);
                         gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
                         results.Add("https://github.com/" + root.Owner + "/" + root.Repository + "/pull/" + prNumber);
                         break;
@@ -143,24 +143,32 @@
 
         async Task<string> BuildTargetTree(TargetTree tt)
         {
-            var treeFrom = await gateway.TreeFrom(tt.Current, false).IgnoreWaitContext();
+            var treeFrom = await gateway.TreeFrom(tt.Current, false).ConfigureAwait(false);
 
             NewTree newTree;
-            if (treeFrom != null)
+            if (treeFrom == null)
             {
-                var destinationParentTree = treeFrom.Item2;
-                newTree = BuildNewTreeFrom(destinationParentTree);
+                newTree = new NewTree();
             }
             else
             {
-                newTree = new NewTree();
+                var destinationParentTree = treeFrom.Item2;
+                newTree = BuildNewTreeFrom(destinationParentTree);
             }
 
             foreach (var st in tt.SubTreesToUpdate.Values)
             {
                 RemoveTreeItemFrom(newTree, st.Current.Name);
-                var sha = await BuildTargetTree(st).IgnoreWaitContext();
-                newTree.Tree.Add(new NewTreeItem { Mode = "040000", Path = st.Current.Name, Sha = sha, Type = TreeType.Tree });
+                var sha = await BuildTargetTree(st).ConfigureAwait(false);
+                var newTreeItem = new NewTreeItem
+                {
+                    Mode = "040000",
+                    Path = st.Current.Name,
+                    Sha = sha,
+                    Type = TreeType.Tree
+                };
+
+                newTree.Tree.Add(newTreeItem);
             }
 
             foreach (var l in tt.LeavesToCreate.Values)
@@ -170,12 +178,12 @@
 
                 RemoveTreeItemFrom(newTree, destination.Name);
 
-                await SyncLeaf(source, destination).IgnoreWaitContext();
+                await SyncLeaf(source, destination).ConfigureAwait(false);
 
                 switch (source.Type)
                 {
                     case TreeEntryTargetType.Blob:
-                        var sourceBlobItem = (await gateway.BlobFrom(source, true).IgnoreWaitContext()).Item2;
+                        var sourceBlobItem = (await gateway.BlobFrom(source, true).ConfigureAwait(false)).Item2;
                         newTree.Tree.Add(new NewTreeItem { Mode = sourceBlobItem.Mode, Path = destination.Name, Sha = source.Sha, Type = TreeType.Blob });
                         break;
 
@@ -188,7 +196,7 @@
                 }
             }
 
-            return await gateway.CreateTree(newTree, tt.Current.Owner, tt.Current.Repository).IgnoreWaitContext();
+            return await gateway.CreateTree(newTree, tt.Current.Owner, tt.Current.Repository).ConfigureAwait(false);
         }
 
         async Task SyncLeaf(Parts source, Parts destination)
@@ -199,14 +207,14 @@
                     log("Sync - Determine if Blob '{0}' requires to be created in '{1}/{2}'.",
                         source.Sha.Substring(0, 7), destination.Owner, destination.Repository);
 
-                    await SyncBlob(source.Owner, source.Repository, source.Sha, destination.Owner, destination.Repository).IgnoreWaitContext();
+                    await SyncBlob(source.Owner, source.Repository, source.Sha, destination.Owner, destination.Repository).ConfigureAwait(false);
                     break;
 
                 case TreeEntryTargetType.Tree:
                     log("Sync - Determine if Tree '{0}' requires to be created in '{1}/{2}'.",
                         source.Sha.Substring(0, 7), destination.Owner, destination.Repository);
 
-                    await SyncTree(source, destination.Owner, destination.Repository).IgnoreWaitContext();
+                    await SyncTree(source, destination.Owner, destination.Repository).ConfigureAwait(false);
                     break;
 
                 default:
@@ -270,11 +278,11 @@
                 switch (value)
                 {
                     case TreeType.Blob:
-                        await SyncBlob(source.Owner, source.Repository, i.Sha, destinationOwner, destinationRepository).IgnoreWaitContext();
+                        await SyncBlob(source.Owner, source.Repository, i.Sha, destinationOwner, destinationRepository).ConfigureAwait(false);
                         break;
 
                     case TreeType.Tree:
-                        await SyncTree(treeFrom.Item1.Combine(TreeEntryTargetType.Tree, i.Path, i.Sha), destinationOwner, destinationRepository).IgnoreWaitContext();
+                        await SyncTree(treeFrom.Item1.Combine(TreeEntryTargetType.Tree, i.Path, i.Sha), destinationOwner, destinationRepository).ConfigureAwait(false);
                         break;
 
                     default:
@@ -303,7 +311,7 @@
             switch (part.Type)
             {
                 case TreeEntryTargetType.Tree:
-                    var t = await gateway.TreeFrom(part, throwsIfNotFound).IgnoreWaitContext();
+                    var t = await gateway.TreeFrom(part, throwsIfNotFound).ConfigureAwait(false);
 
                     if (t != null)
                         outPart = t.Item1;
@@ -311,7 +319,7 @@
                     break;
 
                 case TreeEntryTargetType.Blob:
-                    var b = await gateway.BlobFrom(part, throwsIfNotFound).IgnoreWaitContext();
+                    var b = await gateway.BlobFrom(part, throwsIfNotFound).ConfigureAwait(false);
 
                     if (b != null)
                         outPart = b.Item1;

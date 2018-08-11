@@ -3,19 +3,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using GitHubSync;
 using Xunit;
+using Xunit.Abstractions;
 
-public class DiffFixture
+public class DiffTests: TestBase
 {
     Syncer BuildSUT()
     {
-        return new Syncer(CredentialsHelper.Credentials, null, ConsoleLogger);
+        return new Syncer(CredentialsHelper.Credentials, null, WriteLog);
     }
-
-    static void ConsoleLogger(LogEntry obj)
-    {
-        Console.WriteLine("{0:o}\t{1}", obj.At, obj.What);
-    }
-
+    
     [Fact]
     public async Task NothingToUpdateWhenSourceBlobAndDestinationBlobHaveTheSameSha()
     {
@@ -184,5 +180,9 @@ public class DiffFixture
         Assert.NotNull(diff.Single().Key.Sha);
         Assert.Single(diff.Single().Value);
         Assert.Null(diff.Single().Value.Single().Sha);
+    }
+
+    public DiffTests(ITestOutputHelper output) : base(output)
+    {
     }
 }

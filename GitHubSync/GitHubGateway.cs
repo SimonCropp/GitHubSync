@@ -105,12 +105,12 @@ class GitHubGateway : IDisposable
             "heads/" + source.Branch, source.Owner, source.Repository);
 
         var client = ClientFor(source.Owner, source.Repository);
-        var refBranch = await client.Git.Reference.Get(source.Owner, source.Repository, "heads/" + source.Branch).IgnoreWaitContext();
+        var refBranch = await client.Git.Reference.Get(source.Owner, source.Repository, "heads/" + source.Branch).ConfigureAwait(false);
 
         log("API Query - Retrieve commit '{0}' details from '{1}/{2}'.",
             refBranch.Object.Sha.Substring(0, 7), source.Owner, source.Repository);
 
-        commit = await client.Git.Commit.Get(source.Owner, source.Repository, refBranch.Object.Sha).IgnoreWaitContext();
+        commit = await client.Git.Commit.Get(source.Owner, source.Repository, refBranch.Object.Sha).ConfigureAwait(false);
 
         commitCachePerOwnerRepositoryBranch.Add(orb, commit);
         return commit;
@@ -153,14 +153,14 @@ class GitHubGateway : IDisposable
 
         if (source.Path == null)
         {
-            var commit = await RootCommitFrom(source).IgnoreWaitContext();
+            var commit = await RootCommitFrom(source).ConfigureAwait(false);
 
             sha = commit.Tree.Sha;
         }
         else
         {
             var parentTreePart = source.ParentTreePart;
-            var parentTreeResponse = await TreeFrom(parentTreePart, throwsIfNotFound).IgnoreWaitContext();
+            var parentTreeResponse = await TreeFrom(parentTreePart, throwsIfNotFound).ConfigureAwait(false);
             if (parentTreeResponse == null)
             {
                 return null;
@@ -186,7 +186,7 @@ class GitHubGateway : IDisposable
             sha.Substring(0, 7), source.Owner, source.Repository, source.Url);
 
         var client = ClientFor(source.Owner, source.Repository);
-        var tree = await client.Git.Tree.Get(source.Owner, source.Repository, sha).IgnoreWaitContext();
+        var tree = await client.Git.Tree.Get(source.Owner, source.Repository, sha).ConfigureAwait(false);
         var parts = new Parts(source.Owner, source.Repository, TreeEntryTargetType.Tree, source.Branch, source.Path, tree.Sha);
 
         var treeFrom = AddToPathCache(parts, tree);
@@ -223,7 +223,7 @@ class GitHubGateway : IDisposable
             return blobResponse;
         }
 
-        var parent = await TreeFrom(source.ParentTreePart, throwsIfNotFound).IgnoreWaitContext();
+        var parent = await TreeFrom(source.ParentTreePart, throwsIfNotFound).ConfigureAwait(false);
 
         if (parent == null)
         {
@@ -316,7 +316,7 @@ class GitHubGateway : IDisposable
         var newCommit = new NewCommit("GitHubSync update", treeSha, new[] {parentCommitSha});
 
         var client = ClientFor(destinationOwner, destinationRepository);
-        var createdCommit = await client.Git.Commit.Create(destinationOwner, destinationRepository, newCommit).IgnoreWaitContext();
+        var createdCommit = await client.Git.Commit.Create(destinationOwner, destinationRepository, newCommit).ConfigureAwait(false);
 
         log("API Query - Create commit '{0}' in '{1}/{2}'. -> https://github.com/{1}/{2}/commit/{3}",
             createdCommit.Sha.Substring(0, 7), destinationOwner, destinationRepository, createdCommit.Sha);
@@ -327,7 +327,7 @@ class GitHubGateway : IDisposable
     public async Task<string> CreateTree(NewTree newTree, string destinationOwner, string destinationRepository)
     {
         var client = ClientFor(destinationOwner, destinationRepository);
-        var createdTree = await client.Git.Tree.Create(destinationOwner, destinationRepository, newTree).IgnoreWaitContext();
+        var createdTree = await client.Git.Tree.Create(destinationOwner, destinationRepository, newTree).ConfigureAwait(false);
 
         log("API Query - Create tree '{0}' in '{1}/{2}'.",
             createdTree.Sha.Substring(0, 7), destinationOwner, destinationRepository);
@@ -354,7 +354,7 @@ class GitHubGateway : IDisposable
 
         var client = ClientFor(owner, repository);
         // ReSharper disable once RedundantAssignment
-        var createdBlob = await client.Git.Blob.Create(owner, repository, newBlob).IgnoreWaitContext();
+        var createdBlob = await client.Git.Blob.Create(owner, repository, newBlob).ConfigureAwait(false);
         Debug.Assert(sha == createdBlob.Sha);
 
         AddToKnown<Blob>(sha, owner, repository);
@@ -370,7 +370,7 @@ class GitHubGateway : IDisposable
         log("API Query - Retrieve blob '{0}' details from '{1}/{2}'.", sha.Substring(0, 7), owner, repository);
 
         var client = ClientFor(owner, repository);
-        var blob = await client.Git.Blob.Get(owner, repository, sha).IgnoreWaitContext();
+        var blob = await client.Git.Blob.Get(owner, repository, sha).ConfigureAwait(false);
 
         switch (blob.Encoding.Value)
         {
@@ -396,7 +396,7 @@ class GitHubGateway : IDisposable
             newRef.Ref, owner, repository);
 
         var client = ClientFor(owner, repository);
-        var reference = await client.Git.Reference.Create(owner, repository, newRef).IgnoreWaitContext();
+        var reference = await client.Git.Reference.Create(owner, repository, newRef).ConfigureAwait(false);
         return reference.Ref.Substring("refs/heads/".Length);
     }
 
@@ -404,7 +404,7 @@ class GitHubGateway : IDisposable
     {
         var client = ClientFor(owner, repository);
         var newPullRequest = new NewPullRequest("GitHubSync update", branchName, targetBranchName);
-        var pullRequest = await client.Repository.PullRequest.Create(owner, repository, newPullRequest).IgnoreWaitContext();
+        var pullRequest = await client.Repository.PullRequest.Create(owner, repository, newPullRequest).ConfigureAwait(false);
 
         log("API Query - Create pull request '#{0}' in '{1}/{2}'. -> https://github.com/{1}/{2}/pull/{0}",
             pullRequest.Number, owner, repository);

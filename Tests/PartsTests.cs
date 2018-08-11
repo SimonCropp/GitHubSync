@@ -1,8 +1,9 @@
 ﻿using System;
 using GitHubSync;
 using Xunit;
+using Xunit.Abstractions;
 
-public class PartsFixture
+public class PartsTests: TestBase
 {
     [Fact]
     public void Tree()
@@ -72,5 +73,9 @@ public class PartsFixture
 
 // ReSharper disable once UnusedVariable
         Assert.Throws<InvalidOperationException>(() => { var parent = parts.ParentTreePart; });
+    }
+
+    public PartsTests(ITestOutputHelper output) : base(output)
+    {
     }
 }

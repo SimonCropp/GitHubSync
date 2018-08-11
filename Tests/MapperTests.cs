@@ -2,8 +2,9 @@
 using System.Linq;
 using GitHubSync;
 using Xunit;
+using Xunit.Abstractions;
 
-public class MapperFixture
+public class MapperTests: TestBase
 {
     [Fact]
     public void CanAddAndEnumerate()
@@ -69,5 +70,9 @@ public class MapperFixture
             "o1/r2/b2",
             "o1/r3/b1"
         }, orbs.ToArray());
+    }
+
+    public MapperTests(ITestOutputHelper output) : base(output)
+    {
     }
 }
