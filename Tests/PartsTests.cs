@@ -34,16 +34,16 @@ public class PartsTests: TestBase
     [Fact]
     public void Blob()
     {
-        var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Blob, "develop", "src/NServiceBus.sln.DotSettings");
+        var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Blob, "develop", "src/settings");
 
         Assert.Equal("SimonCropp", parts.Owner);
         Assert.Equal("Fake", parts.Repository);
         Assert.Equal(TreeEntryTargetType.Blob, parts.Type);
         Assert.Equal("develop", parts.Branch);
-        Assert.Equal("src/NServiceBus.sln.DotSettings", parts.Path);
+        Assert.Equal("src/settings", parts.Path);
         Assert.Equal(2, parts.NumberOfPathSegments);
-        Assert.Equal("NServiceBus.sln.DotSettings", parts.Name);
-        Assert.Equal("https://github.com/SimonCropp/Fake/blob/develop/src/NServiceBus.sln.DotSettings", parts.Url);
+        Assert.Equal("settings", parts.Name);
+        Assert.Equal("https://github.com/SimonCropp/Fake/blob/develop/src/settings", parts.Url);
 
         var parent = parts.ParentTreePart;
 
