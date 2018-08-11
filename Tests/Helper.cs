@@ -1,19 +1,21 @@
 ﻿using System;
 using Octokit;
 
-public static class Helper
+public static class CredentialsHelper
 {
-    static readonly Lazy<Credentials> credentialsThunk = new Lazy<Credentials>(() =>
+    static CredentialsHelper()
     {
         var githubToken = Environment.GetEnvironmentVariable("Octokit_OAuthToken");
 
-        if (githubToken != null)
+        if (githubToken == null)
         {
-            return new Credentials(githubToken);
+            Credentials = Credentials.Anonymous;
         }
+        else
+        {
+            Credentials = new Credentials(githubToken);
+        }
+    }
 
-        return Credentials.Anonymous;
-    });
-
-    public static Credentials Credentials => credentialsThunk.Value;
+    public static Credentials Credentials;
 }

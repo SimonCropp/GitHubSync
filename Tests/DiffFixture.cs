@@ -8,7 +8,7 @@ public class DiffFixture
 {
     Syncer BuildSUT()
     {
-        return new Syncer(Helper.Credentials, null, ConsoleLogger);
+        return new Syncer(CredentialsHelper.Credentials, null, ConsoleLogger);
     }
 
     static void ConsoleLogger(LogEntry obj)
