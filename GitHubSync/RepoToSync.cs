@@ -4,10 +4,10 @@ namespace GitHubSync
 {
     public class RepoToSync
     {
-        public string Org { get; set; }
+        public string Owner { get; set; }
         public string Repo { get; set; }
         public string TargetBranch { get; set; }
-        public Dictionary<string,string> ReplacementTokens { get; set; } = new Dictionary<string, string>();
+        public Dictionary<string,string> ReplacementTokens { get; set; }
 
         public Mapper GetMapper(List<SyncItem> syncItems)
         {
@@ -15,7 +15,7 @@ namespace GitHubSync
 
             foreach (var syncItem in syncItems)
             {
-                var toPart = new Parts($"{Org}/{Repo}", syncItem.Parts.Type, TargetBranch, ApplyTargetPathTemplate(syncItem));
+                var toPart = new Parts($"{Owner}/{Repo}", syncItem.Parts.Type, TargetBranch, ApplyTargetPathTemplate(syncItem));
                 mapper.Add(syncItem.Parts, toPart);
             }
 
@@ -30,9 +30,12 @@ namespace GitHubSync
                 return syncItem.Parts.Path;
             }
 
-            foreach (var token in ReplacementTokens)
+            if (ReplacementTokens != null)
             {
-                target = target.Replace(token.Key, token.Value);
+                foreach (var token in ReplacementTokens)
+                {
+                    target = target.Replace(token.Key, token.Value);
+                }
             }
 
             return target;
