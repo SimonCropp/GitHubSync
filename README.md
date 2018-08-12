@@ -5,7 +5,11 @@ GitHubSync
 
 A tool to help synchronizing specific files and folders across repositories
 
+## NuGet [![NuGet Status](http://img.shields.io/nuget/v/GitHubSync.svg?longCache=true&style=flat)](https://www.nuget.org/packages/GitHubSync/)
 
+https://nuget.org/packages/GitHubSync/
+
+    PM> Install-Package GitHubSync
 
 ## Icon 
 
