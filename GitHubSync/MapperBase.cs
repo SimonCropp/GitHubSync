@@ -41,12 +41,11 @@ namespace GitHubSync
         {
             get
             {
-                if (!dic.TryGetValue(from, out var l))
+                if (dic.TryGetValue(@from, out var l))
                 {
-                    return Enumerable.Empty<Parts>();
+                    return l;
                 }
-
-                return l;
+                return Enumerable.Empty<Parts>();
             }
         }
 

@@ -18,7 +18,7 @@ namespace GitHubSync
             IWebProxy proxy = null,
             Action<string> log = null)
         {
-            this.log = log ?? NullLogger;
+            this.log = log ?? nullLogger;
 
             gateway = new GitHubGateway(credentialsPerRepos, proxy, log);
         }
@@ -28,12 +28,12 @@ namespace GitHubSync
             IWebProxy proxy = null,
             Action<string> log = null)
         {
-            this.log = log ?? NullLogger;
+            this.log = log ?? nullLogger;
 
             gateway = new GitHubGateway(defaultCredentials, proxy, log);
         }
 
-        static Action<string> NullLogger = _ => { };
+        static Action<string> nullLogger = _ => { };
 
         public async Task<Diff> Diff(Mapper input)
         {
@@ -80,7 +80,7 @@ namespace GitHubSync
             }
 
             var t = diff.Transpose();
-            var branchName = "GitHubSync-" + DateTimeOffset.UtcNow.ToString("yyyyMMdd-HHmmss");
+            var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
 
             var results = new List<string>();
 
@@ -118,7 +118,7 @@ namespace GitHubSync
                         branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).ConfigureAwait(false);
                         var prNumber = await gateway.CreatePullRequest(root.Owner, root.Repository, branchName, root.Branch).ConfigureAwait(false);
                         gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
-                        results.Add("https://github.com/" + root.Owner + "/" + root.Repository + "/pull/" + prNumber);
+                        results.Add($"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}");
                         break;
 
                     default:
@@ -177,11 +177,25 @@ namespace GitHubSync
                 {
                     case TreeEntryTargetType.Blob:
                         var sourceBlobItem = (await gateway.BlobFrom(source, true).ConfigureAwait(false)).Item2;
-                        newTree.Tree.Add(new NewTreeItem { Mode = sourceBlobItem.Mode, Path = destination.Name, Sha = source.Sha, Type = TreeType.Blob });
+                        newTree.Tree.Add(
+                            new NewTreeItem
+                            {
+                                Mode = sourceBlobItem.Mode,
+                                Path = destination.Name,
+                                Sha = source.Sha,
+                                Type = TreeType.Blob
+                            });
                         break;
 
                     case TreeEntryTargetType.Tree:
-                        newTree.Tree.Add(new NewTreeItem { Mode = "040000", Path = destination.Name, Sha = source.Sha, Type = TreeType.Tree });
+                        newTree.Tree.Add(
+                            new NewTreeItem
+                            {
+                                Mode = "040000",
+                                Path = destination.Name,
+                                Sha = source.Sha,
+                                Type = TreeType.Tree
+                            });
                         break;
 
                     default:
@@ -248,7 +262,9 @@ namespace GitHubSync
         async Task SyncBlob(string sourceOwner, string sourceRepository, string sha, string destinationOwner, string destinationRepository)
         {
             if (gateway.IsKnownBy<Blob>(sha, destinationOwner, destinationRepository))
+            {
                 return;
+            }
 
             await gateway.FetchBlob(sourceOwner, sourceRepository, sha).ConfigureAwait(false);
             await gateway.CreateBlob(destinationOwner, destinationRepository, sha).ConfigureAwait(false);
@@ -257,7 +273,9 @@ namespace GitHubSync
         async Task SyncTree(Parts source, string destinationOwner, string destinationRepository)
         {
             if (gateway.IsKnownBy<TreeResponse>(source.Sha, destinationOwner, destinationRepository))
+            {
                 return;
+            }
 
             var treeFrom = await gateway.TreeFrom(source, true).ConfigureAwait(false);
 
@@ -305,7 +323,9 @@ namespace GitHubSync
                     var t = await gateway.TreeFrom(part, throwsIfNotFound).ConfigureAwait(false);
 
                     if (t != null)
+                    {
                         outPart = t.Item1;
+                    }
 
                     break;
 
@@ -313,7 +333,9 @@ namespace GitHubSync
                     var b = await gateway.BlobFrom(part, throwsIfNotFound).ConfigureAwait(false);
 
                     if (b != null)
+                    {
                         outPart = b.Item1;
+                    }
 
                     break;
 

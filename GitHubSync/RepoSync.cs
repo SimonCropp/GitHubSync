@@ -14,15 +14,17 @@ namespace GitHubSync
         string sourceRepository;
         string branch;
         Action<string> log;
-        private List<RepoToSync> targets = new List<RepoToSync>();
+        List<string> labelsToApplyOnPullRequests;
+        List<RepoToSync> targets = new List<RepoToSync>();
 
-        public RepoSync(Credentials credentials, string sourceOwner, string sourceRepository, string branch, Action<string> log = null)
+        public RepoSync(Credentials credentials, string sourceOwner, string sourceRepository, string branch, Action<string> log = null, List<string> labelsToApplyOnPullRequests = null)
         {
             this.credentials = credentials;
             this.sourceOwner = sourceOwner;
             this.sourceRepository = sourceRepository;
             this.branch = branch;
             this.log = log;
+            this.labelsToApplyOnPullRequests = labelsToApplyOnPullRequests;
         }
 
         public void AddSourceItem(TreeEntryTargetType type, string path, string target = null)
@@ -53,7 +55,7 @@ namespace GitHubSync
                 using (var som = new Syncer(credentials, null, log))
                 {
                     var diff = await som.Diff(target.GetMapper(itemsToSync));
-                    var sync = await som.Sync(diff, SyncOutput.CreatePullRequest, new[] {"Internal refactoring"});
+                    var sync = await som.Sync(diff, SyncOutput.CreatePullRequest, labelsToApplyOnPullRequests);
                     var createdSyncBranch = sync.FirstOrDefault();
 
                     if (string.IsNullOrEmpty(createdSyncBranch))

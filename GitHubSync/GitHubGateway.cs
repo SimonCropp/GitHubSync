@@ -399,8 +399,7 @@ class GitHubGateway : IDisposable
         var newPullRequest = new NewPullRequest("GitHubSync update", branchName, targetBranchName);
         var pullRequest = await client.Repository.PullRequest.Create(owner, repository, newPullRequest).ConfigureAwait(false);
 
-        log(string.Format("API Query - Create pull request '#{0}' in '{1}/{2}'. -> https://github.com/{1}/{2}/pull/{0}",
-            pullRequest.Number, owner, repository));
+        log(string.Format("API Query - Create pull request '#{0}' in '{1}/{2}'. -> https://github.com/{1}/{2}/pull/{0}",pullRequest.Number, owner, repository));
 
         return pullRequest.Number;
     }
@@ -416,8 +415,7 @@ class GitHubGateway : IDisposable
     {
         Debug.Assert(labels != null);
 
-        log(string.Format("API Query - Apply labels '{3}' to request '#{0}' in '{1}/{2}'.",
-            issueNumber, owner, repository, string.Join(", ", labels)));
+        log(string.Format("API Query - Apply labels '{3}' to request '#{0}' in '{1}/{2}'.", issueNumber, owner, repository, string.Join(", ", labels)));
 
         var client = ClientFor(owner, repository);
         client.Issue.Labels.AddToIssue(owner, repository, issueNumber, labels)
