@@ -11,34 +11,29 @@ namespace GitHubSync
     public class Syncer : IDisposable
     {
         GitHubGateway gateway;
-        Action<LogEntry> logCallBack;
+        Action<string> log;
 
         public Syncer(
             IEnumerable<Tuple<Credentials, string>> credentialsPerRepos,
             IWebProxy proxy = null,
-            Action<LogEntry> loggerCallback = null)
+            Action<string> log = null)
         {
-            logCallBack = loggerCallback ?? NullLogger;
+            this.log = log ?? NullLogger;
 
-            gateway = new GitHubGateway(credentialsPerRepos, proxy, logCallBack);
+            gateway = new GitHubGateway(credentialsPerRepos, proxy, log);
         }
 
         public Syncer(
             Credentials defaultCredentials,
             IWebProxy proxy = null,
-            Action<LogEntry> loggerCallback = null)
+            Action<string> log = null)
         {
-            logCallBack = loggerCallback ?? NullLogger;
+            this.log = log ?? NullLogger;
 
-            gateway = new GitHubGateway(defaultCredentials, proxy, logCallBack);
+            gateway = new GitHubGateway(defaultCredentials, proxy, log);
         }
 
-        static Action<LogEntry> NullLogger = _ => { };
-
-        void log(string message, params object[] values)
-        {
-            logCallBack(new LogEntry(message, values));
-        }
+        static Action<string> NullLogger = _ => { };
 
         public async Task<Diff> Diff(Mapper input)
         {
@@ -48,27 +43,25 @@ namespace GitHubSync
             {
                 var source = kvp.Key;
 
-                log("Diff - Analyze {0} source '{1}'.", source.Type, source.Url);
+                log($"Diff - Analyze {source.Type} source '{source.Url}'.");
 
                 var richSource = await EnrichWithShas(source, true).ConfigureAwait(false);
 
                 foreach (var destination in kvp.Value)
                 {
-                    log("Diff - Analyze {0} target '{1}'.",
-                        source.Type, destination.Url);
+                    log($"Diff - Analyze {source.Type} target '{destination.Url}'.");
 
                     var richDestination = await EnrichWithShas(destination, false).ConfigureAwait(false);
 
                     if (richSource.Sha == richDestination.Sha)
                     {
-                        log("Diff - No sync required. Matching sha ({0}) between target '{1}' and source '{2}.",
-                            richSource.Sha.Substring(0, 7), destination.Url, source.Url);
+                        log($"Diff - No sync required. Matching sha ({richSource.Sha.Substring(0, 7)}) between target '{destination.Url}' and source '{source.Url}.");
 
                         continue;
                     }
 
-                    log("Diff - {4} required. Non-matching sha ({0} vs {1}) between target '{2}' and source '{3}.",
-                        richSource.Sha.Substring(0, 7), richDestination.Sha?.Substring(0, 7) ?? "NULL", destination.Url, source.Url, richDestination.Sha == null ? "Creation" : "Updation");
+                    log(string.Format("Diff - {4} required. Non-matching sha ({0} vs {1}) between target '{2}' and source '{3}.",
+                        richSource.Sha.Substring(0, 7), richDestination.Sha?.Substring(0, 7) ?? "NULL", destination.Url, source.Url, richDestination.Sha == null ? "Creation" : "Updation"));
 
                     outMapper.Add(richSource, richDestination);
                 }
@@ -204,15 +197,13 @@ namespace GitHubSync
             switch (source.Type)
             {
                 case TreeEntryTargetType.Blob:
-                    log("Sync - Determine if Blob '{0}' requires to be created in '{1}/{2}'.",
-                        source.Sha.Substring(0, 7), destination.Owner, destination.Repository);
+                    log($"Sync - Determine if Blob '{source.Sha.Substring(0, 7)}' requires to be created in '{destination.Owner}/{destination.Repository}'.");
 
                     await SyncBlob(source.Owner, source.Repository, source.Sha, destination.Owner, destination.Repository).ConfigureAwait(false);
                     break;
 
                 case TreeEntryTargetType.Tree:
-                    log("Sync - Determine if Tree '{0}' requires to be created in '{1}/{2}'.",
-                        source.Sha.Substring(0, 7), destination.Owner, destination.Repository);
+                    log($"Sync - Determine if Tree '{source.Sha.Substring(0, 7)}' requires to be created in '{destination.Owner}/{destination.Repository}'.");
 
                     await SyncTree(source, destination.Owner, destination.Repository).ConfigureAwait(false);
                     break;

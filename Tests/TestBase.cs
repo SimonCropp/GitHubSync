@@ -1,5 +1,4 @@
-﻿using GitHubSync;
-using Xunit.Abstractions;
+﻿using Xunit.Abstractions;
 
 public abstract class TestBase
 {
@@ -9,8 +8,9 @@ public abstract class TestBase
     {
         Output = output;
     }
-    public void WriteLog(LogEntry obj)
+
+    public void WriteLog(string message)
     {
-        Output.WriteLine("{0:o}\t{1}", obj.At, obj.What);
+        Output.WriteLine(message);
     }
 }

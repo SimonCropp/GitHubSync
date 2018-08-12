@@ -12,16 +12,16 @@ public class RepoSync
     string sourceOwner;
     string sourceRepo;
     string branch;
-    Action<LogEntry> loggerCallback;
+    Action<string> log;
     private List<RepoToSync> targets = new List<RepoToSync>();
 
-    public RepoSync(Credentials credentials, string sourceOwner, string sourceRepo, string branch, Action<LogEntry> loggerCallback = null)
+    public RepoSync(Credentials credentials, string sourceOwner, string sourceRepo, string branch, Action<string> log = null)
     {
         this.credentials = credentials;
         this.sourceOwner = sourceOwner;
         this.sourceRepo = sourceRepo;
         this.branch = branch;
-        this.loggerCallback = loggerCallback;
+        this.log = log;
     }
 
     public void AddSourceItem(TreeEntryTargetType type, string path, string target = null)
@@ -49,7 +49,7 @@ public class RepoSync
     {
         foreach (var target in targets)
         {
-            using (var som = new Syncer(credentials, null, loggerCallback))
+            using (var som = new Syncer(credentials, null, log))
             {
                 var diff = await som.Diff(target.GetMapper(itemsToSync)).ConfigureAwait(false);
                 var sync = await som.Sync(diff, SyncOutput.CreatePullRequest, new[] {"Internal refactoring"}).ConfigureAwait(false);

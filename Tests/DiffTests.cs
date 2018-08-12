@@ -11,7 +11,7 @@ public class DiffTests: TestBase
     {
         return new Syncer(CredentialsHelper.Credentials, null, WriteLog);
     }
-    
+
     [Fact]
     public async Task NothingToUpdateWhenSourceBlobAndDestinationBlobHaveTheSameSha()
     {
