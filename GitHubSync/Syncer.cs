@@ -206,22 +206,17 @@ namespace GitHubSync
             return await gateway.CreateTree(newTree, tt.Current.Owner, tt.Current.Repository).ConfigureAwait(false);
         }
 
-        async Task SyncLeaf(Parts source, Parts destination)
+        Task SyncLeaf(Parts source, Parts destination)
         {
+            var shortSha = source.Sha.Substring(0, 7);
             switch (source.Type)
             {
                 case TreeEntryTargetType.Blob:
-                    log($"Sync - Determine if Blob '{source.Sha.Substring(0, 7)}' requires to be created in '{destination.Owner}/{destination.Repository}'.");
-
-                    await SyncBlob(source.Owner, source.Repository, source.Sha, destination.Owner, destination.Repository).ConfigureAwait(false);
-                    break;
-
+                    log($"Sync - Determine if Blob '{shortSha}' requires to be created in '{destination.Owner}/{destination.Repository}'.");
+                    return SyncBlob(source.Owner, source.Repository, source.Sha, destination.Owner, destination.Repository);
                 case TreeEntryTargetType.Tree:
-                    log($"Sync - Determine if Tree '{source.Sha.Substring(0, 7)}' requires to be created in '{destination.Owner}/{destination.Repository}'.");
-
-                    await SyncTree(source, destination.Owner, destination.Repository).ConfigureAwait(false);
-                    break;
-
+                    log($"Sync - Determine if Tree '{shortSha}' requires to be created in '{destination.Owner}/{destination.Repository}'.");
+                    return SyncTree(source, destination.Owner, destination.Repository);
                 default:
                     throw new NotSupportedException();
             }
