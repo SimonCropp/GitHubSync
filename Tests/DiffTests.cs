@@ -20,13 +20,11 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(blob, blob);
 
-        Diff diff;
         using (var som = BuildSUT())
         {
-            diff = await som.Diff(map);
+            var diff = await som.Diff(map);
+            Assert.Empty(diff);
         }
-
-        Assert.Empty(diff);
     }
 
     [Fact]
@@ -38,16 +36,14 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(sourceBlob, destinationBlob);
 
-        Diff diff;
         using (var som = BuildSUT())
         {
-            diff = await som.Diff(map);
+            var diff = await som.Diff(map);
+            Assert.Single(diff);
+            Assert.NotNull(diff.Single().Key.Sha);
+            Assert.Single(diff.Single().Value);
+            Assert.NotNull(diff.Single().Value.Single().Sha);
         }
-
-        Assert.Single(diff);
-        Assert.NotNull(diff.Single().Key.Sha);
-        Assert.Single(diff.Single().Value);
-        Assert.NotNull(diff.Single().Value.Single().Sha);
     }
 
     [Fact]
@@ -59,16 +55,14 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(sourceBlob, destinationBlob);
 
-        Diff diff;
         using (var som = BuildSUT())
         {
-            diff = await som.Diff(map);
+            var diff = await som.Diff(map);
+            Assert.Single(diff);
+            Assert.NotNull(diff.Single().Key.Sha);
+            Assert.Single(diff.Single().Value);
+            Assert.Null(diff.Single().Value.Single().Sha);
         }
-
-        Assert.Single(diff);
-        Assert.NotNull(diff.Single().Key.Sha);
-        Assert.Single(diff.Single().Value);
-        Assert.Null(diff.Single().Value.Single().Sha);
     }
 
     [Fact]
@@ -94,13 +88,11 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(tree, tree);
 
-        Diff diff;
         using (var som = BuildSUT())
         {
-            diff = await som.Diff(map);
+            var diff = await som.Diff(map);
+            Assert.Empty(diff);
         }
-
-        Assert.Empty(diff);
     }
 
     [Fact]
@@ -112,17 +104,15 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(sourceTree, destinationTree);
 
-        Diff diff;
         using (var som = BuildSUT())
         {
-            diff = await som.Diff(map);
+            var diff = await som.Diff(map);
+            Assert.Single(diff);
+            var pair = diff.Single();
+            Assert.NotNull(pair.Key.Sha);
+            Assert.Single(pair.Value);
+            Assert.NotNull(pair.Value.Single().Sha);
         }
-
-        Assert.Single(diff);
-        var pair = diff.Single();
-        Assert.NotNull(pair.Key.Sha);
-        Assert.Single(pair.Value);
-        Assert.NotNull(pair.Value.Single().Sha);
     }
 
     [Fact]
@@ -134,16 +124,15 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(sourceTree, destinationTree);
 
-        Diff diff;
         using (var som = BuildSUT())
         {
-            diff = await som.Diff(map);
-        }
+            var diff = await som.Diff(map);
 
-        Assert.Single(diff);
-        Assert.NotNull(diff.Single().Key.Sha);
-        Assert.Single(diff.Single().Value);
-        Assert.Null(diff.Single().Value.Single().Sha);
+            Assert.Single(diff);
+            Assert.NotNull(diff.Single().Key.Sha);
+            Assert.Single(diff.Single().Value);
+            Assert.Null(diff.Single().Value.Single().Sha);
+        }
     }
 
     [Fact]
@@ -170,16 +159,14 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(sourceBlob, destinationBlob);
 
-        Diff diff;
         using (var som = BuildSUT())
         {
-            diff = await som.Diff(map);
+            var diff = await som.Diff(map);
+            Assert.Single(diff);
+            Assert.NotNull(diff.Single().Key.Sha);
+            Assert.Single(diff.Single().Value);
+            Assert.Null(diff.Single().Value.Single().Sha);
         }
-
-        Assert.Single(diff);
-        Assert.NotNull(diff.Single().Key.Sha);
-        Assert.Single(diff.Single().Value);
-        Assert.Null(diff.Single().Value.Single().Sha);
     }
 
     public DiffTests(ITestOutputHelper output) : base(output)
