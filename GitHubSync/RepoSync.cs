@@ -32,7 +32,7 @@ namespace GitHubSync
             itemsToSync.Add(
                 new SyncItem
                 {
-                    Parts = new Parts(sourceOwner + "/" + sourceRepository, type, branch, path),
+                    Parts = new Parts($"{sourceOwner}/{sourceRepository}", type, branch, path),
                     Target = target
                 });
         }
@@ -60,11 +60,11 @@ namespace GitHubSync
 
                     if (string.IsNullOrEmpty(createdSyncBranch))
                     {
-                        Console.Out.WriteLine("Repo {0} is in sync", target);
+                        log($"Repo {target} is in sync");
                     }
                     else
                     {
-                        Console.Out.WriteLine("Pull created for {0}, click here to review and pull: {1}", target, createdSyncBranch);
+                        log($"Pull created for {target}, click here to review and pull: {createdSyncBranch}");
                     }
                 }
             }
