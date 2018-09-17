@@ -72,7 +72,7 @@ public class PartsTests: TestBase
         Assert.Equal("https://github.com/SimonCropp/Fake/tree/develop", parts.Url);
 
 // ReSharper disable once UnusedVariable
-        Assert.Throws<InvalidOperationException>(() => { var parent = parts.ParentTreePart; });
+        Assert.Throws<Exception>(() => { var parent = parts.ParentTreePart; });
     }
 
     public PartsTests(ITestOutputHelper output) : base(output)

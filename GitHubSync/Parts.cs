@@ -44,7 +44,7 @@ namespace GitHubSync
         {
             if (Path == null)
             {
-                throw new InvalidOperationException("Cannot escape out of a Tree.");
+                throw new Exception("Cannot escape out of a Tree.");
             }
 
             var indexOf = Path.LastIndexOf('/');
@@ -58,7 +58,7 @@ namespace GitHubSync
         {
             if (Path == null)
             {
-                throw new InvalidOperationException("Cannot escape out of a Tree.");
+                throw new Exception("Cannot escape out of a Tree.");
             }
 
             return new Parts(Owner, Repository, TreeEntryTargetType.Tree, Branch, null, null);

@@ -76,7 +76,7 @@ namespace GitHubSync
 
             if (labels.Any() && expectedOutput != SyncOutput.CreatePullRequest)
             {
-                throw new InvalidOperationException($"Labels can only be applied in '{SyncOutput.CreatePullRequest}' mode.");
+                throw new Exception($"Labels can only be applied in '{SyncOutput.CreatePullRequest}' mode.");
             }
 
             var t = diff.Transpose();
