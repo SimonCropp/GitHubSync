@@ -399,7 +399,7 @@ class GitHubGateway : IDisposable
         var newPullRequest = new NewPullRequest("GitHubSync update", branchName, targetBranchName);
         var pullRequest = await client.Repository.PullRequest.Create(owner, repository, newPullRequest).ConfigureAwait(false);
 
-        log(string.Format("API Query - Create pull request '#{0}' in '{1}/{2}'. -> https://github.com/{1}/{2}/pull/{0}",pullRequest.Number, owner, repository));
+        log($"API Query - Create pull request '#{pullRequest.Number}' in '{owner}/{repository}'. -> https://github.com/{owner}/{repository}/pull/{pullRequest.Number}");
 
         return pullRequest.Number;
     }
