@@ -85,48 +85,55 @@ namespace GitHubSync
 
             foreach (var updatesPerOwnerRepositoryBranch in t.Values)
             {
-            var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
-                var root = updatesPerOwnerRepositoryBranch.First().Item1.RootTreePart;
-                var tt = new TargetTree(root);
-
-                foreach (var change in updatesPerOwnerRepositoryBranch)
-                {
-                    var source = change.Item2;
-                    var destination = change.Item1;
-
-                    tt.Add(destination, source);
-                }
-
-                var btt = await BuildTargetTree(tt).ConfigureAwait(false);
-
-                var parentCommit = await gateway.RootCommitFrom(root).ConfigureAwait(false);
-
-                var c = await gateway.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha).ConfigureAwait(false);
-
-                switch (expectedOutput)
-                {
-                    case SyncOutput.CreateCommit:
-                        results.Add($"https://github.com/{root.Owner}/{root.Repository}/commit/{c}");
-                        break;
-
-                    case SyncOutput.CreateBranch:
-                        branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).ConfigureAwait(false);
-                        results.Add($"https://github.com/{root.Owner}/{root.Repository}/compare/{UrlSanitize(root.Branch)}...{UrlSanitize(branchName)}");
-                        break;
-
-                    case SyncOutput.CreatePullRequest:
-                        branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).ConfigureAwait(false);
-                        var prNumber = await gateway.CreatePullRequest(root.Owner, root.Repository, branchName, root.Branch).ConfigureAwait(false);
-                        gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
-                        results.Add($"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}");
-                        break;
-
-                    default:
-                        throw new NotSupportedException();
-                }
+                results.Add(await ProcessUpdates(expectedOutput, updatesPerOwnerRepositoryBranch, labels).ConfigureAwait(false));
             }
 
             return results;
+        }
+
+        async Task<string> ProcessUpdates(SyncOutput expectedOutput, IList<Tuple<Parts, Parts>> updatesPerOwnerRepositoryBranch, string[] labels)
+        {
+            var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
+            var root = updatesPerOwnerRepositoryBranch.First().Item1.RootTreePart;
+            var tt = new TargetTree(root);
+
+            foreach (var change in updatesPerOwnerRepositoryBranch)
+            {
+                var source = change.Item2;
+                var destination = change.Item1;
+
+                tt.Add(destination, source);
+            }
+
+            var btt = await BuildTargetTree(tt).ConfigureAwait(false);
+
+            var parentCommit = await gateway.RootCommitFrom(root).ConfigureAwait(false);
+
+            var c = await gateway.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha).ConfigureAwait(false);
+
+            if (expectedOutput == SyncOutput.CreateCommit)
+            {
+                return $"https://github.com/{root.Owner}/{root.Repository}/commit/{c}";
+            }
+
+            if (expectedOutput == SyncOutput.CreateBranch)
+            {
+                branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).ConfigureAwait(false);
+                return $"https://github.com/{root.Owner}/{root.Repository}/compare/{UrlSanitize(root.Branch)}...{UrlSanitize(branchName)}";
+            }
+
+            if (expectedOutput == SyncOutput.CreatePullRequest || expectedOutput == SyncOutput.MergePullRequest)
+            {
+
+                branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).ConfigureAwait(false);
+                var merge = expectedOutput == SyncOutput.MergePullRequest;
+                var prNumber = await gateway.CreatePullRequest(root.Owner, root.Repository, branchName, root.Branch, merge).ConfigureAwait(false);
+                gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
+                return $"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}";
+            }
+
+            throw new NotSupportedException();
+
         }
 
         string UrlSanitize(string branch)

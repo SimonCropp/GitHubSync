@@ -5,5 +5,6 @@ namespace GitHubSync
         CreateCommit,
         CreateBranch,
         CreatePullRequest,
+        MergePullRequest
     }
 }

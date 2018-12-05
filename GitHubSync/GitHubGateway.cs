@@ -393,14 +393,23 @@ class GitHubGateway : IDisposable
         return reference.Ref.Substring("refs/heads/".Length);
     }
 
-    public async Task<int> CreatePullRequest(string owner, string repository, string branchName, string targetBranchName)
+    public async Task<int> CreatePullRequest(string owner, string repository, string branchName, string targetBranchName, bool merge)
     {
         var client = ClientFor(owner, repository);
         var newPullRequest = new NewPullRequest("GitHubSync update", branchName, targetBranchName);
         var pullRequest = await client.Repository.PullRequest.Create(owner, repository, newPullRequest).ConfigureAwait(false);
+        var prUrl = $"https://github.com/{owner}/{repository}/pull/{pullRequest.Number}";
+        log($"API Query - Create pull request '#{pullRequest.Number}' in '{owner}/{repository}'. -> {prUrl}");
+        if (merge)
+        {
+            if (!pullRequest.Mergeable.GetValueOrDefault(true))
+            {
+                throw new Exception($"PR not mergable: {prUrl}");
+            }
 
-        log($"API Query - Create pull request '#{pullRequest.Number}' in '{owner}/{repository}'. -> https://github.com/{owner}/{repository}/pull/{pullRequest.Number}");
-
+            log($"API Query - Merge pull request '#{pullRequest.Number}' in '{owner}/{repository}'. -> {prUrl}");
+            await client.Repository.PullRequest.Merge(owner, repository, pullRequest.Number, new MergePullRequest()).ConfigureAwait(false);
+        }
         return pullRequest.Number;
     }
 

@@ -17,6 +17,17 @@ public class RepoSyncTests : TestBase
     }
 
     [Fact]
+    public Task SyncPrMerge()
+    {
+        var credentials = CredentialsHelper.Credentials;
+        var repoSync = new RepoSync(credentials, "SimonCropp", "GitHubSync.TestRepository", "source", WriteLog);
+        repoSync.AddSourceItem(TreeEntryTargetType.Blob, "sourceFile.txt");
+        repoSync.AddTarget("SimonCropp", "GitHubSync.TestRepository", "targetForMerge");
+
+        return repoSync.Sync(SyncOutput.MergePullRequest);
+    }
+
+    [Fact]
     public Task SyncCommit()
     {
         var repoSync = new RepoSync(CredentialsHelper.Credentials, "SimonCropp", "GitHubSync.TestRepository", "source", WriteLog);
