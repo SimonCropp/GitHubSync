@@ -80,12 +80,12 @@ namespace GitHubSync
             }
 
             var t = diff.Transpose();
-            var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
 
             var results = new List<string>();
 
             foreach (var updatesPerOwnerRepositoryBranch in t.Values)
             {
+            var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
                 var root = updatesPerOwnerRepositoryBranch.First().Item1.RootTreePart;
                 var tt = new TargetTree(root);
 

@@ -48,14 +48,14 @@ namespace GitHubSync
             });
         }
 
-        public async Task Sync()
+        public async Task Sync(SyncOutput expectedOutput = SyncOutput.CreatePullRequest)
         {
             foreach (var target in targets)
             {
                 using (var som = new Syncer(credentials, null, log))
                 {
                     var diff = await som.Diff(target.GetMapper(itemsToSync));
-                    var sync = await som.Sync(diff, SyncOutput.CreatePullRequest, labelsToApplyOnPullRequests);
+                    var sync = await som.Sync(diff, expectedOutput, labelsToApplyOnPullRequests);
                     var createdSyncBranch = sync.FirstOrDefault();
 
                     if (string.IsNullOrEmpty(createdSyncBranch))
