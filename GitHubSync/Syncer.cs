@@ -14,23 +14,13 @@ namespace GitHubSync
         Action<string> log;
 
         public Syncer(
-            IEnumerable<Tuple<Credentials, string>> credentialsPerRepos,
+            Credentials credentials,
             IWebProxy proxy = null,
             Action<string> log = null)
         {
             this.log = log ?? nullLogger;
 
-            gateway = new GitHubGateway(credentialsPerRepos, proxy, log);
-        }
-
-        public Syncer(
-            Credentials defaultCredentials,
-            IWebProxy proxy = null,
-            Action<string> log = null)
-        {
-            this.log = log ?? nullLogger;
-
-            gateway = new GitHubGateway(defaultCredentials, proxy, log);
+            gateway = new GitHubGateway(credentials, proxy, log);
         }
 
         static Action<string> nullLogger = _ => { };

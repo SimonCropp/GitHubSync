@@ -18,13 +18,12 @@ class GitHubGateway : IDisposable
     Dictionary<string, Tuple<Parts, TreeResponse>> treeCachePerPath = new Dictionary<string, Tuple<Parts, TreeResponse>>();
     Dictionary<string, IList<string>> knownBlobsPerRepository = new Dictionary<string, IList<string>>();
     Dictionary<string, IList<string>> knownTreesPerRepository = new Dictionary<string, IList<string>>();
-    Dictionary<string, GitHubClient> clientsPerOwnerRepository = new Dictionary<string, GitHubClient>();
+    GitHubClient client;
     string blobStoragePath;
-    const string DEFAULT_CREDENTIALS_KEY = "Default";
 
-    public GitHubGateway(IEnumerable<Tuple<Credentials, string>> credentialsPerRepos, IWebProxy proxy, Action<string> log)
+    public GitHubGateway(Credentials credentials, IWebProxy proxy, Action<string> log)
     {
-        SetupClientCache(credentialsPerRepos, Credentials.Anonymous, proxy);
+        client = ClientFrom(credentials, proxy);
 
         this.log = log;
 
@@ -32,60 +31,16 @@ class GitHubGateway : IDisposable
         Directory.CreateDirectory(blobStoragePath);
 
         log($"Ctor - Create temp blob storage '{blobStoragePath}'.");
-    }
-
-    public GitHubGateway(Credentials defaultCredentials, IWebProxy proxy, Action<string> log)
-    {
-        SetupClientCache(Enumerable.Empty<Tuple<Credentials, string>>(), defaultCredentials, proxy);
-
-        this.log = log;
-
-        blobStoragePath = Path.Combine(Path.GetTempPath(), $"GitHubSync-{Guid.NewGuid()}");
-        Directory.CreateDirectory(blobStoragePath);
-
-        log($"Ctor - Create temp blob storage '{blobStoragePath}'.");
-    }
-
-    void SetupClientCache(IEnumerable<Tuple<Credentials, string>> credentialsPerRepos, Credentials defaultCredentials, IWebProxy proxy)
-    {
-        foreach (var credentialsPerRepo in credentialsPerRepos)
-        {
-            SetupClientCache(credentialsPerRepo, proxy);
-        }
-
-        var client = ClientFrom(defaultCredentials, proxy);
-
-        clientsPerOwnerRepository.Add(DEFAULT_CREDENTIALS_KEY, client);
-    }
-
-    void SetupClientCache(Tuple<Credentials, string> credentialsPerRepo, IWebProxy proxy)
-    {
-        var client = ClientFrom(credentialsPerRepo.Item1, proxy);
-
-        clientsPerOwnerRepository.Add(credentialsPerRepo.Item2, client);
     }
 
     GitHubClient ClientFrom(Credentials credentials, IWebProxy proxy)
     {
         var connection = new Connection(new ProductHeaderValue("GitHubSync"),
             new HttpClientAdapter(() => HttpMessageHandlerFactory.CreateDefault(proxy)));
-        var client = new GitHubClient(connection)
+        return new GitHubClient(connection)
         {
             Credentials = credentials
         };
-        return client;
-    }
-
-    GitHubClient ClientFor(string owner, string repository)
-    {
-        var or = string.Join("/", owner, repository);
-
-        if (!clientsPerOwnerRepository.TryGetValue(or, out var client))
-        {
-            client = clientsPerOwnerRepository[DEFAULT_CREDENTIALS_KEY];
-        }
-
-        return client;
     }
 
     public async Task<Commit> RootCommitFrom(Parts source)
@@ -98,7 +53,6 @@ class GitHubGateway : IDisposable
 
         log($"API Query - Retrieve reference '{"heads/" + source.Branch}' details from '{source.Owner}/{source.Repository}'.");
 
-        var client = ClientFor(source.Owner, source.Repository);
         var refBranch = await client.Git.Reference.Get(source.Owner, source.Repository, "heads/" + source.Branch).ConfigureAwait(false);
 
         log($"API Query - Retrieve commit '{refBranch.Object.Sha.Substring(0, 7)}' details from '{source.Owner}/{source.Repository}'.");
@@ -178,7 +132,6 @@ class GitHubGateway : IDisposable
         log(string.Format("API Query - Retrieve tree '{0}' ({3}) details from '{1}/{2}'.",
             sha.Substring(0, 7), source.Owner, source.Repository, source.Url));
 
-        var client = ClientFor(source.Owner, source.Repository);
         var tree = await client.Git.Tree.Get(source.Owner, source.Repository, sha).ConfigureAwait(false);
         var parts = new Parts(source.Owner, source.Repository, TreeEntryTargetType.Tree, source.Branch, source.Path, tree.Sha);
 
@@ -308,7 +261,6 @@ class GitHubGateway : IDisposable
     {
         var newCommit = new NewCommit("GitHubSync update", treeSha, new[] {parentCommitSha});
 
-        var client = ClientFor(destinationOwner, destinationRepository);
         var createdCommit = await client.Git.Commit.Create(destinationOwner, destinationRepository, newCommit).ConfigureAwait(false);
 
         log(string.Format("API Query - Create commit '{0}' in '{1}/{2}'. -> https://github.com/{1}/{2}/commit/{3}",
@@ -319,7 +271,6 @@ class GitHubGateway : IDisposable
 
     public async Task<string> CreateTree(NewTree newTree, string destinationOwner, string destinationRepository)
     {
-        var client = ClientFor(destinationOwner, destinationRepository);
         var createdTree = await client.Git.Tree.Create(destinationOwner, destinationRepository, newTree).ConfigureAwait(false);
 
         log($"API Query - Create tree '{createdTree.Sha.Substring(0, 7)}' in '{destinationOwner}/{destinationRepository}'.");
@@ -344,7 +295,6 @@ class GitHubGateway : IDisposable
 
         log($"API Query - Create blob '{sha.Substring(0, 7)}' in '{owner}/{repository}'.");
 
-        var client = ClientFor(owner, repository);
         // ReSharper disable once RedundantAssignment
         var createdBlob = await client.Git.Blob.Create(owner, repository, newBlob).ConfigureAwait(false);
         Debug.Assert(sha == createdBlob.Sha);
@@ -363,7 +313,6 @@ class GitHubGateway : IDisposable
 
         log($"API Query - Retrieve blob '{sha.Substring(0, 7)}' details from '{owner}/{repository}'.");
 
-        var client = ClientFor(owner, repository);
         var blob = await client.Git.Blob.Get(owner, repository, sha).ConfigureAwait(false);
 
         switch (blob.Encoding.Value)
@@ -388,14 +337,12 @@ class GitHubGateway : IDisposable
 
         log($"API Query - Create reference '{newRef.Ref}' in '{owner}/{repository}'.");
 
-        var client = ClientFor(owner, repository);
         var reference = await client.Git.Reference.Create(owner, repository, newRef).ConfigureAwait(false);
         return reference.Ref.Substring("refs/heads/".Length);
     }
 
     public async Task<int> CreatePullRequest(string owner, string repository, string branchName, string targetBranchName, bool merge)
     {
-        var client = ClientFor(owner, repository);
         var newPullRequest = new NewPullRequest("GitHubSync update", branchName, targetBranchName);
         var pullRequest = await client.Repository.PullRequest.Create(owner, repository, newPullRequest).ConfigureAwait(false);
         var prUrl = $"https://github.com/{owner}/{repository}/pull/{pullRequest.Number}";
@@ -426,7 +373,6 @@ class GitHubGateway : IDisposable
 
         log(string.Format("API Query - Apply labels '{3}' to request '#{0}' in '{1}/{2}'.", issueNumber, owner, repository, string.Join(", ", labels)));
 
-        var client = ClientFor(owner, repository);
         client.Issue.Labels.AddToIssue(owner, repository, issueNumber, labels)
             .Wait();
     }
