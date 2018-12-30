@@ -3,11 +3,10 @@
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>latest</LangVersion>
-    <NoWarn>CS1591;NU5104;NU5125</NoWarn>
+    <NoWarn>CS1591;NU5104</NoWarn>
     <Version>0.3.0</Version>
     <Description>A tool to help synchronizing specific files and folders across GitHub hosted repositories.</Description>
-    <PackageLicenseUrl>https://opensource.org/licenses/MIT</PackageLicenseUrl>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright $([System.DateTime]::UtcNow.ToString(yyyy)). All rights reserved</Copyright>
     <PackageTags>GitHub</PackageTags>
     <PackageIconUrl>https://raw.githubusercontent.com/SimonCropp/GitHubSync/master/icon.png</PackageIconUrl>
