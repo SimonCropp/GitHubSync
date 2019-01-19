@@ -125,6 +125,7 @@ class Syncer : IDisposable
         }
 
         throw new NotSupportedException();
+
     }
 
     string UrlSanitize(string branch)
