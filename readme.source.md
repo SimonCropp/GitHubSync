@@ -1,7 +1,4 @@
-GitHubSync
-==========
-
-![Icon](https://raw.github.com/SimonCropp/GitHubSync/master/src/icon.png)
+# <img src="https://raw.github.com/SimonCropp/CaptureSnippet/master/src/icon.png" height="40px"> GitHubSync
 
 A tool to help synchronizing specific files and folders across repositories
 

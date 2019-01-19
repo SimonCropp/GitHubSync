@@ -11,6 +11,7 @@ namespace GitHubSync
 
         public Mapper GetMapper(List<SyncItem> syncItems)
         {
+            Guard.AgainstNull(syncItems, nameof(syncItems));
             var mapper = new Mapper();
 
             foreach (var syncItem in syncItems)

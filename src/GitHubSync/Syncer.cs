@@ -18,6 +18,7 @@ namespace GitHubSync
             IWebProxy proxy = null,
             Action<string> log = null)
         {
+            Guard.AgainstNull(credentials, nameof(credentials));
             this.log = log ?? nullLogger;
 
             gateway = new GitHubGateway(credentials, proxy, log);
@@ -27,6 +28,7 @@ namespace GitHubSync
 
         public async Task<Diff> Diff(Mapper input)
         {
+            Guard.AgainstNull(input, nameof(input));
             var outMapper = new Diff();
 
             foreach (var kvp in input)
@@ -62,6 +64,8 @@ namespace GitHubSync
 
         public async Task<IEnumerable<string>> Sync(Diff diff, SyncOutput expectedOutput, IEnumerable<string> labelsToApplyOnPullRequests = null)
         {
+            Guard.AgainstNull(diff, nameof(diff));
+            Guard.AgainstNull(expectedOutput, nameof(expectedOutput));
             var labels = labelsToApplyOnPullRequests?.ToArray() ?? new string[] { };
 
             if (labels.Any() && expectedOutput != SyncOutput.CreatePullRequest)

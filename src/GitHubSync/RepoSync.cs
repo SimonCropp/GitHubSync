@@ -19,6 +19,10 @@ namespace GitHubSync
 
         public RepoSync(Credentials credentials, string sourceOwner, string sourceRepository, string branch, Action<string> log = null, List<string> labelsToApplyOnPullRequests = null)
         {
+            Guard.AgainstNull(credentials, nameof(credentials));
+            Guard.AgainstNullAndEmpty(sourceOwner, nameof(sourceOwner));
+            Guard.AgainstNullAndEmpty(sourceRepository, nameof(sourceRepository));
+            Guard.AgainstNullAndEmpty(branch, nameof(branch));
             this.credentials = credentials;
             this.sourceOwner = sourceOwner;
             this.sourceRepository = sourceRepository;
@@ -34,6 +38,8 @@ namespace GitHubSync
 
         public void AddSourceItem(TreeEntryTargetType type, string path, string target = null)
         {
+            Guard.AgainstNullAndEmpty(path, nameof(path));
+            Guard.AgainstEmpty(target, nameof(target));
             itemsToSync.Add(
                 new SyncItem
                 {
@@ -49,6 +55,9 @@ namespace GitHubSync
 
         public void AddTarget(string owner, string repository, string branch = null, Dictionary<string, string> replacementTokens = null)
         {
+            Guard.AgainstNullAndEmpty(owner, nameof(owner));
+            Guard.AgainstNullAndEmpty(repository, nameof(repository));
+            Guard.AgainstEmpty(branch, nameof(branch));
             targets.Add(new RepoToSync
             {
                 Owner = owner,
