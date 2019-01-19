@@ -3,15 +3,15 @@
   <PropertyGroup>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <LangVersion>latest</LangVersion>
-    <NoWarn>CS1591;NU5104</NoWarn>
-    <Version>0.3.0</Version>
+    <NoWarn>CS1591</NoWarn>
+    <Version>0.4.0</Version>
     <Description>A tool to help synchronizing specific files and folders across GitHub hosted repositories.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright $([System.DateTime]::UtcNow.ToString(yyyy)). All rights reserved</Copyright>
     <PackageTags>GitHub</PackageTags>
-    <PackageIconUrl>https://raw.githubusercontent.com/SimonCropp/GitHubSync/master/icon.png</PackageIconUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/SimonCropp/GitHubSync/master/src/icon.png</PackageIconUrl>
     <PackageProjectUrl>http://github.com/SimonCropp/GitHubSync</PackageProjectUrl>
-    <PackageOutputPath>..\nugets</PackageOutputPath>
+    <PackageOutputPath>..\..\nugets</PackageOutputPath>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <DebugType>embedded</DebugType>
     <DebugSymbols>true</DebugSymbols>

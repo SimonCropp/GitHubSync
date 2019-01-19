@@ -12,7 +12,7 @@ namespace GitHubSync
         Credentials credentials;
         string sourceOwner;
         string sourceRepository;
-        string branch;
+        string sourceBranch;
         Action<string> log;
         List<string> labelsToApplyOnPullRequests;
         List<RepoToSync> targets = new List<RepoToSync>();
@@ -22,9 +22,14 @@ namespace GitHubSync
             this.credentials = credentials;
             this.sourceOwner = sourceOwner;
             this.sourceRepository = sourceRepository;
-            this.branch = branch;
+            sourceBranch = branch;
             this.log = log;
             this.labelsToApplyOnPullRequests = labelsToApplyOnPullRequests;
+        }
+
+        public void AddBlob(string path, string target = null)
+        {
+            AddSourceItem(TreeEntryTargetType.Blob, path, target);
         }
 
         public void AddSourceItem(TreeEntryTargetType type, string path, string target = null)
@@ -32,9 +37,14 @@ namespace GitHubSync
             itemsToSync.Add(
                 new SyncItem
                 {
-                    Parts = new Parts($"{sourceOwner}/{sourceRepository}", type, branch, path),
+                    Parts = new Parts($"{sourceOwner}/{sourceRepository}", type, sourceBranch, path),
                     Target = target
                 });
+        }
+
+        public void AddTarget(string repository, string branch = null, Dictionary<string, string> replacementTokens = null)
+        {
+            AddTarget(sourceOwner, repository, branch , replacementTokens);
         }
 
         public void AddTarget(string owner, string repository, string branch = null, Dictionary<string, string> replacementTokens = null)
@@ -48,14 +58,14 @@ namespace GitHubSync
             });
         }
 
-        public async Task Sync(SyncOutput expectedOutput = SyncOutput.CreatePullRequest)
+        public async Task Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)
         {
             foreach (var target in targets)
             {
                 using (var som = new Syncer(credentials, null, log))
                 {
                     var diff = await som.Diff(target.GetMapper(itemsToSync));
-                    var sync = await som.Sync(diff, expectedOutput, labelsToApplyOnPullRequests);
+                    var sync = await som.Sync(diff, syncOutput, labelsToApplyOnPullRequests);
                     var createdSyncBranch = sync.FirstOrDefault();
 
                     if (string.IsNullOrEmpty(createdSyncBranch))
