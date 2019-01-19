@@ -50,7 +50,7 @@ namespace GitHubSync
 
         public void AddTarget(string repository, string branch = null, Dictionary<string, string> replacementTokens = null)
         {
-            AddTarget(sourceOwner, repository, branch , replacementTokens);
+            AddTarget(sourceOwner, repository, branch, replacementTokens);
         }
 
         public void AddTarget(string owner, string repository, string branch = null, Dictionary<string, string> replacementTokens = null)
@@ -69,23 +69,26 @@ namespace GitHubSync
 
         public async Task Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)
         {
-            foreach (var target in targets)
+            using (var som = new Syncer(credentials, null, log))
             {
-                using (var som = new Syncer(credentials, null, log))
-                {
-                    var diff = await som.Diff(target.GetMapper(itemsToSync));
-                    var sync = await som.Sync(diff, syncOutput, labelsToApplyOnPullRequests);
-                    var createdSyncBranch = sync.FirstOrDefault();
+                await Task.WhenAll(targets.Select(x => SyncTarget(syncOutput, som, x)))
+                    .ConfigureAwait(false);
+            }
+        }
 
-                    if (string.IsNullOrEmpty(createdSyncBranch))
-                    {
-                        log($"Repo {target} is in sync");
-                    }
-                    else
-                    {
-                        log($"Pull created for {target}, click here to review and pull: {createdSyncBranch}");
-                    }
-                }
+        async Task SyncTarget(SyncOutput syncOutput, Syncer som, RepoToSync target)
+        {
+            var diff = await som.Diff(target.GetMapper(itemsToSync)).ConfigureAwait(false);
+            var sync = await som.Sync(diff, syncOutput, labelsToApplyOnPullRequests).ConfigureAwait(false);
+            var createdSyncBranch = sync.FirstOrDefault();
+
+            if (string.IsNullOrEmpty(createdSyncBranch))
+            {
+                log($"Repo {target} is in sync");
+            }
+            else
+            {
+                log($"Pull created for {target}, click here to review and pull: {createdSyncBranch}");
             }
         }
     }
