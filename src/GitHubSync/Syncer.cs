@@ -4,347 +4,344 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using GitHubSync;
 using Octokit;
 
-namespace GitHubSync
+class Syncer : IDisposable
 {
-    public class Syncer : IDisposable
+    GitHubGateway gateway;
+    Action<string> log;
+
+    public Syncer(
+        Credentials credentials,
+        IWebProxy proxy = null,
+        Action<string> log = null)
     {
-        GitHubGateway gateway;
-        Action<string> log;
+        this.log = log ?? nullLogger;
 
-        public Syncer(
-            Credentials credentials,
-            IWebProxy proxy = null,
-            Action<string> log = null)
+        gateway = new GitHubGateway(credentials, proxy, log);
+    }
+
+    static Action<string> nullLogger = _ => { };
+
+    internal async Task<Diff> Diff(Mapper input)
+    {
+        Guard.AgainstNull(input, nameof(input));
+        var outMapper = new Diff();
+
+        foreach (var kvp in input)
         {
-            Guard.AgainstNull(credentials, nameof(credentials));
-            this.log = log ?? nullLogger;
+            var source = kvp.Key;
 
-            gateway = new GitHubGateway(credentials, proxy, log);
-        }
+            log($"Diff - Analyze {source.Type} source '{source.Url}'.");
 
-        static Action<string> nullLogger = _ => { };
+            var richSource = await EnrichWithShas(source, true).ConfigureAwait(false);
 
-        public async Task<Diff> Diff(Mapper input)
-        {
-            Guard.AgainstNull(input, nameof(input));
-            var outMapper = new Diff();
-
-            foreach (var kvp in input)
+            foreach (var destination in kvp.Value)
             {
-                var source = kvp.Key;
+                log($"Diff - Analyze {source.Type} target '{destination.Url}'.");
 
-                log($"Diff - Analyze {source.Type} source '{source.Url}'.");
+                var richDestination = await EnrichWithShas(destination, false).ConfigureAwait(false);
 
-                var richSource = await EnrichWithShas(source, true).ConfigureAwait(false);
-
-                foreach (var destination in kvp.Value)
+                if (richSource.Sha == richDestination.Sha)
                 {
-                    log($"Diff - Analyze {source.Type} target '{destination.Url}'.");
+                    log($"Diff - No sync required. Matching sha ({richSource.Sha.Substring(0, 7)}) between target '{destination.Url}' and source '{source.Url}.");
 
-                    var richDestination = await EnrichWithShas(destination, false).ConfigureAwait(false);
-
-                    if (richSource.Sha == richDestination.Sha)
-                    {
-                        log($"Diff - No sync required. Matching sha ({richSource.Sha.Substring(0, 7)}) between target '{destination.Url}' and source '{source.Url}.");
-
-                        continue;
-                    }
-
-                    log(string.Format("Diff - {4} required. Non-matching sha ({0} vs {1}) between target '{2}' and source '{3}.",
-                        richSource.Sha.Substring(0, 7), richDestination.Sha?.Substring(0, 7) ?? "NULL", destination.Url, source.Url, richDestination.Sha == null ? "Creation" : "Updation"));
-
-                    outMapper.Add(richSource, richDestination);
+                    continue;
                 }
-            }
 
-            return outMapper;
+                log(string.Format("Diff - {4} required. Non-matching sha ({0} vs {1}) between target '{2}' and source '{3}.",
+                    richSource.Sha.Substring(0, 7), richDestination.Sha?.Substring(0, 7) ?? "NULL", destination.Url, source.Url, richDestination.Sha == null ? "Creation" : "Updation"));
+
+                outMapper.Add(richSource, richDestination);
+            }
         }
 
-        public async Task<IEnumerable<string>> Sync(Diff diff, SyncOutput expectedOutput, IEnumerable<string> labelsToApplyOnPullRequests = null)
+        return outMapper;
+    }
+
+    internal async Task<IEnumerable<string>> Sync(Diff diff, SyncOutput expectedOutput, IEnumerable<string> labelsToApplyOnPullRequests = null)
+    {
+        Guard.AgainstNull(diff, nameof(diff));
+        Guard.AgainstNull(expectedOutput, nameof(expectedOutput));
+        var labels = labelsToApplyOnPullRequests?.ToArray() ?? new string[] { };
+
+        if (labels.Any() && expectedOutput != SyncOutput.CreatePullRequest)
         {
-            Guard.AgainstNull(diff, nameof(diff));
-            Guard.AgainstNull(expectedOutput, nameof(expectedOutput));
-            var labels = labelsToApplyOnPullRequests?.ToArray() ?? new string[] { };
-
-            if (labels.Any() && expectedOutput != SyncOutput.CreatePullRequest)
-            {
-                throw new Exception($"Labels can only be applied in '{SyncOutput.CreatePullRequest}' mode.");
-            }
-
-            var t = diff.Transpose();
-
-            var results = new List<string>();
-
-            foreach (var updatesPerOwnerRepositoryBranch in t.Values)
-            {
-                results.Add(await ProcessUpdates(expectedOutput, updatesPerOwnerRepositoryBranch, labels).ConfigureAwait(false));
-            }
-
-            return results;
+            throw new Exception($"Labels can only be applied in '{SyncOutput.CreatePullRequest}' mode.");
         }
 
-        async Task<string> ProcessUpdates(SyncOutput expectedOutput, IList<Tuple<Parts, Parts>> updatesPerOwnerRepositoryBranch, string[] labels)
+        var t = diff.Transpose();
+
+        var results = new List<string>();
+
+        foreach (var updatesPerOwnerRepositoryBranch in t.Values)
         {
-            var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
-            var root = updatesPerOwnerRepositoryBranch.First().Item1.RootTreePart;
-            var tt = new TargetTree(root);
-
-            foreach (var change in updatesPerOwnerRepositoryBranch)
-            {
-                var source = change.Item2;
-                var destination = change.Item1;
-
-                tt.Add(destination, source);
-            }
-
-            var btt = await BuildTargetTree(tt).ConfigureAwait(false);
-
-            var parentCommit = await gateway.RootCommitFrom(root).ConfigureAwait(false);
-
-            var c = await gateway.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha).ConfigureAwait(false);
-
-            if (expectedOutput == SyncOutput.CreateCommit)
-            {
-                return $"https://github.com/{root.Owner}/{root.Repository}/commit/{c}";
-            }
-
-            if (expectedOutput == SyncOutput.CreateBranch)
-            {
-                branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).ConfigureAwait(false);
-                return $"https://github.com/{root.Owner}/{root.Repository}/compare/{UrlSanitize(root.Branch)}...{UrlSanitize(branchName)}";
-            }
-
-            if (expectedOutput == SyncOutput.CreatePullRequest || expectedOutput == SyncOutput.MergePullRequest)
-            {
-
-                branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).ConfigureAwait(false);
-                var merge = expectedOutput == SyncOutput.MergePullRequest;
-                var prNumber = await gateway.CreatePullRequest(root.Owner, root.Repository, branchName, root.Branch, merge).ConfigureAwait(false);
-                gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
-                return $"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}";
-            }
-
-            throw new NotSupportedException();
-
+            results.Add(await ProcessUpdates(expectedOutput, updatesPerOwnerRepositoryBranch, labels).ConfigureAwait(false));
         }
 
-        string UrlSanitize(string branch)
+        return results;
+    }
+
+    async Task<string> ProcessUpdates(SyncOutput expectedOutput, IList<Tuple<Parts, Parts>> updatesPerOwnerRepositoryBranch, string[] labels)
+    {
+        var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
+        var root = updatesPerOwnerRepositoryBranch.First().Item1.RootTreePart;
+        var tt = new TargetTree(root);
+
+        foreach (var change in updatesPerOwnerRepositoryBranch)
         {
-            return branch.Replace("/", ";");
+            var source = change.Item2;
+            var destination = change.Item1;
+
+            tt.Add(destination, source);
         }
 
-        async Task<string> BuildTargetTree(TargetTree tt)
+        var btt = await BuildTargetTree(tt).ConfigureAwait(false);
+
+        var parentCommit = await gateway.RootCommitFrom(root).ConfigureAwait(false);
+
+        var c = await gateway.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha).ConfigureAwait(false);
+
+        if (expectedOutput == SyncOutput.CreateCommit)
         {
-            var treeFrom = await gateway.TreeFrom(tt.Current, false).ConfigureAwait(false);
-
-            NewTree newTree;
-            if (treeFrom == null)
-            {
-                newTree = new NewTree();
-            }
-            else
-            {
-                var destinationParentTree = treeFrom.Item2;
-                newTree = BuildNewTreeFrom(destinationParentTree);
-            }
-
-            foreach (var st in tt.SubTreesToUpdate.Values)
-            {
-                RemoveTreeItemFrom(newTree, st.Current.Name);
-                var sha = await BuildTargetTree(st).ConfigureAwait(false);
-                var newTreeItem = new NewTreeItem
-                {
-                    Mode = "040000",
-                    Path = st.Current.Name,
-                    Sha = sha,
-                    Type = TreeType.Tree
-                };
-
-                newTree.Tree.Add(newTreeItem);
-            }
-
-            foreach (var l in tt.LeavesToCreate.Values)
-            {
-                var destination = l.Item1;
-                var source = l.Item2;
-
-                RemoveTreeItemFrom(newTree, destination.Name);
-
-                await SyncLeaf(source, destination).ConfigureAwait(false);
-
-                switch (source.Type)
-                {
-                    case TreeEntryTargetType.Blob:
-                        var sourceBlobItem = (await gateway.BlobFrom(source, true).ConfigureAwait(false)).Item2;
-                        newTree.Tree.Add(
-                            new NewTreeItem
-                            {
-                                Mode = sourceBlobItem.Mode,
-                                Path = destination.Name,
-                                Sha = source.Sha,
-                                Type = TreeType.Blob
-                            });
-                        break;
-
-                    case TreeEntryTargetType.Tree:
-                        newTree.Tree.Add(
-                            new NewTreeItem
-                            {
-                                Mode = "040000",
-                                Path = destination.Name,
-                                Sha = source.Sha,
-                                Type = TreeType.Tree
-                            });
-                        break;
-
-                    default:
-                        throw new NotSupportedException();
-                }
-            }
-
-            return await gateway.CreateTree(newTree, tt.Current.Owner, tt.Current.Repository).ConfigureAwait(false);
+            return $"https://github.com/{root.Owner}/{root.Repository}/commit/{c}";
         }
 
-        Task SyncLeaf(Parts source, Parts destination)
+        if (expectedOutput == SyncOutput.CreateBranch)
         {
-            var shortSha = source.Sha.Substring(0, 7);
+            branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).ConfigureAwait(false);
+            return $"https://github.com/{root.Owner}/{root.Repository}/compare/{UrlSanitize(root.Branch)}...{UrlSanitize(branchName)}";
+        }
+
+        if (expectedOutput == SyncOutput.CreatePullRequest || expectedOutput == SyncOutput.MergePullRequest)
+        {
+
+            branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).ConfigureAwait(false);
+            var merge = expectedOutput == SyncOutput.MergePullRequest;
+            var prNumber = await gateway.CreatePullRequest(root.Owner, root.Repository, branchName, root.Branch, merge).ConfigureAwait(false);
+            gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
+            return $"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}";
+        }
+
+        throw new NotSupportedException();
+
+    }
+
+    string UrlSanitize(string branch)
+    {
+        return branch.Replace("/", ";");
+    }
+
+    async Task<string> BuildTargetTree(TargetTree tt)
+    {
+        var treeFrom = await gateway.TreeFrom(tt.Current, false).ConfigureAwait(false);
+
+        NewTree newTree;
+        if (treeFrom == null)
+        {
+            newTree = new NewTree();
+        }
+        else
+        {
+            var destinationParentTree = treeFrom.Item2;
+            newTree = BuildNewTreeFrom(destinationParentTree);
+        }
+
+        foreach (var st in tt.SubTreesToUpdate.Values)
+        {
+            RemoveTreeItemFrom(newTree, st.Current.Name);
+            var sha = await BuildTargetTree(st).ConfigureAwait(false);
+            var newTreeItem = new NewTreeItem
+            {
+                Mode = "040000",
+                Path = st.Current.Name,
+                Sha = sha,
+                Type = TreeType.Tree
+            };
+
+            newTree.Tree.Add(newTreeItem);
+        }
+
+        foreach (var l in tt.LeavesToCreate.Values)
+        {
+            var destination = l.Item1;
+            var source = l.Item2;
+
+            RemoveTreeItemFrom(newTree, destination.Name);
+
+            await SyncLeaf(source, destination).ConfigureAwait(false);
+
             switch (source.Type)
             {
                 case TreeEntryTargetType.Blob:
-                    log($"Sync - Determine if Blob '{shortSha}' requires to be created in '{destination.Owner}/{destination.Repository}'.");
-                    return SyncBlob(source.Owner, source.Repository, source.Sha, destination.Owner, destination.Repository);
+                    var sourceBlobItem = (await gateway.BlobFrom(source, true).ConfigureAwait(false)).Item2;
+                    newTree.Tree.Add(
+                        new NewTreeItem
+                        {
+                            Mode = sourceBlobItem.Mode,
+                            Path = destination.Name,
+                            Sha = source.Sha,
+                            Type = TreeType.Blob
+                        });
+                    break;
+
                 case TreeEntryTargetType.Tree:
-                    log($"Sync - Determine if Tree '{shortSha}' requires to be created in '{destination.Owner}/{destination.Repository}'.");
-                    return SyncTree(source, destination.Owner, destination.Repository);
+                    newTree.Tree.Add(
+                        new NewTreeItem
+                        {
+                            Mode = "040000",
+                            Path = destination.Name,
+                            Sha = source.Sha,
+                            Type = TreeType.Tree
+                        });
+                    break;
+
                 default:
                     throw new NotSupportedException();
             }
         }
 
-        void RemoveTreeItemFrom(NewTree tree, string name)
+        return await gateway.CreateTree(newTree, tt.Current.Owner, tt.Current.Repository).ConfigureAwait(false);
+    }
+
+    Task SyncLeaf(Parts source, Parts destination)
+    {
+        var shortSha = source.Sha.Substring(0, 7);
+        switch (source.Type)
         {
-            var existing = tree.Tree.SingleOrDefault(ti => ti.Path == name);
+            case TreeEntryTargetType.Blob:
+                log($"Sync - Determine if Blob '{shortSha}' requires to be created in '{destination.Owner}/{destination.Repository}'.");
+                return SyncBlob(source.Owner, source.Repository, source.Sha, destination.Owner, destination.Repository);
+            case TreeEntryTargetType.Tree:
+                log($"Sync - Determine if Tree '{shortSha}' requires to be created in '{destination.Owner}/{destination.Repository}'.");
+                return SyncTree(source, destination.Owner, destination.Repository);
+            default:
+                throw new NotSupportedException();
+        }
+    }
 
-            if (existing == null)
-            {
-                return;
-            }
+    void RemoveTreeItemFrom(NewTree tree, string name)
+    {
+        var existing = tree.Tree.SingleOrDefault(ti => ti.Path == name);
 
-            tree.Tree.Remove(existing);
+        if (existing == null)
+        {
+            return;
         }
 
-        static NewTree BuildNewTreeFrom(TreeResponse destinationParentTree)
+        tree.Tree.Remove(existing);
+    }
+
+    static NewTree BuildNewTreeFrom(TreeResponse destinationParentTree)
+    {
+        var newTree = new NewTree();
+
+        foreach (var treeItem in destinationParentTree.Tree)
         {
-            var newTree = new NewTree();
+            var newTreeItem = new NewTreeItem
+                              {
+                                  Mode = treeItem.Mode,
+                                  Path = treeItem.Path,
+                                  Sha = treeItem.Sha,
+                                  Type = treeItem.Type.Value
+                              };
 
-            foreach (var treeItem in destinationParentTree.Tree)
-            {
-                var newTreeItem = new NewTreeItem
-                                  {
-                                      Mode = treeItem.Mode,
-                                      Path = treeItem.Path,
-                                      Sha = treeItem.Sha,
-                                      Type = treeItem.Type.Value
-                                  };
-
-                newTree.Tree.Add(newTreeItem);
-            }
-
-            return newTree;
+            newTree.Tree.Add(newTreeItem);
         }
 
-        async Task SyncBlob(string sourceOwner, string sourceRepository, string sha, string destinationOwner, string destinationRepository)
-        {
-            if (gateway.IsKnownBy<Blob>(sha, destinationOwner, destinationRepository))
-            {
-                return;
-            }
+        return newTree;
+    }
 
-            await gateway.FetchBlob(sourceOwner, sourceRepository, sha).ConfigureAwait(false);
-            await gateway.CreateBlob(destinationOwner, destinationRepository, sha).ConfigureAwait(false);
+    async Task SyncBlob(string sourceOwner, string sourceRepository, string sha, string destinationOwner, string destinationRepository)
+    {
+        if (gateway.IsKnownBy<Blob>(sha, destinationOwner, destinationRepository))
+        {
+            return;
         }
 
-        async Task SyncTree(Parts source, string destinationOwner, string destinationRepository)
+        await gateway.FetchBlob(sourceOwner, sourceRepository, sha).ConfigureAwait(false);
+        await gateway.CreateBlob(destinationOwner, destinationRepository, sha).ConfigureAwait(false);
+    }
+
+    async Task SyncTree(Parts source, string destinationOwner, string destinationRepository)
+    {
+        if (gateway.IsKnownBy<TreeResponse>(source.Sha, destinationOwner, destinationRepository))
         {
-            if (gateway.IsKnownBy<TreeResponse>(source.Sha, destinationOwner, destinationRepository))
+            return;
+        }
+
+        var treeFrom = await gateway.TreeFrom(source, true).ConfigureAwait(false);
+
+        var newTree = new NewTree();
+
+        foreach (var i in treeFrom.Item2.Tree)
+        {
+            var value = i.Type.Value;
+            switch (value)
             {
-                return;
+                case TreeType.Blob:
+                    await SyncBlob(source.Owner, source.Repository, i.Sha, destinationOwner, destinationRepository).ConfigureAwait(false);
+                    break;
+
+                case TreeType.Tree:
+                    await SyncTree(treeFrom.Item1.Combine(TreeEntryTargetType.Tree, i.Path, i.Sha), destinationOwner, destinationRepository).ConfigureAwait(false);
+                    break;
+
+                default:
+                    throw new NotSupportedException();
             }
 
-            var treeFrom = await gateway.TreeFrom(source, true).ConfigureAwait(false);
-
-            var newTree = new NewTree();
-
-            foreach (var i in treeFrom.Item2.Tree)
+            newTree.Tree.Add(new NewTreeItem
             {
-                var value = i.Type.Value;
-                switch (value)
+                Type = value,
+                Path = i.Path,
+                Sha = i.Sha,
+                Mode = i.Mode
+            });
+        }
+
+        // ReSharper disable once RedundantAssignment
+        var sha = await gateway.CreateTree(newTree, destinationOwner, destinationRepository).ConfigureAwait(false);
+
+        Debug.Assert(source.Sha == sha);
+    }
+
+    async Task<Parts> EnrichWithShas(Parts part, bool throwsIfNotFound)
+    {
+        var outPart = part;
+
+        switch (part.Type)
+        {
+            case TreeEntryTargetType.Tree:
+                var t = await gateway.TreeFrom(part, throwsIfNotFound).ConfigureAwait(false);
+
+                if (t != null)
                 {
-                    case TreeType.Blob:
-                        await SyncBlob(source.Owner, source.Repository, i.Sha, destinationOwner, destinationRepository).ConfigureAwait(false);
-                        break;
-
-                    case TreeType.Tree:
-                        await SyncTree(treeFrom.Item1.Combine(TreeEntryTargetType.Tree, i.Path, i.Sha), destinationOwner, destinationRepository).ConfigureAwait(false);
-                        break;
-
-                    default:
-                        throw new NotSupportedException();
+                    outPart = t.Item1;
                 }
 
-                newTree.Tree.Add(new NewTreeItem
+                break;
+
+            case TreeEntryTargetType.Blob:
+                var b = await gateway.BlobFrom(part, throwsIfNotFound).ConfigureAwait(false);
+
+                if (b != null)
                 {
-                    Type = value,
-                    Path = i.Path,
-                    Sha = i.Sha,
-                    Mode = i.Mode
-                });
-            }
+                    outPart = b.Item1;
+                }
 
-            // ReSharper disable once RedundantAssignment
-            var sha = await gateway.CreateTree(newTree, destinationOwner, destinationRepository).ConfigureAwait(false);
+                break;
 
-            Debug.Assert(source.Sha == sha);
+            default:
+                throw new NotSupportedException();
         }
 
-        async Task<Parts> EnrichWithShas(Parts part, bool throwsIfNotFound)
-        {
-            var outPart = part;
+        return outPart;
+    }
 
-            switch (part.Type)
-            {
-                case TreeEntryTargetType.Tree:
-                    var t = await gateway.TreeFrom(part, throwsIfNotFound).ConfigureAwait(false);
-
-                    if (t != null)
-                    {
-                        outPart = t.Item1;
-                    }
-
-                    break;
-
-                case TreeEntryTargetType.Blob:
-                    var b = await gateway.BlobFrom(part, throwsIfNotFound).ConfigureAwait(false);
-
-                    if (b != null)
-                    {
-                        outPart = b.Item1;
-                    }
-
-                    break;
-
-                default:
-                    throw new NotSupportedException();
-            }
-
-            return outPart;
-        }
-
-        public void Dispose()
-        {
-            gateway.Dispose();
-        }
+    public void Dispose()
+    {
+        gateway.Dispose();
     }
 }

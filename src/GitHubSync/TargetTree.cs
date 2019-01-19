@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using GitHubSync;
 
 class TargetTree
 {
-    public readonly Dictionary<string, TargetTree> SubTreesToUpdate;
-    public readonly Dictionary<string, Tuple<Parts, Parts>> LeavesToCreate;
-    public readonly Parts Current;
+    public Dictionary<string, TargetTree> SubTreesToUpdate;
+    public Dictionary<string, Tuple<Parts, Parts>> LeavesToCreate;
+    public Parts Current;
 
     public TargetTree(Parts root)
     {

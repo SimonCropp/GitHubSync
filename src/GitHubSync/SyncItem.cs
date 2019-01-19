@@ -1,8 +1,5 @@
-﻿namespace GitHubSync
+﻿class SyncItem
 {
-    public class SyncItem
-    {
-        public Parts Parts { get; set; }
-        public string Target { get; set; }
-    }
+    public Parts Parts { get; set; }
+    public string Target { get; set; }
 }

@@ -35,7 +35,8 @@ class GitHubGateway : IDisposable
 
     GitHubClient ClientFrom(Credentials credentials, IWebProxy proxy)
     {
-        var connection = new Connection(new ProductHeaderValue("GitHubSync"),
+        var connection = new Connection(
+            new ProductHeaderValue("GitHubSync"),
             new HttpClientAdapter(() => HttpMessageHandlerFactory.CreateDefault(proxy)));
         return new GitHubClient(connection)
         {
