@@ -120,7 +120,7 @@ class Syncer : IDisposable
             branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).ConfigureAwait(false);
             var merge = expectedOutput == SyncOutput.MergePullRequest;
             var prNumber = await gateway.CreatePullRequest(root.Owner, root.Repository, branchName, root.Branch, merge).ConfigureAwait(false);
-            gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
+            await gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels).ConfigureAwait(false);
             return $"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}";
         }
 

@@ -368,13 +368,10 @@ class GitHubGateway : IDisposable
         log($"Dispose - Remove temp blob storage '{blobStoragePath}'.");
     }
 
-    public void ApplyLabels(string owner, string repository, int issueNumber, string[] labels)
+    public Task<IReadOnlyList<Label>> ApplyLabels(string owner, string repository, int issueNumber, string[] labels)
     {
-        Debug.Assert(labels != null);
-
         log(string.Format("API Query - Apply labels '{3}' to request '#{0}' in '{1}/{2}'.", issueNumber, owner, repository, string.Join(", ", labels)));
 
-        client.Issue.Labels.AddToIssue(owner, repository, issueNumber, labels)
-            .Wait();
+        return client.Issue.Labels.AddToIssue(owner, repository, issueNumber, labels);
     }
 }
