@@ -1,0 +1,127 @@
+﻿[
+  {
+    Key: {
+      Owner: 'o',
+      Repository: 'r1',
+      Branch: 'b1',
+      Path: 'a',
+      Name: 'a',
+      NumberOfPathSegments: 1,
+      Url: 'https://github.com/o/r1/blob/b1/a',
+      ParentTreePart: {
+        Owner: 'o',
+        Repository: 'r1',
+        Type: 'Tree',
+        Branch: 'b1',
+        Url: 'https://github.com/o/r1/tree/b1'
+      },
+      RootTreePart: {
+        Owner: 'o',
+        Repository: 'r1',
+        Type: 'Tree',
+        Branch: 'b1',
+        Url: 'https://github.com/o/r1/tree/b1'
+      }
+    },
+    Value: [
+      {
+        Owner: 'o',
+        Repository: 'r2',
+        Branch: 'b1',
+        Path: 'a',
+        Name: 'a',
+        NumberOfPathSegments: 1,
+        Url: 'https://github.com/o/r2/blob/b1/a',
+        ParentTreePart: {
+          Owner: 'o',
+          Repository: 'r2',
+          Type: 'Tree',
+          Branch: 'b1',
+          Url: 'https://github.com/o/r2/tree/b1'
+        },
+        RootTreePart: {
+          Owner: 'o',
+          Repository: 'r2',
+          Type: 'Tree',
+          Branch: 'b1',
+          Url: 'https://github.com/o/r2/tree/b1'
+        }
+      },
+      {
+        Owner: 'o',
+        Repository: 'r3',
+        Branch: 'b1',
+        Path: 'a',
+        Name: 'a',
+        NumberOfPathSegments: 1,
+        Url: 'https://github.com/o/r3/blob/b1/a',
+        ParentTreePart: {
+          Owner: 'o',
+          Repository: 'r3',
+          Type: 'Tree',
+          Branch: 'b1',
+          Url: 'https://github.com/o/r3/tree/b1'
+        },
+        RootTreePart: {
+          Owner: 'o',
+          Repository: 'r3',
+          Type: 'Tree',
+          Branch: 'b1',
+          Url: 'https://github.com/o/r3/tree/b1'
+        }
+      }
+    ]
+  },
+  {
+    Key: {
+      Owner: 'o',
+      Repository: 'r1',
+      Type: 'Tree',
+      Branch: 'b1',
+      Path: 'c',
+      Name: 'c',
+      NumberOfPathSegments: 1,
+      Url: 'https://github.com/o/r1/tree/b1/c',
+      ParentTreePart: {
+        Owner: 'o',
+        Repository: 'r1',
+        Type: 'Tree',
+        Branch: 'b1',
+        Url: 'https://github.com/o/r1/tree/b1'
+      },
+      RootTreePart: {
+        Owner: 'o',
+        Repository: 'r1',
+        Type: 'Tree',
+        Branch: 'b1',
+        Url: 'https://github.com/o/r1/tree/b1'
+      }
+    },
+    Value: [
+      {
+        Owner: 'o',
+        Repository: 'r2',
+        Type: 'Tree',
+        Branch: 'b1',
+        Path: 'c',
+        Name: 'c',
+        NumberOfPathSegments: 1,
+        Url: 'https://github.com/o/r2/tree/b1/c',
+        ParentTreePart: {
+          Owner: 'o',
+          Repository: 'r2',
+          Type: 'Tree',
+          Branch: 'b1',
+          Url: 'https://github.com/o/r2/tree/b1'
+        },
+        RootTreePart: {
+          Owner: 'o',
+          Repository: 'r2',
+          Type: 'Tree',
+          Branch: 'b1',
+          Url: 'https://github.com/o/r2/tree/b1'
+        }
+      }
+    ]
+  }
+]

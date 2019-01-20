@@ -1,5 +1,6 @@
 ﻿using System;
 using GitHubSync;
+using ObjectApproval;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -36,25 +37,7 @@ public class PartsTests: TestBase
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Blob, "develop", "src/settings");
 
-        Assert.Equal("SimonCropp", parts.Owner);
-        Assert.Equal("Fake", parts.Repository);
-        Assert.Equal(TreeEntryTargetType.Blob, parts.Type);
-        Assert.Equal("develop", parts.Branch);
-        Assert.Equal("src/settings", parts.Path);
-        Assert.Equal(2, parts.NumberOfPathSegments);
-        Assert.Equal("settings", parts.Name);
-        Assert.Equal("https://github.com/SimonCropp/Fake/blob/develop/src/settings", parts.Url);
-
-        var parent = parts.ParentTreePart;
-
-        Assert.Equal("SimonCropp", parent.Owner);
-        Assert.Equal("Fake", parent.Repository);
-        Assert.Equal(TreeEntryTargetType.Tree, parent.Type);
-        Assert.Equal("develop", parent.Branch);
-        Assert.Equal("src", parent.Path);
-        Assert.Equal(1, parent.NumberOfPathSegments);
-        Assert.Equal("src", parent.Name);
-        Assert.Equal("https://github.com/SimonCropp/Fake/tree/develop/src", parent.Url);
+        ObjectApprover.VerifyWithJson(parts);
     }
 
     [Fact]
@@ -62,15 +45,7 @@ public class PartsTests: TestBase
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Tree, "develop", null);
 
-        Assert.Equal("SimonCropp", parts.Owner);
-        Assert.Equal("Fake", parts.Repository);
-        Assert.Equal(TreeEntryTargetType.Tree, parts.Type);
-        Assert.Equal("develop", parts.Branch);
-        Assert.Null(parts.Path);
-        Assert.Equal(0, parts.NumberOfPathSegments);
-        Assert.Null(parts.Name);
-        Assert.Equal("https://github.com/SimonCropp/Fake/tree/develop", parts.Url);
-
+        ObjectApprover.VerifyWithJson(parts);
 // ReSharper disable once UnusedVariable
         Assert.Throws<Exception>(() => { var parent = parts.ParentTreePart; });
     }

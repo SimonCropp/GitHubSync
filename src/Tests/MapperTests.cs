@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using GitHubSync;
+using ObjectApproval;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -20,14 +21,7 @@ public class MapperTests: TestBase
             .Add(a, one)
             .Add(a, two)
             .Add(c, three);
-
-        Assert.Equal(2, m.Count());
-
-        Assert.Equal(2, m[a].Count());
-        Assert.Single(m[c]);
-
-        var b = new Uri("http://github.com/o/r1/blob/b1/b");
-        Assert.Empty(m[b]);
+        ObjectApprover.VerifyWithJson(m);
     }
 
     [Fact]
@@ -64,12 +58,7 @@ public class MapperTests: TestBase
         var orbs = t.Keys.ToList();
         orbs.Sort(StringComparer.Ordinal);
 
-        Assert.Equal(new[]
-        {
-            "o1/r2/b1",
-            "o1/r2/b2",
-            "o1/r3/b1"
-        }, orbs.ToArray());
+        ObjectApprover.VerifyWithJson(orbs);
     }
 
     public MapperTests(ITestOutputHelper output) : base(output)
