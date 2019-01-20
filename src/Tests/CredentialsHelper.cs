@@ -9,12 +9,10 @@ public static class CredentialsHelper
 
         if (githubToken == null)
         {
-            Credentials = Credentials.Anonymous;
+            throw new Exception("Could not find EnvironmentVariable Octokit_OAuthToken");
         }
-        else
-        {
-            Credentials = new Credentials(githubToken);
-        }
+
+        Credentials = new Credentials(githubToken);
     }
 
     public static Credentials Credentials;
