@@ -1,45 +1,91 @@
-﻿using System;
-using System.Collections;
+﻿using GitHubSync;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
-abstract class MapperBase : IEnumerable<KeyValuePair<Parts, IEnumerable<Parts>>>
+abstract class MapperBase
 {
-    Dictionary<Parts, List<Parts>> dic = new Dictionary<Parts, List<Parts>>();
+    Dictionary<Parts, ICollection<Parts>> toBeAddedOrUpdatedEntries = new Dictionary<Parts, ICollection<Parts>>();
+    List<Parts> toBeRemovedEntries = new List<Parts>();
 
-    protected void Add_Internal(Parts from, Parts to)
+    protected void AddOrRemove_Internal(IParts from, Parts to)
     {
-        if (from.Type != to.Type)
+        switch (from)
         {
-            throw new ArgumentException($"Cannot map [{from.Type}: {@from.Url}] to [{to.Type}: {to.Url}]. ");
-        }
+            case Parts toAddOrUpdate:
+                if (toAddOrUpdate.Type != to.Type)
+                {
+                    throw new ArgumentException($"Cannot map [{toAddOrUpdate.Type}: {toAddOrUpdate.Url}] to [{to.Type}: {to.Url}]. ");
+                }
 
-        if (!dic.TryGetValue(from, out var parts))
+                if (toBeRemovedEntries.Contains(to))
+                {
+                    throw new InvalidOperationException(
+                        $"Cannot add this as the target path '{to.Path}' in branch'{to.Branch}' of '{to.Owner}/{to.Repository}' " +
+                        $"as it's already scheduled for removal.");
+                }
+
+                if (!toBeAddedOrUpdatedEntries.TryGetValue(toAddOrUpdate, out var parts))
+                {
+                    parts = new List<Parts>();
+                    toBeAddedOrUpdatedEntries.Add(toAddOrUpdate, parts);
+                }
+
+                parts.Add(to);
+
+                break;
+
+            case Parts.NullParts ToBeRemoved:
+                if (to.Type == TreeEntryTargetType.Tree)
+                {
+                    throw new NotSupportedException($"Removing a '{nameof(TreeEntryTargetType.Tree)}' isn't supported.");
+                }
+
+                if (toBeAddedOrUpdatedEntries.Values.SelectMany(x => x).Contains(to))
+                {
+                    throw new InvalidOperationException(
+                        $"Cannot remove this as the target path '{to.Path}' in branch '{to.Branch}' of '{to.Owner}/{to.Repository}' " +
+                        $"as it's already scheduled for addition.");
+                }
+
+                if (toBeRemovedEntries.Contains(to))
+                {
+                    return;
+                }
+
+                toBeRemovedEntries.Add(to);
+
+                break;
+
+            default:
+                throw new InvalidOperationException($"Unsupported 'from' type ({from.GetType().FullName}).");
+        }
+    }
+
+    public IEnumerable<KeyValuePair<Parts, IEnumerable<Parts>>> ToBeAddedOrUpdatedEntries
+    {
+        get
         {
-            parts = new List<Parts>();
-            dic.Add(from, parts);
+            return toBeAddedOrUpdatedEntries
+                .Select(e => new KeyValuePair<Parts, IEnumerable<Parts>>(e.Key, e.Value));
         }
-
-        parts.Add(to);
     }
 
-    public IEnumerator<KeyValuePair<Parts, IEnumerable<Parts>>> GetEnumerator()
+    public IEnumerable<Parts> ToBeRemovedEntries
     {
-        return dic
-            .Select(e => new KeyValuePair<Parts, IEnumerable<Parts>>(e.Key, e.Value))
-            .GetEnumerator();
+        get
+        {
+            return new ReadOnlyCollection<Parts>(toBeRemovedEntries);
+
+        }
     }
 
-    IEnumerator IEnumerable.GetEnumerator()
+    public IDictionary<string, IList<Tuple<Parts, IParts>>> Transpose()
     {
-        return GetEnumerator();
-    }
+        var d = new Dictionary<string, IList<Tuple<Parts, IParts>>>();
 
-    public IDictionary<string, IList<Tuple<Parts, Parts>>> Transpose()
-    {
-        var d = new Dictionary<string, IList<Tuple<Parts, Parts>>>();
-
-        foreach (var kvp in dic)
+        foreach (var kvp in toBeAddedOrUpdatedEntries)
         {
             var source = kvp.Key;
 
@@ -49,12 +95,25 @@ abstract class MapperBase : IEnumerable<KeyValuePair<Parts, IEnumerable<Parts>>>
 
                 if (!d.TryGetValue(orb, out var items))
                 {
-                    items = new List<Tuple<Parts, Parts>>();
+                    items = new List<Tuple<Parts, IParts>>();
                     d.Add(orb, items);
                 }
 
-                items.Add(new Tuple<Parts, Parts>(destination, source));
+                items.Add(new Tuple<Parts, IParts>(destination, source));
             }
+        }
+
+        foreach (var destination in toBeRemovedEntries)
+        {
+            var orb = $"{destination.Owner}/{destination.Repository}/{destination.Branch}";
+
+            if (!d.TryGetValue(orb, out var items))
+            {
+                items = new List<Tuple<Parts, IParts>>();
+                d.Add(orb, items);
+            }
+
+            items.Add(new Tuple<Parts, IParts>(destination, Parts.Empty));
         }
 
         return d;

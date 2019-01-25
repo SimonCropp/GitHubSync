@@ -2,7 +2,7 @@
 {
     public Mapper Add(Parts from, Parts to)
     {
-        Add_Internal(from, to);
+        AddOrRemove_Internal(from, to);
         return this;
     }
 
@@ -10,9 +10,15 @@
     {
         foreach (var to in tos)
         {
-            Add_Internal(from, to);
+            AddOrRemove_Internal(from, to);
         }
 
+        return this;
+    }
+
+    public Mapper Remove(Parts to)
+    {
+        AddOrRemove_Internal(Parts.Empty, to);
         return this;
     }
 }

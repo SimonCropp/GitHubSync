@@ -29,7 +29,7 @@ class Syncer : IDisposable
         Guard.AgainstNull(input, nameof(input));
         var outMapper = new Mapper();
 
-        foreach (var kvp in input)
+        foreach (var kvp in input.ToBeAddedOrUpdatedEntries)
         {
             var source = kvp.Key;
 
@@ -55,6 +55,11 @@ class Syncer : IDisposable
 
                 outMapper.Add(richSource, richDestination);
             }
+        }
+
+        foreach (var p in input.ToBeRemovedEntries)
+        {
+            outMapper.Remove(p);
         }
 
         return outMapper;
@@ -83,7 +88,7 @@ class Syncer : IDisposable
         return results;
     }
 
-    async Task<string> ProcessUpdates(SyncOutput expectedOutput, IList<Tuple<Parts, Parts>> updatesPerOwnerRepositoryBranch, string[] labels)
+    async Task<string> ProcessUpdates(SyncOutput expectedOutput, IList<Tuple<Parts, IParts>> updatesPerOwnerRepositoryBranch, string[] labels)
     {
         var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
         var root = updatesPerOwnerRepositoryBranch.First().Item1.RootTreePart;
@@ -94,7 +99,19 @@ class Syncer : IDisposable
             var source = change.Item2;
             var destination = change.Item1;
 
-            tt.Add(destination, source);
+            switch (source)
+            {
+                case Parts toAddOrUpdate:
+                    tt.Add(destination, toAddOrUpdate);
+                    break;
+
+                case Parts.NullParts ToBeRemoved:
+                    tt.Remove(destination);
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"Unsupported 'from' type ({source.GetType().FullName}).");
+            }
         }
 
         var btt = await BuildTargetTree(tt).ConfigureAwait(false);
@@ -151,6 +168,13 @@ class Syncer : IDisposable
         {
             RemoveTreeItemFrom(newTree, st.Current.Name);
             var sha = await BuildTargetTree(st).ConfigureAwait(false);
+
+            if (sha == TargetTree.EmptyTreeSha)
+            {
+                // Resulting tree contains no items
+                continue;
+            }
+
             var newTreeItem = new NewTreeItem
             {
                 Mode = "040000",
@@ -160,6 +184,11 @@ class Syncer : IDisposable
             };
 
             newTree.Tree.Add(newTreeItem);
+        }
+
+        foreach (var l in tt.LeavesToDrop.Values)
+        {
+            RemoveTreeItemFrom(newTree, l.Name);
         }
 
         foreach (var l in tt.LeavesToCreate.Values)
@@ -199,6 +228,11 @@ class Syncer : IDisposable
                 default:
                     throw new NotSupportedException();
             }
+        }
+
+        if (newTree.Tree.Count == 0)
+        {
+            return TargetTree.EmptyTreeSha;
         }
 
         return await gateway.CreateTree(newTree, tt.Current.Owner, tt.Current.Repository).ConfigureAwait(false);

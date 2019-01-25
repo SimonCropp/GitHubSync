@@ -11,6 +11,9 @@ public class RepoSyncTests : TestBase
         var credentials = CredentialsHelper.Credentials;
         var repoSync = new RepoSync(credentials, "SimonCropp", "GitHubSync.TestRepository", "source", WriteLog);
         repoSync.AddBlob("sourceFile.txt");
+        repoSync.RemoveBlob("IDoNotExist/MeNeither.txt");
+        repoSync.RemoveBlob("a/b/c/file.txt");
+        repoSync.RemoveBlob("a/b/file.txt");
         repoSync.AddTarget("SimonCropp", "GitHubSync.TestRepository", "target");
 
         return repoSync.Sync();
@@ -22,6 +25,8 @@ public class RepoSyncTests : TestBase
         var credentials = CredentialsHelper.Credentials;
         var repoSync = new RepoSync(credentials, "SimonCropp", "GitHubSync.TestRepository", "source", WriteLog);
         repoSync.AddBlob("sourceFile.txt");
+        repoSync.RemoveBlob("IDoNotExist/MeNeither.txt");
+        repoSync.RemoveBlob("README.md");
         repoSync.AddTarget("SimonCropp", "GitHubSync.TestRepository", "targetForMerge");
 
         return repoSync.Sync(SyncOutput.MergePullRequest);
@@ -32,6 +37,8 @@ public class RepoSyncTests : TestBase
     {
         var repoSync = new RepoSync(CredentialsHelper.Credentials, "SimonCropp", "GitHubSync.TestRepository", "source", WriteLog);
         repoSync.AddBlob("sourceFile.txt");
+        repoSync.RemoveBlob("IDoNotExist/MeNeither.txt");
+        repoSync.RemoveBlob("README.md");
         repoSync.AddTarget("SimonCropp", "GitHubSync.TestRepository", "targetForCommit");
 
         return repoSync.Sync(SyncOutput.CreateCommit);
