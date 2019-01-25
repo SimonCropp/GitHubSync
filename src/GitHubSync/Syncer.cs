@@ -24,10 +24,10 @@ class Syncer : IDisposable
 
     static Action<string> nullLogger = _ => { };
 
-    internal async Task<Diff> Diff(Mapper input)
+    internal async Task<Mapper> Diff(Mapper input)
     {
         Guard.AgainstNull(input, nameof(input));
-        var outMapper = new Diff();
+        var outMapper = new Mapper();
 
         foreach (var kvp in input)
         {
@@ -60,7 +60,7 @@ class Syncer : IDisposable
         return outMapper;
     }
 
-    internal async Task<IEnumerable<string>> Sync(Diff diff, SyncOutput expectedOutput, IEnumerable<string> labelsToApplyOnPullRequests = null)
+    internal async Task<IEnumerable<string>> Sync(Mapper diff, SyncOutput expectedOutput, IEnumerable<string> labelsToApplyOnPullRequests = null)
     {
         Guard.AgainstNull(diff, nameof(diff));
         Guard.AgainstNull(expectedOutput, nameof(expectedOutput));
