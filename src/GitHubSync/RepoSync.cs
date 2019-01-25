@@ -9,12 +9,12 @@ namespace GitHubSync
     public class RepoSync
     {
         List<SyncItem> itemsToSync = new List<SyncItem>();
-        Credentials credentials;
-        string sourceOwner;
-        string sourceRepository;
-        string sourceBranch;
-        Action<string> log;
-        List<string> labelsToApplyOnPullRequests;
+        readonly Credentials credentials;
+        readonly string sourceOwner;
+        readonly string sourceRepository;
+        readonly string sourceBranch;
+        readonly Action<string> log;
+        readonly List<string> labelsToApplyOnPullRequests;
         List<RepoToSync> targets = new List<RepoToSync>();
 
         public RepoSync(Credentials credentials, string sourceOwner, string sourceRepository, string branch, Action<string> log = null, List<string> labelsToApplyOnPullRequests = null)

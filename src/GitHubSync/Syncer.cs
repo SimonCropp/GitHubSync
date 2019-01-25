@@ -10,7 +10,7 @@ using Octokit;
 class Syncer : IDisposable
 {
     GitHubGateway gateway;
-    Action<string> log;
+    readonly Action<string> log;
 
     public Syncer(
         Credentials credentials,

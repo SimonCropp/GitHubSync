@@ -108,7 +108,7 @@ class Parts : IEquatable<Parts>
 
     public bool Equals(Parts other)
     {
-        if (ReferenceEquals(null, other))
+        if (other is null)
         {
             return false;
         }
