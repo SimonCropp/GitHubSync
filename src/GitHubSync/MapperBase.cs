@@ -35,36 +35,6 @@ abstract class MapperBase : IEnumerable<KeyValuePair<Parts, IEnumerable<Parts>>>
         return GetEnumerator();
     }
 
-    public IEnumerable<Parts> this[Parts from]
-    {
-        get
-        {
-            if (dic.TryGetValue(@from, out var l))
-            {
-                return l;
-            }
-            return Enumerable.Empty<Parts>();
-        }
-    }
-
-    public IEnumerable<Parts> this[Uri from]
-    {
-        get
-        {
-            foreach (var kvp in dic)
-            {
-                if (kvp.Key.Url != from.ToString())
-                {
-                    continue;
-                }
-
-                return kvp.Value;
-            }
-
-            return Enumerable.Empty<Parts>();
-        }
-    }
-
     public IDictionary<string, IList<Tuple<Parts, Parts>>> Transpose()
     {
         var d = new Dictionary<string, IList<Tuple<Parts, Parts>>>();
