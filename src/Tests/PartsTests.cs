@@ -41,7 +41,7 @@ public class PartsTests: TestBase
     }
 
     [Fact]
-    public void CanEscapeOutOfARootTree()
+    public void CannotEscapeOutOfARootTree()
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Tree, "develop", null);
 

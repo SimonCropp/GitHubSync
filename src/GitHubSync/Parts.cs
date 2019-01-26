@@ -2,7 +2,7 @@
 using System.Linq;
 using GitHubSync;
 
-class Parts : IEquatable<Parts>
+class Parts : IParts, IEquatable<Parts>
 {
     Lazy<Parts> parent;
     Lazy<Parts> root;
@@ -64,6 +64,8 @@ class Parts : IEquatable<Parts>
         return new Parts(Owner, Repository, TreeEntryTargetType.Tree, Branch, null, null);
     }
 
+    public static readonly NullParts Empty = new NullParts();
+
     public string Owner { get; }
     public string Repository { get; }
     public TreeEntryTargetType Type { get; }
@@ -108,7 +110,7 @@ class Parts : IEquatable<Parts>
 
     public bool Equals(Parts other)
     {
-        if (ReferenceEquals(null, other))
+        if (other is null)
         {
             return false;
         }
@@ -150,5 +152,11 @@ class Parts : IEquatable<Parts>
     public static bool operator !=(Parts left, Parts right)
     {
         return !Equals(left, right);
+    }
+
+    public class NullParts : IParts
+    {
+        internal NullParts()
+        { }
     }
 }

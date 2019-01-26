@@ -23,7 +23,7 @@ public class DiffTests: TestBase
         using (var syncer = BuildSyncer())
         {
             var diff = await syncer.Diff(map);
-            ObjectApprover.VerifyWithJson(diff);
+            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
         }
     }
 
@@ -39,7 +39,7 @@ public class DiffTests: TestBase
         using (var som = BuildSyncer())
         {
             var diff = await som.Diff(map);
-            ObjectApprover.VerifyWithJson(diff);
+            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
         }
     }
 
@@ -55,7 +55,7 @@ public class DiffTests: TestBase
         using (var som = BuildSyncer())
         {
             var diff = await som.Diff(map);
-            ObjectApprover.VerifyWithJson(diff);
+            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
         }
     }
 
@@ -85,7 +85,8 @@ public class DiffTests: TestBase
         using (var syncer = BuildSyncer())
         {
             var diff = await syncer.Diff(map);
-            Assert.Empty(diff);
+            Assert.Empty(diff.ToBeAddedOrUpdatedEntries);
+            Assert.Empty(diff.ToBeRemovedEntries);
         }
     }
 
@@ -101,7 +102,7 @@ public class DiffTests: TestBase
         using (var syncer = BuildSyncer())
         {
             var diff = await syncer.Diff(map);
-            ObjectApprover.VerifyWithJson(diff);
+            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
         }
     }
 
@@ -117,7 +118,7 @@ public class DiffTests: TestBase
         using (var syncer = BuildSyncer())
         {
             var diff = await syncer.Diff(map);
-            ObjectApprover.VerifyWithJson(diff);
+            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
         }
     }
 
@@ -148,7 +149,24 @@ public class DiffTests: TestBase
         using (var syncer = BuildSyncer())
         {
             var diff = await syncer.Diff(map);
-            ObjectApprover.VerifyWithJson(diff);
+            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
+        }
+    }
+
+    [Fact]
+    public async Task OnRemoval_DoesNotThrowWhenBlobDoesNotexistInTargets()
+    {
+        var destinationBlob1 = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "new-new-file.txt");
+        var destinationBlob2 = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "IDoNotExist/MeNeither/new-file.txt");
+
+        var map = new Mapper()
+            .Remove(destinationBlob1)
+            .Remove(destinationBlob2);
+
+        using (var syncer = BuildSyncer())
+        {
+            var diff = await syncer.Diff(map);
+            ObjectApprover.VerifyWithJson(diff.ToBeRemovedEntries);
         }
     }
 

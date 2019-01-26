@@ -9,12 +9,12 @@ namespace GitHubSync
     public class RepoSync
     {
         List<SyncItem> itemsToSync = new List<SyncItem>();
-        Credentials credentials;
-        string sourceOwner;
-        string sourceRepository;
-        string sourceBranch;
-        Action<string> log;
-        List<string> labelsToApplyOnPullRequests;
+        readonly Credentials credentials;
+        readonly string sourceOwner;
+        readonly string sourceRepository;
+        readonly string sourceBranch;
+        readonly Action<string> log;
+        readonly List<string> labelsToApplyOnPullRequests;
         List<RepoToSync> targets = new List<RepoToSync>();
 
         public RepoSync(Credentials credentials, string sourceOwner, string sourceRepository, string branch, Action<string> log = null, List<string> labelsToApplyOnPullRequests = null)
@@ -36,7 +36,27 @@ namespace GitHubSync
             AddSourceItem(TreeEntryTargetType.Blob, path, target);
         }
 
+        public void RemoveBlob(string path, string target = null)
+        {
+            RemoveSourceItem(TreeEntryTargetType.Blob, path, target);
+        }
+
         public void AddSourceItem(TreeEntryTargetType type, string path, string target = null)
+        {
+            AddOrRemoveSourceItem(true, type, path, target);
+        }
+
+        public void RemoveSourceItem(TreeEntryTargetType type, string path, string target = null)
+        {
+            if (type == TreeEntryTargetType.Tree)
+            {
+                throw new NotSupportedException($"Removing a '{nameof(TreeEntryTargetType.Tree)}' isn't supported.");
+            }
+
+            AddOrRemoveSourceItem(false, type, path, target);
+        }
+
+        public void AddOrRemoveSourceItem(bool toBeAdded, TreeEntryTargetType type, string path, string target)
         {
             Guard.AgainstNullAndEmpty(path, nameof(path));
             Guard.AgainstEmpty(target, nameof(target));
@@ -44,13 +64,14 @@ namespace GitHubSync
                 new SyncItem
                 {
                     Parts = new Parts($"{sourceOwner}/{sourceRepository}", type, sourceBranch, path),
+                    ToBeAdded = toBeAdded,
                     Target = target
                 });
         }
 
         public void AddTarget(string repository, string branch = null, Dictionary<string, string> replacementTokens = null)
         {
-            AddTarget(sourceOwner, repository, branch , replacementTokens);
+            AddTarget(sourceOwner, repository, branch, replacementTokens);
         }
 
         public void AddTarget(string owner, string repository, string branch = null, Dictionary<string, string> replacementTokens = null)

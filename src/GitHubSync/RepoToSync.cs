@@ -14,7 +14,15 @@ class RepoToSync
         foreach (var syncItem in syncItems)
         {
             var toPart = new Parts($"{Owner}/{Repo}", syncItem.Parts.Type, TargetBranch, ApplyTargetPathTemplate(syncItem));
-            mapper.Add(syncItem.Parts, toPart);
+
+            if (syncItem.ToBeAdded)
+            {
+                mapper.Add(syncItem.Parts, toPart);
+            }
+            else
+            {
+                mapper.Remove(toPart);
+            }
         }
 
         return mapper;

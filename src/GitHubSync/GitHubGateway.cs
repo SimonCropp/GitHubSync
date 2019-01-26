@@ -12,14 +12,14 @@ using GitHubSync;
 
 class GitHubGateway : IDisposable
 {
-    Action<string> log;
+    readonly Action<string> log;
     Dictionary<string, Commit> commitCachePerOwnerRepositoryBranch = new Dictionary<string, Commit>();
     Dictionary<string, Tuple<Parts, TreeItem>> blobCachePerPath = new Dictionary<string, Tuple<Parts, TreeItem>>();
     Dictionary<string, Tuple<Parts, TreeResponse>> treeCachePerPath = new Dictionary<string, Tuple<Parts, TreeResponse>>();
-    Dictionary<string, IList<string>> knownBlobsPerRepository = new Dictionary<string, IList<string>>();
-    Dictionary<string, IList<string>> knownTreesPerRepository = new Dictionary<string, IList<string>>();
+    readonly Dictionary<string, IList<string>> knownBlobsPerRepository = new Dictionary<string, IList<string>>();
+    readonly Dictionary<string, IList<string>> knownTreesPerRepository = new Dictionary<string, IList<string>>();
     GitHubClient client;
-    string blobStoragePath;
+    readonly string blobStoragePath;
 
     public GitHubGateway(Credentials credentials, IWebProxy proxy, Action<string> log)
     {
