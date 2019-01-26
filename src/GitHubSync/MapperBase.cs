@@ -21,9 +21,7 @@ abstract class MapperBase
 
                 if (toBeRemovedEntries.Contains(to))
                 {
-                    throw new InvalidOperationException(
-                        $"Cannot add this as the target path '{to.Path}' in branch'{to.Branch}' of '{to.Owner}/{to.Repository}' " +
-                        $"as it's already scheduled for removal.");
+                    throw new InvalidOperationException($"Cannot add this as the target path '{to.Path}' in branch'{to.Branch}' of '{to.Owner}/{to.Repository}' as it's already scheduled for removal.");
                 }
 
                 if (!toBeAddedOrUpdatedEntries.TryGetValue(toAddOrUpdate, out var parts))
@@ -45,8 +43,7 @@ abstract class MapperBase
                 if (toBeAddedOrUpdatedEntries.Values.SelectMany(x => x).Contains(to))
                 {
                     throw new InvalidOperationException(
-                        $"Cannot remove this as the target path '{to.Path}' in branch '{to.Branch}' of '{to.Owner}/{to.Repository}' " +
-                        $"as it's already scheduled for addition.");
+                        $"Cannot remove this as the target path '{to.Path}' in branch '{to.Branch}' of '{to.Owner}/{to.Repository}' as it's already scheduled for addition.");
                 }
 
                 if (toBeRemovedEntries.Contains(to))
@@ -77,7 +74,6 @@ abstract class MapperBase
         get
         {
             return new ReadOnlyCollection<Parts>(toBeRemovedEntries);
-
         }
     }
 
