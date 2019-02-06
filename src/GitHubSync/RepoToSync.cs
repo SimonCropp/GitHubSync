@@ -2,6 +2,11 @@ using System.Collections.Generic;
 
 class RepoToSync
 {
+    public override string ToString()
+    {
+        return $"{Owner}/{Repo}/{TargetBranch}";
+    }
+
     public string Owner { get; set; }
     public string Repo { get; set; }
     public string TargetBranch { get; set; }
