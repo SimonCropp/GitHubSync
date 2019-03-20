@@ -13,7 +13,7 @@
     <PackageReference Include="Octokit" Version="0.32.0" />
     <PackageReference Include="Xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <PackageReference Include="MarkdownSnippets" Version="9.1.0" />
+    <PackageReference Include="MarkdownSnippets" Version="9.1.1" />
     <ProjectReference Include="..\GitHubSync\GitHubSync.csproj" />
   </ItemGroup>
 
