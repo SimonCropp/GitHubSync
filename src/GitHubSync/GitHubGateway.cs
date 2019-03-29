@@ -12,14 +12,14 @@ using GitHubSync;
 
 class GitHubGateway : IDisposable
 {
-    readonly Action<string> log;
+    Action<string> log;
     Dictionary<string, Commit> commitCachePerOwnerRepositoryBranch = new Dictionary<string, Commit>();
     Dictionary<string, Tuple<Parts, TreeItem>> blobCachePerPath = new Dictionary<string, Tuple<Parts, TreeItem>>();
     Dictionary<string, Tuple<Parts, TreeResponse>> treeCachePerPath = new Dictionary<string, Tuple<Parts, TreeResponse>>();
-    readonly Dictionary<string, IList<string>> knownBlobsPerRepository = new Dictionary<string, IList<string>>();
-    readonly Dictionary<string, IList<string>> knownTreesPerRepository = new Dictionary<string, IList<string>>();
+    Dictionary<string, IList<string>> knownBlobsPerRepository = new Dictionary<string, IList<string>>();
+    Dictionary<string, IList<string>> knownTreesPerRepository = new Dictionary<string, IList<string>>();
     GitHubClient client;
-    readonly string blobStoragePath;
+    string blobStoragePath;
 
     public GitHubGateway(Credentials credentials, IWebProxy proxy, Action<string> log)
     {
@@ -258,25 +258,25 @@ class GitHubGateway : IDisposable
         return dic;
     }
 
-    public async Task<string> CreateCommit(string treeSha, string destinationOwner, string destinationRepository, string parentCommitSha)
+    public async Task<string> CreateCommit(string treeSha, string owner, string repo, string parentCommitSha)
     {
         var newCommit = new NewCommit("GitHubSync update", treeSha, new[] {parentCommitSha});
 
-        var createdCommit = await client.Git.Commit.Create(destinationOwner, destinationRepository, newCommit);
+        var createdCommit = await client.Git.Commit.Create(owner, repo, newCommit);
 
         log(string.Format("API Query - Create commit '{0}' in '{1}/{2}'. -> https://github.com/{1}/{2}/commit/{3}",
-            createdCommit.Sha.Substring(0, 7), destinationOwner, destinationRepository, createdCommit.Sha));
+            createdCommit.Sha.Substring(0, 7), owner, repo, createdCommit.Sha));
 
         return createdCommit.Sha;
     }
 
-    public async Task<string> CreateTree(NewTree newTree, string destinationOwner, string destinationRepository)
+    public async Task<string> CreateTree(NewTree newTree, string owner, string repo)
     {
-        var createdTree = await client.Git.Tree.Create(destinationOwner, destinationRepository, newTree);
+        var createdTree = await client.Git.Tree.Create(owner, repo, newTree);
 
-        log($"API Query - Create tree '{createdTree.Sha.Substring(0, 7)}' in '{destinationOwner}/{destinationRepository}'.");
+        log($"API Query - Create tree '{createdTree.Sha.Substring(0, 7)}' in '{owner}/{repo}'.");
 
-        AddToKnown<TreeResponse>(createdTree.Sha, destinationOwner, destinationRepository);
+        AddToKnown<TreeResponse>(createdTree.Sha, owner, repo);
 
         return createdTree.Sha;
     }
@@ -342,9 +342,9 @@ class GitHubGateway : IDisposable
         return reference.Ref.Substring("refs/heads/".Length);
     }
 
-    public async Task<int> CreatePullRequest(string owner, string repository, string branchName, string targetBranchName, bool merge)
+    public async Task<int> CreatePullRequest(string owner, string repository, string branch, string targetBranch, bool merge)
     {
-        var newPullRequest = new NewPullRequest("GitHubSync update", branchName, targetBranchName);
+        var newPullRequest = new NewPullRequest("GitHubSync update", branch, targetBranch);
         var pullRequest = await client.Repository.PullRequest.Create(owner, repository, newPullRequest);
         var prUrl = $"https://github.com/{owner}/{repository}/pull/{pullRequest.Number}";
         log($"API Query - Create pull request '#{pullRequest.Number}' in '{owner}/{repository}'. -> {prUrl}");
