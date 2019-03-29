@@ -54,11 +54,11 @@ class GitHubGateway : IDisposable
 
         log($"API Query - Retrieve reference '{"heads/" + source.Branch}' details from '{source.Owner}/{source.Repository}'.");
 
-        var refBranch = await client.Git.Reference.Get(source.Owner, source.Repository, "heads/" + source.Branch).ConfigureAwait(false);
+        var refBranch = await client.Git.Reference.Get(source.Owner, source.Repository, "heads/" + source.Branch);
 
         log($"API Query - Retrieve commit '{refBranch.Object.Sha.Substring(0, 7)}' details from '{source.Owner}/{source.Repository}'.");
 
-        commit = await client.Git.Commit.Get(source.Owner, source.Repository, refBranch.Object.Sha).ConfigureAwait(false);
+        commit = await client.Git.Commit.Get(source.Owner, source.Repository, refBranch.Object.Sha);
 
         commitCachePerOwnerRepositoryBranch.Add(orb, commit);
         return commit;
@@ -101,14 +101,14 @@ class GitHubGateway : IDisposable
 
         if (source.Path == null)
         {
-            var commit = await RootCommitFrom(source).ConfigureAwait(false);
+            var commit = await RootCommitFrom(source);
 
             sha = commit.Tree.Sha;
         }
         else
         {
             var parentTreePart = source.ParentTreePart;
-            var parentTreeResponse = await TreeFrom(parentTreePart, throwsIfNotFound).ConfigureAwait(false);
+            var parentTreeResponse = await TreeFrom(parentTreePart, throwsIfNotFound);
             if (parentTreeResponse == null)
             {
                 return null;
@@ -133,7 +133,7 @@ class GitHubGateway : IDisposable
         log(string.Format("API Query - Retrieve tree '{0}' ({3}) details from '{1}/{2}'.",
             sha.Substring(0, 7), source.Owner, source.Repository, source.Url));
 
-        var tree = await client.Git.Tree.Get(source.Owner, source.Repository, sha).ConfigureAwait(false);
+        var tree = await client.Git.Tree.Get(source.Owner, source.Repository, sha);
         var parts = new Parts(source.Owner, source.Repository, TreeEntryTargetType.Tree, source.Branch, source.Path, tree.Sha);
 
         var treeFrom = AddToPathCache(parts, tree);
@@ -170,7 +170,7 @@ class GitHubGateway : IDisposable
             return blobResponse;
         }
 
-        var parent = await TreeFrom(source.ParentTreePart, throwsIfNotFound).ConfigureAwait(false);
+        var parent = await TreeFrom(source.ParentTreePart, throwsIfNotFound);
 
         if (parent == null)
         {
@@ -262,7 +262,7 @@ class GitHubGateway : IDisposable
     {
         var newCommit = new NewCommit("GitHubSync update", treeSha, new[] {parentCommitSha});
 
-        var createdCommit = await client.Git.Commit.Create(destinationOwner, destinationRepository, newCommit).ConfigureAwait(false);
+        var createdCommit = await client.Git.Commit.Create(destinationOwner, destinationRepository, newCommit);
 
         log(string.Format("API Query - Create commit '{0}' in '{1}/{2}'. -> https://github.com/{1}/{2}/commit/{3}",
             createdCommit.Sha.Substring(0, 7), destinationOwner, destinationRepository, createdCommit.Sha));
@@ -272,7 +272,7 @@ class GitHubGateway : IDisposable
 
     public async Task<string> CreateTree(NewTree newTree, string destinationOwner, string destinationRepository)
     {
-        var createdTree = await client.Git.Tree.Create(destinationOwner, destinationRepository, newTree).ConfigureAwait(false);
+        var createdTree = await client.Git.Tree.Create(destinationOwner, destinationRepository, newTree);
 
         log($"API Query - Create tree '{createdTree.Sha.Substring(0, 7)}' in '{destinationOwner}/{destinationRepository}'.");
 
@@ -297,7 +297,7 @@ class GitHubGateway : IDisposable
         log($"API Query - Create blob '{sha.Substring(0, 7)}' in '{owner}/{repository}'.");
 
         // ReSharper disable once RedundantAssignment
-        var createdBlob = await client.Git.Blob.Create(owner, repository, newBlob).ConfigureAwait(false);
+        var createdBlob = await client.Git.Blob.Create(owner, repository, newBlob);
         Debug.Assert(sha == createdBlob.Sha);
 
         AddToKnown<Blob>(sha, owner, repository);
@@ -314,7 +314,7 @@ class GitHubGateway : IDisposable
 
         log($"API Query - Retrieve blob '{sha.Substring(0, 7)}' details from '{owner}/{repository}'.");
 
-        var blob = await client.Git.Blob.Get(owner, repository, sha).ConfigureAwait(false);
+        var blob = await client.Git.Blob.Get(owner, repository, sha);
 
         switch (blob.Encoding.Value)
         {
@@ -338,14 +338,14 @@ class GitHubGateway : IDisposable
 
         log($"API Query - Create reference '{newRef.Ref}' in '{owner}/{repository}'.");
 
-        var reference = await client.Git.Reference.Create(owner, repository, newRef).ConfigureAwait(false);
+        var reference = await client.Git.Reference.Create(owner, repository, newRef);
         return reference.Ref.Substring("refs/heads/".Length);
     }
 
     public async Task<int> CreatePullRequest(string owner, string repository, string branchName, string targetBranchName, bool merge)
     {
         var newPullRequest = new NewPullRequest("GitHubSync update", branchName, targetBranchName);
-        var pullRequest = await client.Repository.PullRequest.Create(owner, repository, newPullRequest).ConfigureAwait(false);
+        var pullRequest = await client.Repository.PullRequest.Create(owner, repository, newPullRequest);
         var prUrl = $"https://github.com/{owner}/{repository}/pull/{pullRequest.Number}";
         log($"API Query - Create pull request '#{pullRequest.Number}' in '{owner}/{repository}'. -> {prUrl}");
         if (merge)
@@ -356,7 +356,7 @@ class GitHubGateway : IDisposable
             }
 
             log($"API Query - Merge pull request '#{pullRequest.Number}' in '{owner}/{repository}'. -> {prUrl}");
-            await client.Repository.PullRequest.Merge(owner, repository, pullRequest.Number, new MergePullRequest()).ConfigureAwait(false);
+            await client.Repository.PullRequest.Merge(owner, repository, pullRequest.Number, new MergePullRequest());
         }
         return pullRequest.Number;
     }

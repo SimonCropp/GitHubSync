@@ -95,8 +95,8 @@ namespace GitHubSync
                 using (var syncer = new Syncer(credentials, null, log))
                 {
                     var mapper = target.GetMapper(itemsToSync);
-                    var diff = await syncer.Diff(mapper).ConfigureAwait(false);
-                    var sync = await syncer.Sync(diff, syncOutput, labelsToApplyOnPullRequests).ConfigureAwait(false);
+                    var diff = await syncer.Diff(mapper);
+                    var sync = await syncer.Sync(diff, syncOutput, labelsToApplyOnPullRequests);
                     var createdSyncBranch = sync.FirstOrDefault();
 
                     if (string.IsNullOrEmpty(createdSyncBranch))

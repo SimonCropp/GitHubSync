@@ -154,7 +154,7 @@ public class DiffTests: TestBase
     }
 
     [Fact]
-    public async Task OnRemoval_DoesNotThrowWhenBlobDoesNotexistInTargets()
+    public async Task OnRemoval_DoesNotThrowWhenBlobDoesNotExistInTargets()
     {
         var destinationBlob1 = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "new-new-file.txt");
         var destinationBlob2 = new Parts("SimonCropp/GitHubSync.TestRepository", TreeEntryTargetType.Blob, "consumer-one", "IDoNotExist/MeNeither/new-file.txt");

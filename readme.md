@@ -1,4 +1,9 @@
-# <img src="https://raw.github.com/SimonCropp/GitHubSync/master/src/icon.png" height="40px"> GitHubSync
+<!--
+This file was generate by MarkdownSnippets.
+Source File: /readme.source.md
+To change this file edit the source file and then re-run the generation using either the dotnet global tool (https://github.com/SimonCropp/MarkdownSnippets#githubmarkdownsnippets) or using the api (https://github.com/SimonCropp/MarkdownSnippets#running-as-a-unit-test).
+-->
+# <img src="https://raw.github.com/SimonCropp/CaptureSnippet/master/src/icon.png" height="40px"> GitHubSync
 
 A tool to help synchronizing specific files and folders across repositories
 

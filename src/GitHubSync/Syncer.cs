@@ -35,13 +35,13 @@ class Syncer : IDisposable
 
             log($"Diff - Analyze {source.Type} source '{source.Url}'.");
 
-            var richSource = await EnrichWithShas(source, true).ConfigureAwait(false);
+            var richSource = await EnrichWithShas(source, true);
 
             foreach (var destination in kvp.Value)
             {
                 log($"Diff - Analyze {source.Type} target '{destination.Url}'.");
 
-                var richDestination = await EnrichWithShas(destination, false).ConfigureAwait(false);
+                var richDestination = await EnrichWithShas(destination, false);
 
                 if (richSource.Sha == richDestination.Sha)
                 {
@@ -114,11 +114,11 @@ class Syncer : IDisposable
             }
         }
 
-        var btt = await BuildTargetTree(tt).ConfigureAwait(false);
+        var btt = await BuildTargetTree(tt);
 
-        var parentCommit = await gateway.RootCommitFrom(root).ConfigureAwait(false);
+        var parentCommit = await gateway.RootCommitFrom(root);
 
-        var c = await gateway.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha).ConfigureAwait(false);
+        var c = await gateway.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha);
 
         if (expectedOutput == SyncOutput.CreateCommit)
         {
@@ -127,17 +127,17 @@ class Syncer : IDisposable
 
         if (expectedOutput == SyncOutput.CreateBranch)
         {
-            branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).ConfigureAwait(false);
+            branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c);
             return $"https://github.com/{root.Owner}/{root.Repository}/compare/{UrlSanitize(root.Branch)}...{UrlSanitize(branchName)}";
         }
 
         if (expectedOutput == SyncOutput.CreatePullRequest || expectedOutput == SyncOutput.MergePullRequest)
         {
 
-            branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c).ConfigureAwait(false);
+            branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, c);
             var merge = expectedOutput == SyncOutput.MergePullRequest;
-            var prNumber = await gateway.CreatePullRequest(root.Owner, root.Repository, branchName, root.Branch, merge).ConfigureAwait(false);
-            await gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels).ConfigureAwait(false);
+            var prNumber = await gateway.CreatePullRequest(root.Owner, root.Repository, branchName, root.Branch, merge);
+            await gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
             return $"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}";
         }
 
@@ -151,7 +151,7 @@ class Syncer : IDisposable
 
     async Task<string> BuildTargetTree(TargetTree tt)
     {
-        var treeFrom = await gateway.TreeFrom(tt.Current, false).ConfigureAwait(false);
+        var treeFrom = await gateway.TreeFrom(tt.Current, false);
 
         NewTree newTree;
         if (treeFrom == null)
@@ -167,7 +167,7 @@ class Syncer : IDisposable
         foreach (var st in tt.SubTreesToUpdate.Values)
         {
             RemoveTreeItemFrom(newTree, st.Current.Name);
-            var sha = await BuildTargetTree(st).ConfigureAwait(false);
+            var sha = await BuildTargetTree(st);
 
             if (sha == TargetTree.EmptyTreeSha)
             {
@@ -198,7 +198,7 @@ class Syncer : IDisposable
 
             RemoveTreeItemFrom(newTree, destination.Name);
 
-            await SyncLeaf(source, destination).ConfigureAwait(false);
+            await SyncLeaf(source, destination);
 
             switch (source.Type)
             {
@@ -235,7 +235,7 @@ class Syncer : IDisposable
             return TargetTree.EmptyTreeSha;
         }
 
-        return await gateway.CreateTree(newTree, tt.Current.Owner, tt.Current.Repository).ConfigureAwait(false);
+        return await gateway.CreateTree(newTree, tt.Current.Owner, tt.Current.Repository);
     }
 
     Task SyncLeaf(Parts source, Parts destination)
@@ -293,8 +293,8 @@ class Syncer : IDisposable
             return;
         }
 
-        await gateway.FetchBlob(sourceOwner, sourceRepository, sha).ConfigureAwait(false);
-        await gateway.CreateBlob(destinationOwner, destinationRepository, sha).ConfigureAwait(false);
+        await gateway.FetchBlob(sourceOwner, sourceRepository, sha);
+        await gateway.CreateBlob(destinationOwner, destinationRepository, sha);
     }
 
     async Task SyncTree(Parts source, string destinationOwner, string destinationRepository)
@@ -304,7 +304,7 @@ class Syncer : IDisposable
             return;
         }
 
-        var treeFrom = await gateway.TreeFrom(source, true).ConfigureAwait(false);
+        var treeFrom = await gateway.TreeFrom(source, true);
 
         var newTree = new NewTree();
 
@@ -314,11 +314,11 @@ class Syncer : IDisposable
             switch (value)
             {
                 case TreeType.Blob:
-                    await SyncBlob(source.Owner, source.Repository, i.Sha, destinationOwner, destinationRepository).ConfigureAwait(false);
+                    await SyncBlob(source.Owner, source.Repository, i.Sha, destinationOwner, destinationRepository);
                     break;
 
                 case TreeType.Tree:
-                    await SyncTree(treeFrom.Item1.Combine(TreeEntryTargetType.Tree, i.Path, i.Sha), destinationOwner, destinationRepository).ConfigureAwait(false);
+                    await SyncTree(treeFrom.Item1.Combine(TreeEntryTargetType.Tree, i.Path, i.Sha), destinationOwner, destinationRepository);
                     break;
 
                 default:
@@ -335,7 +335,7 @@ class Syncer : IDisposable
         }
 
         // ReSharper disable once RedundantAssignment
-        var sha = await gateway.CreateTree(newTree, destinationOwner, destinationRepository).ConfigureAwait(false);
+        var sha = await gateway.CreateTree(newTree, destinationOwner, destinationRepository);
 
         Debug.Assert(source.Sha == sha);
     }
@@ -347,7 +347,7 @@ class Syncer : IDisposable
         switch (part.Type)
         {
             case TreeEntryTargetType.Tree:
-                var t = await gateway.TreeFrom(part, throwsIfNotFound).ConfigureAwait(false);
+                var t = await gateway.TreeFrom(part, throwsIfNotFound);
 
                 if (t != null)
                 {
@@ -357,7 +357,7 @@ class Syncer : IDisposable
                 break;
 
             case TreeEntryTargetType.Blob:
-                var b = await gateway.BlobFrom(part, throwsIfNotFound).ConfigureAwait(false);
+                var b = await gateway.BlobFrom(part, throwsIfNotFound);
 
                 if (b != null)
                 {
