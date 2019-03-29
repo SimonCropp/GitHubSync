@@ -105,7 +105,7 @@ class Syncer : IDisposable
                     tt.Add(destination, toAddOrUpdate);
                     break;
 
-                case Parts.NullParts ToBeRemoved:
+                case Parts.NullParts _:
                     tt.Remove(destination);
                     break;
 

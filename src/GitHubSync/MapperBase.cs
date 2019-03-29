@@ -34,7 +34,7 @@ abstract class MapperBase
 
                 break;
 
-            case Parts.NullParts ToBeRemoved:
+            case Parts.NullParts _:
                 if (to.Type == TreeEntryTargetType.Tree)
                 {
                     throw new NotSupportedException($"Removing a '{nameof(TreeEntryTargetType.Tree)}' isn't supported.");

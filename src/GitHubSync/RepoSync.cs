@@ -9,12 +9,12 @@ namespace GitHubSync
     public class RepoSync
     {
         List<SyncItem> itemsToSync = new List<SyncItem>();
-        readonly Credentials credentials;
-        readonly string sourceOwner;
-        readonly string sourceRepository;
-        readonly string sourceBranch;
-        readonly Action<string> log;
-        readonly List<string> labelsToApplyOnPullRequests;
+        Credentials credentials;
+        string sourceOwner;
+        string sourceRepository;
+        string sourceBranch;
+        Action<string> log;
+        List<string> labelsToApplyOnPullRequests;
         List<RepoToSync> targets = new List<RepoToSync>();
 
         public RepoSync(Credentials credentials, string sourceOwner, string sourceRepository, string branch, Action<string> log = null, List<string> labelsToApplyOnPullRequests = null)
@@ -79,13 +79,14 @@ namespace GitHubSync
             Guard.AgainstNullAndEmpty(owner, nameof(owner));
             Guard.AgainstNullAndEmpty(repository, nameof(repository));
             Guard.AgainstEmpty(branch, nameof(branch));
-            targets.Add(new RepoToSync
-            {
-                Owner = owner,
-                Repo = repository,
-                TargetBranch = branch,
-                ReplacementTokens = replacementTokens
-            });
+            targets.Add(
+                new RepoToSync
+                {
+                    Owner = owner,
+                    Repo = repository,
+                    TargetBranch = branch,
+                    ReplacementTokens = replacementTokens
+                });
         }
 
         public async Task Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)
