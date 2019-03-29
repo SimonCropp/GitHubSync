@@ -79,7 +79,7 @@ abstract class MapperBase
 
     public IDictionary<string, IList<Tuple<Parts, IParts>>> Transpose()
     {
-        var d = new Dictionary<string, IList<Tuple<Parts, IParts>>>();
+        var parts = new Dictionary<string, IList<Tuple<Parts, IParts>>>();
 
         foreach (var kvp in toBeAddedOrUpdatedEntries)
         {
@@ -89,10 +89,10 @@ abstract class MapperBase
             {
                 var orb = $"{destination.Owner}/{destination.Repository}/{destination.Branch}";
 
-                if (!d.TryGetValue(orb, out var items))
+                if (!parts.TryGetValue(orb, out var items))
                 {
                     items = new List<Tuple<Parts, IParts>>();
-                    d.Add(orb, items);
+                    parts.Add(orb, items);
                 }
 
                 items.Add(new Tuple<Parts, IParts>(destination, source));
@@ -103,15 +103,15 @@ abstract class MapperBase
         {
             var orb = $"{destination.Owner}/{destination.Repository}/{destination.Branch}";
 
-            if (!d.TryGetValue(orb, out var items))
+            if (!parts.TryGetValue(orb, out var items))
             {
                 items = new List<Tuple<Parts, IParts>>();
-                d.Add(orb, items);
+                parts.Add(orb, items);
             }
 
             items.Add(new Tuple<Parts, IParts>(destination, Parts.Empty));
         }
 
-        return d;
+        return parts;
     }
 }

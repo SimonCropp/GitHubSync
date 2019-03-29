@@ -1,0 +1,13 @@
+﻿{
+  targets: [
+    {
+      Owner: 'owner',
+      Repo: 'repo1'
+    },
+    {
+      Owner: 'owner2',
+      Repo: 'repo2',
+      TargetBranch: 'branch2'
+    }
+  ]
+}

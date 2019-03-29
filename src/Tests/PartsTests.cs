@@ -10,26 +10,7 @@ public class PartsTests: TestBase
     public void Tree()
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Tree, "develop", "buildSupport");
-
-        Assert.Equal("SimonCropp", parts.Owner);
-        Assert.Equal("Fake", parts.Repository);
-        Assert.Equal(TreeEntryTargetType.Tree, parts.Type);
-        Assert.Equal("develop", parts.Branch);
-        Assert.Equal("buildSupport", parts.Path);
-        Assert.Equal(1, parts.NumberOfPathSegments);
-        Assert.Equal("buildSupport", parts.Name);
-        Assert.Equal("https://github.com/SimonCropp/Fake/tree/develop/buildSupport", parts.Url);
-
-        var parent = parts.ParentTreePart;
-
-        Assert.Equal("SimonCropp", parent.Owner);
-        Assert.Equal("Fake", parent.Repository);
-        Assert.Equal(TreeEntryTargetType.Tree, parent.Type);
-        Assert.Equal("develop", parent.Branch);
-        Assert.Null(parent.Path);
-        Assert.Equal(0, parent.NumberOfPathSegments);
-        Assert.Null(parent.Name);
-        Assert.Equal("https://github.com/SimonCropp/Fake/tree/develop", parent.Url);
+        ObjectApprover.VerifyWithJson(parts);
     }
 
     [Fact]
