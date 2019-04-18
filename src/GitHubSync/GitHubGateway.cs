@@ -96,7 +96,7 @@ class GitHubGateway : IDisposable
 
     public async Task<bool> HasOpenPullRequests(string owner, string name, string prTitle)
     {
-        var pullRequests = await this.client.PullRequest.GetAllForRepository(owner, name);
+        var pullRequests = await client.PullRequest.GetAllForRepository(owner, name);
 
         return pullRequests.Any(x => string.Equals(x.Title, prTitle, StringComparison.OrdinalIgnoreCase));
     }

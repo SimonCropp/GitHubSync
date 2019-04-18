@@ -18,7 +18,7 @@ namespace GitHubSync
 
         public RepoSync(Action<string> log = null, List<string> labelsToApplyOnPullRequests = null, SyncMode syncMode = SyncMode.IncludeAllByDefault)
         {
-            this.log = log;
+            this.log = log ?? Console.WriteLine;
             this.labelsToApplyOnPullRequests = labelsToApplyOnPullRequests;
             this.syncMode = syncMode;
         }
@@ -79,7 +79,7 @@ namespace GitHubSync
             targets.Add(targetRepository);
         }
 
-        public async Task<SyncContext> CalculateItemsToSync(RepositoryInfo targetRepository)
+        public async Task<SyncContext> CalculateSyncContext(RepositoryInfo targetRepository)
         {
             var syncContext = new SyncContext(targetRepository);
 
@@ -109,7 +109,7 @@ namespace GitHubSync
 
                         includedPaths.Add(item);
 
-                        if (manualSyncItems.Any(x => string.Equals(x.Path, item, StringComparison.OrdinalIgnoreCase)))
+                        if (manualSyncItems.Any(x => item.StartsWith(x.Path, StringComparison.OrdinalIgnoreCase)))
                         {
                             switch (syncMode)
                             {
@@ -190,7 +190,7 @@ namespace GitHubSync
                         continue;
                     }
 
-                    var syncContext = await CalculateItemsToSync(targetRepository);
+                    var syncContext = await CalculateSyncContext(targetRepository);
 
                     if (syncContext.Diff.ToBeAddedOrUpdatedEntries.Count() == 0)
                     {

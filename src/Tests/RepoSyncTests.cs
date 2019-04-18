@@ -9,25 +9,29 @@ public class RepoSyncTests : TestBase
     public Task SyncPr()
     {
         var credentials = CredentialsHelper.Credentials;
-        var repoSync = new RepoSync(credentials, "SimonCropp", "GitHubSync.TestRepository", "source", WriteLog);
-        repoSync.AddBlob("sourceFile.txt");
+        var repoSync = new RepoSync(WriteLog);
+
+        repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+        //repoSync.AddBlob("sourceFile.txt");
         repoSync.RemoveBlob("IDoNotExist/MeNeither.txt");
         repoSync.RemoveBlob("a/b/c/file.txt");
         repoSync.RemoveBlob("a/b/file.txt");
-        repoSync.AddTarget("SimonCropp", "GitHubSync.TestRepository", "target");
+        repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "target"));
 
-        return repoSync.Sync();
+        return repoSync.Sync(SyncOutput.CreatePullRequest);
     }
 
     [Fact]
     public Task SyncPrMerge()
     {
         var credentials = CredentialsHelper.Credentials;
-        var repoSync = new RepoSync(credentials, "SimonCropp", "GitHubSync.TestRepository", "source", WriteLog);
-        repoSync.AddBlob("sourceFile.txt");
+        var repoSync = new RepoSync(WriteLog);
+
+        repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+        //repoSync.AddBlob("sourceFile.txt");
         repoSync.RemoveBlob("IDoNotExist/MeNeither.txt");
         repoSync.RemoveBlob("README.md");
-        repoSync.AddTarget("SimonCropp", "GitHubSync.TestRepository", "targetForMerge");
+        repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "targetForMerge"));
 
         return repoSync.Sync(SyncOutput.MergePullRequest);
     }
@@ -35,11 +39,14 @@ public class RepoSyncTests : TestBase
     [Fact]
     public Task SyncCommit()
     {
-        var repoSync = new RepoSync(CredentialsHelper.Credentials, "SimonCropp", "GitHubSync.TestRepository", "source", WriteLog);
-        repoSync.AddBlob("sourceFile.txt");
+        var credentials = CredentialsHelper.Credentials;
+        var repoSync = new RepoSync(WriteLog);
+
+        repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+        //repoSync.AddBlob("sourceFile.txt");
         repoSync.RemoveBlob("IDoNotExist/MeNeither.txt");
         repoSync.RemoveBlob("README.md");
-        repoSync.AddTarget("SimonCropp", "GitHubSync.TestRepository", "targetForCommit");
+        repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "targetForCommit"));
 
         return repoSync.Sync(SyncOutput.CreateCommit);
     }
