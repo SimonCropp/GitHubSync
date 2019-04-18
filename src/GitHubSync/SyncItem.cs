@@ -1,4 +1,4 @@
-﻿class SyncItem
+﻿public class SyncItem
 {
     public Parts Parts { get; set; }
     public bool ToBeAdded { get; set; }
