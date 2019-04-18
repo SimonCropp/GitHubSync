@@ -1,0 +1,62 @@
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Octokit;
+
+public static class OctokitEx
+{
+    public static async Task<List<string>> GetRecursive(Credentials credentials, string sourceOwner, string sourceRepository, string path = null)
+    {
+        var items = new List<string>();
+        await GetRecursive(credentials, sourceOwner, sourceRepository, path, items);
+        return items;
+    }
+
+    static async Task GetRecursive(Credentials credentials, string sourceOwner, string sourceRepository, string path, List<string> items)
+    {
+        var client = new GitHubClient(new ProductHeaderValue("GitHubSync"));
+
+        if (credentials != null)
+        {
+            client.Credentials = credentials;
+        }
+
+        await GetRecursive(client, sourceOwner, sourceRepository, path, items);
+    }
+
+    static async Task GetRecursive(GitHubClient client, string sourceOwner, string sourceRepository, string path, List<string> items)
+    {
+        foreach (var content in await client.Repository.Content.GetAllContentsEx(sourceOwner, sourceRepository, path))
+        {
+            var contentPath = content.Path;
+            if (content.Type.Value == ContentType.File)
+            {
+                items.Add(contentPath);
+            }
+
+            if (content.Type.Value == ContentType.Dir)
+            {
+                await GetRecursive(client, sourceOwner, sourceRepository, contentPath, items);
+            }
+        }
+    }
+
+    static Task<IReadOnlyList<RepositoryContent>> GetAllContentsEx(this IRepositoryContentsClient content, string owner, string repo, string path = null, string branch = null)
+    {
+        if (branch == null)
+        {
+            if (path != null)
+            {
+                return content.GetAllContents(owner, repo, path);
+            }
+
+            return content.GetAllContents(owner, repo);
+        }
+
+        if (path != null)
+        {
+            return content.GetAllContentsByRef(owner, repo, path, reference: branch);
+        }
+
+        return content.GetAllContentsByRef(owner, repo, reference: branch);
+    }
+}

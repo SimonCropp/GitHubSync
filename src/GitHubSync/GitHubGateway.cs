@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Octokit;
 using Octokit.Internal;
 using GitHubSync;
+using System.Net.Http;
 
 class GitHubGateway : IDisposable
 {
@@ -38,10 +39,66 @@ class GitHubGateway : IDisposable
         var connection = new Connection(
             new ProductHeaderValue("GitHubSync"),
             new HttpClientAdapter(() => HttpMessageHandlerFactory.CreateDefault(proxy)));
-        return new GitHubClient(connection)
+
+        var gitHubClient = new GitHubClient(connection);
+
+        if (credentials != null)
         {
-            Credentials = credentials
-        };
+            gitHubClient.Credentials = credentials;
+        }
+
+        return gitHubClient;
+    }
+
+    public async Task<User> GetCurrentUser()
+    {
+        var currentUser = await client.User.Current();
+        return currentUser;
+    }
+
+    public async Task<bool> IsCollaborator(string owner, string name)
+    {
+        var currentUser = await client.User.Current();
+
+        // Note: checking whether a user is a collaborator requires push access
+        var allRepos = await client.Repository.GetAllForCurrent();
+        var isCollaborator = allRepos.Any(x => string.Equals(x.FullName, $"{owner}/{name}", StringComparison.OrdinalIgnoreCase));
+
+        return isCollaborator;
+    }
+
+    public async Task<Repository> Fork(string owner, string name)
+    {
+        var apiConnection = new ApiConnection(client.Connection);
+        var forkClient = new RepositoryForksClient(apiConnection);
+
+        var forkedRepository = await forkClient.Create(owner, name, new NewRepositoryFork());
+        return forkedRepository;
+    }
+
+    public async Task DownloadBlob(Parts source, Stream targetStream)
+    {
+        var downloadUrl = $"https://raw.githubusercontent.com/{source.Owner}/{source.Repository}/{source.Branch}/{source.Path}";
+
+        log($"Downloading blob from '{downloadUrl}'");
+
+        using (var client = new HttpClient())
+        {
+            using (var response = await client.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead))
+            {
+                using (var streamToReadFrom = await response.Content.ReadAsStreamAsync())
+                {
+                    await streamToReadFrom.CopyToAsync(targetStream);
+                }
+            }
+        }
+    }
+
+    public async Task<bool> HasOpenPullRequests(string owner, string name, string prTitle)
+    {
+        var pullRequests = await this.client.PullRequest.GetAllForRepository(owner, name);
+
+        return pullRequests.Any(x => string.Equals(x.Title, prTitle, StringComparison.OrdinalIgnoreCase));
     }
 
     public async Task<Commit> RootCommitFrom(Parts source)
@@ -260,7 +317,7 @@ class GitHubGateway : IDisposable
 
     public async Task<string> CreateCommit(string treeSha, string owner, string repo, string parentCommitSha)
     {
-        var newCommit = new NewCommit("GitHubSync update", treeSha, new[] {parentCommitSha});
+        var newCommit = new NewCommit("GitHubSync update", treeSha, new[] { parentCommitSha });
 
         var createdCommit = await client.Git.Commit.Create(owner, repo, newCommit);
 
@@ -342,12 +399,21 @@ class GitHubGateway : IDisposable
         return reference.Ref.Substring("refs/heads/".Length);
     }
 
-    public async Task<int> CreatePullRequest(string owner, string repository, string branch, string targetBranch, bool merge)
+    public async Task<int> CreatePullRequest(string owner, string repository, string branch, string targetBranch,
+        bool merge, string description)
     {
         var newPullRequest = new NewPullRequest("GitHubSync update", branch, targetBranch);
+
+        if (!string.IsNullOrWhiteSpace(description))
+        {
+            newPullRequest.Body = description;
+        }
+
         var pullRequest = await client.Repository.PullRequest.Create(owner, repository, newPullRequest);
         var prUrl = $"https://github.com/{owner}/{repository}/pull/{pullRequest.Number}";
+
         log($"API Query - Create pull request '#{pullRequest.Number}' in '{owner}/{repository}'. -> {prUrl}");
+
         if (merge)
         {
             if (!pullRequest.Mergeable.GetValueOrDefault(true))
@@ -358,6 +424,7 @@ class GitHubGateway : IDisposable
             log($"API Query - Merge pull request '#{pullRequest.Number}' in '{owner}/{repository}'. -> {prUrl}");
             await client.Repository.PullRequest.Merge(owner, repository, pullRequest.Number, new MergePullRequest());
         }
+
         return pullRequest.Number;
     }
 
