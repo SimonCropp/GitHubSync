@@ -69,13 +69,7 @@ abstract class MapperBase
         }
     }
 
-    public IEnumerable<Parts> ToBeRemovedEntries
-    {
-        get
-        {
-            return new ReadOnlyCollection<Parts>(toBeRemovedEntries);
-        }
-    }
+    public IEnumerable<Parts> ToBeRemovedEntries => new ReadOnlyCollection<Parts>(toBeRemovedEntries);
 
     public IDictionary<string, IList<Tuple<Parts, IParts>>> Transpose()
     {
