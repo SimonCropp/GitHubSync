@@ -10,8 +10,7 @@ public class Snippets
         #region usage
         // Create a new RepoSync
         var repoSync = new RepoSync(
-            log: Console.WriteLine,
-            syncMode: SyncMode.IncludeAllByDefault);
+            log: Console.WriteLine);
 
         // Add source repo(s)
         repoSync.AddSourceRepository(new RepositoryInfo(

@@ -18,7 +18,7 @@ public class RepoSyncTests : TestBase
         repoSync.RemoveBlob("a/b/file.txt");
         repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "target"));
 
-        return repoSync.Sync(SyncOutput.CreatePullRequest);
+        return repoSync.Sync();
     }
 
     [Fact]

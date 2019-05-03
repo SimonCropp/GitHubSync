@@ -271,7 +271,7 @@ class Syncer : IDisposable
 
                 switch (source)
                 {
-                    case Parts toAddOrUpdate:
+                    case Parts _:
                         // Directly download raw bytes into file
                         using (var fileStream = new FileStream(fullDestination, System.IO.FileMode.Create))
                         {
