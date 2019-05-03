@@ -58,22 +58,17 @@ class GitHubGateway : IDisposable
 
     public async Task<bool> IsCollaborator(string owner, string name)
     {
-        var currentUser = await client.User.Current();
-
         // Note: checking whether a user is a collaborator requires push access
         var allRepos = await client.Repository.GetAllForCurrent();
-        var isCollaborator = allRepos.Any(x => string.Equals(x.FullName, $"{owner}/{name}", StringComparison.OrdinalIgnoreCase));
-
-        return isCollaborator;
+        return allRepos.Any(x => string.Equals(x.FullName, $"{owner}/{name}", StringComparison.OrdinalIgnoreCase));
     }
 
-    public async Task<Repository> Fork(string owner, string name)
+    public Task<Repository> Fork(string owner, string name)
     {
         var apiConnection = new ApiConnection(client.Connection);
         var forkClient = new RepositoryForksClient(apiConnection);
 
-        var forkedRepository = await forkClient.Create(owner, name, new NewRepositoryFork());
-        return forkedRepository;
+        return forkClient.Create(owner, name, new NewRepositoryFork());
     }
 
     public async Task DownloadBlob(Parts source, Stream targetStream)

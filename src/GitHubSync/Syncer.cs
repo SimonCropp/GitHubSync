@@ -121,7 +121,7 @@ class Syncer : IDisposable
         var isCollaborator = await gateway.IsCollaborator(root.Owner, root.Repository);
         if (!isCollaborator)
         {
-            log($"User is not a collaborator, need to create a fork");
+            log("User is not a collaborator, need to create a fork");
 
             if (expectedOutput != SyncOutput.CreatePullRequest)
             {

@@ -1,7 +1,5 @@
 ﻿namespace GitHubSync
 {
-    using System.Collections.Generic;
-
     public class SyncContext
     {
         public SyncContext(RepositoryInfo targetRepository)
