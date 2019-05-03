@@ -1,0 +1,34 @@
+templates:
+  - name: geertvanhorrik
+    url: https://github.com/geertvanhorrik/repositorytemplate
+    branch: master
+  - name: catel
+    url: https://github.com/Catel/RepositoryTemplate.Components
+    branch: master
+  - name: wildgums-components-public
+    url: https://github.com/wildgums/RepositoryTemplate.Components.Public
+    branch: master
+
+repositories:
+  - name: CsvHelper
+    url: https://github.com/JoshClose/CsvHelper
+    branch: master
+    autoMerge: false
+    templates:
+      - geertvanhorrik
+
+  - name: Catel
+    url: https://github.com/catel/catel
+    branch: develop
+    autoMerge: true
+    templates:
+      - geertvanhorrik
+      - catel
+
+  - name: Orc.Controls
+    url: https://github.com/wildgums/orc.controls
+    branch: develop
+    autoMerge: true
+    templates:
+      - geertvanhorrik
+      - wildgums-components-public

@@ -6,6 +6,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="*.yaml" />
+    <Content Include="*yaml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="ApprovalTests" Version="3.0.22" />
     <PackageReference Include="ObjectApproval" Version="9.1.0" />
     <PackageReference Include="Octokit" Version="0.32.0" />
