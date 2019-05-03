@@ -1,74 +1,101 @@
 ﻿using GitHubSync;
 using ObjectApproval;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
 public class RepoSyncPartsTests : TestBase
 {
     [Fact]
-    public void Simple()
+    public async Task Simple()
     {
-        var repoSync = BuildRepoSync();
-        repoSync.AddBlob("added1");
-        repoSync.AddBlob("added2","target2");
+        var repoSync = BuildRepoSync(SyncMode.IncludeAllByDefault);
+
+        //repoSync.AddBlob("added1");
+        //repoSync.AddBlob("added2","target2");
         repoSync.RemoveBlob("removed1");
         repoSync.RemoveBlob("removed2", "target2");
-        repoSync.AddTarget("owner1", "repo1", "branch1");
-        repoSync.AddTarget("owner2", "repo2", "branch2");
-        Verify(repoSync);
+
+        repoSync.AddTargetRepository(new RepositoryInfo(null, "owner1", "repo1", "branch1"));
+        repoSync.AddTargetRepository(new RepositoryInfo(null, "owner2", "repo2", "branch2"));
+
+        await Verify(repoSync);
     }
+
     [Fact]
-    public void AddBlob()
+    public async Task AddBlob()
     {
-        var repoSync = BuildRepoSync();
+        var repoSync = BuildRepoSync(SyncMode.ExcludeAllByDefault);
+
         repoSync.AddBlob("added1");
         repoSync.AddBlob("added2","target2");
         repoSync.AddBlob("sourceDir/added3","targetDir/target3");
-        Verify(repoSync);
+
+        await Verify(repoSync);
     }
+
     [Fact]
-    public void AddTree()
+    public async Task AddTree()
     {
-        var repoSync = BuildRepoSync();
+        var repoSync = BuildRepoSync(SyncMode.ExcludeAllByDefault);
+
         repoSync.AddSourceItem(TreeEntryTargetType.Tree, "added1");
         repoSync.AddSourceItem(TreeEntryTargetType.Tree,"added2","target2");
         repoSync.AddSourceItem(TreeEntryTargetType.Tree,"sourceDir/added3","targetDir/target3");
-        Verify(repoSync);
+
+        await Verify(repoSync);
     }
 
     [Fact]
-    public void RemoveBlob()
+    public async Task RemoveBlob()
     {
-        var repoSync = BuildRepoSync();
+        var repoSync = BuildRepoSync(SyncMode.IncludeAllByDefault);
+
         repoSync.RemoveBlob("added1");
         repoSync.RemoveBlob("added2","target2");
         repoSync.RemoveBlob("sourceDir/added3","targetDir/target3");
-        Verify(repoSync);
+
+        await Verify(repoSync);
     }
 
     [Fact]
-    public void AddTarget()
+    public async Task AddTarget()
     {
-        var repoSync = BuildRepoSync();
-        repoSync.AddTarget("repo1");
-        repoSync.AddTarget("owner2","repo2","branch2");
-        Verify(repoSync);
+        var repoSync = BuildRepoSync(SyncMode.IncludeAllByDefault);
+
+        repoSync.AddTargetRepository(new RepositoryInfo(null, "owner1", "repo1", "branch1"));
+        repoSync.AddTargetRepository(new RepositoryInfo(null, "owner2", "repo2", "branch2"));
+
+        await Verify(repoSync);
     }
 
-    static RepoSync BuildRepoSync()
+    static RepoSync BuildRepoSync(SyncMode syncMode)
     {
         var credentials = CredentialsHelper.Credentials;
-        return new RepoSync(credentials, "owner", "GitHubSync.TestRepository", "source");
+
+        var repoSync = new RepoSync(syncMode: syncMode);
+        repoSync.AddSourceRepository(new RepositoryInfo(credentials, "owner", "GitHubSync.TestRepository", "source"));
+
+        return repoSync;
     }
 
-    static void Verify(RepoSync repoSync)
+#pragma warning disable CS1998
+    static async Task Verify(RepoSync repoSync)
+#pragma warning restore CS1998
     {
-        ObjectApprover.VerifyWithJson(
-            new
-            {
-                repoSync.itemsToSync,
-                repoSync.targets
-            });
+        // Note: we can't verify against local dummy repositories (yet)
+        //foreach (var target in repoSync.targets)
+        //{
+        //    var syncContext = await repoSync.CalculateSyncContext(target);
+
+        //    ObjectApprover.VerifyWithJson(
+        //        new
+        //        {
+        //            syncContext.Diff,
+        //            syncContext.Description,
+        //            repoSync.sources
+        //        });
+        //}
     }
 
     public RepoSyncPartsTests(ITestOutputHelper output) : base(output)

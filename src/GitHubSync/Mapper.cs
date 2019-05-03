@@ -1,4 +1,4 @@
-﻿class Mapper : MapperBase
+﻿public class Mapper : MapperBase
 {
     public Mapper Add(Parts from, Parts to)
     {

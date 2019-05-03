@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-abstract class MapperBase
+public abstract class MapperBase
 {
     Dictionary<Parts, ICollection<Parts>> toBeAddedOrUpdatedEntries = new Dictionary<Parts, ICollection<Parts>>();
     List<Parts> toBeRemovedEntries = new List<Parts>();

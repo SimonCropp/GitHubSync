@@ -1,34 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-using Octokit;
 
 namespace GitHubSync
 {
     public class RepoSync
     {
-        internal List<SyncItem> itemsToSync = new List<SyncItem>();
-        Credentials credentials;
-        string sourceOwner;
-        string sourceRepository;
-        string sourceBranch;
-        Action<string> log;
-        List<string> labelsToApplyOnPullRequests;
-        internal List<RepoToSync> targets = new List<RepoToSync>();
+        private readonly Action<string> log;
+        private readonly List<string> labelsToApplyOnPullRequests;
+        private readonly SyncMode syncMode;
 
-        public RepoSync(Credentials credentials, string sourceOwner, string sourceRepository, string branch, Action<string> log = null, List<string> labelsToApplyOnPullRequests = null)
+        private List<ManualSyncItem> manualSyncItems = new List<ManualSyncItem>();
+        internal List<RepositoryInfo> sources = new List<RepositoryInfo>();
+        internal List<RepositoryInfo> targets = new List<RepositoryInfo>();
+
+        public RepoSync(Action<string> log = null, List<string> labelsToApplyOnPullRequests = null, SyncMode syncMode = SyncMode.IncludeAllByDefault)
         {
-            Guard.AgainstNull(credentials, nameof(credentials));
-            Guard.AgainstNullAndEmpty(sourceOwner, nameof(sourceOwner));
-            Guard.AgainstNullAndEmpty(sourceRepository, nameof(sourceRepository));
-            Guard.AgainstNullAndEmpty(branch, nameof(branch));
-            this.credentials = credentials;
-            this.sourceOwner = sourceOwner;
-            this.sourceRepository = sourceRepository;
-            sourceBranch = branch;
-            this.log = log;
+            this.log = log ?? Console.WriteLine;
             this.labelsToApplyOnPullRequests = labelsToApplyOnPullRequests;
+            this.syncMode = syncMode;
         }
 
         public void AddBlob(string path, string target = null)
@@ -60,53 +52,162 @@ namespace GitHubSync
         {
             Guard.AgainstNullAndEmpty(path, nameof(path));
             Guard.AgainstEmpty(target, nameof(target));
-            itemsToSync.Add(
-                new SyncItem
-                {
-                    Parts = new Parts($"{sourceOwner}/{sourceRepository}", type, sourceBranch, path),
-                    ToBeAdded = toBeAdded,
-                    Target = target
-                });
+
+            if (toBeAdded && syncMode == SyncMode.IncludeAllByDefault)
+            {
+                throw new NotSupportedException($"Adding items is not supported when mode is '{syncMode}'");
+            }
+
+            if (!toBeAdded && syncMode == SyncMode.ExcludeAllByDefault)
+            {
+                throw new NotSupportedException($"Adding items is not supported when mode is '{syncMode}'");
+            }
+
+            manualSyncItems.Add(new ManualSyncItem
+            {
+                Path = path
+            });
         }
 
-        public void AddTarget(string repository, string branch = null, Dictionary<string, string> replacementTokens = null)
+        public void AddSourceRepository(RepositoryInfo sourceRepository)
         {
-            AddTarget(sourceOwner, repository, branch, replacementTokens);
+            sources.Add(sourceRepository);
         }
 
-        public void AddTarget(string owner, string repository, string branch = null, Dictionary<string, string> replacementTokens = null)
+        public void AddTargetRepository(RepositoryInfo targetRepository)
         {
-            Guard.AgainstNullAndEmpty(owner, nameof(owner));
-            Guard.AgainstNullAndEmpty(repository, nameof(repository));
-            Guard.AgainstEmpty(branch, nameof(branch));
-            targets.Add(
-                new RepoToSync
+            targets.Add(targetRepository);
+        }
+
+        public async Task<SyncContext> CalculateSyncContext(RepositoryInfo targetRepository)
+        {
+            var syncContext = new SyncContext(targetRepository);
+
+            using (var syncer = new Syncer(targetRepository.Credentials, null, log))
+            {
+                var diffs = new List<Mapper>();
+                var includedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                var descriptionBuilder = new StringBuilder();
+                descriptionBuilder.AppendLine("This is an automated synchronization PR.");
+                descriptionBuilder.AppendLine();
+                descriptionBuilder.AppendLine("The following source template repositories were used:");
+
+                // Note: iterate backwards, later registered sources should override earlier registrations
+                for (var i = sources.Count - 1; i >= 0; i--)
                 {
-                    Owner = owner,
-                    Repo = repository,
-                    TargetBranch = branch,
-                    ReplacementTokens = replacementTokens
-                });
+                    var sourceRepository = sources[i];
+                    var sourceRepositoryDisplayName = $"{sourceRepository.Owner}/{sourceRepository.Repository}";
+                    var itemsToSync = new List<SyncItem>();
+
+                    foreach (var item in await OctokitEx.GetRecursive(sourceRepository.Credentials, sourceRepository.Owner, sourceRepository.Repository))
+                    {
+                        if (includedPaths.Contains(item))
+                        {
+                            continue;
+                        }
+
+                        includedPaths.Add(item);
+
+                        if (manualSyncItems.Any(x => item.StartsWith(x.Path, StringComparison.OrdinalIgnoreCase)))
+                        {
+                            switch (syncMode)
+                            {
+                                case SyncMode.IncludeAllByDefault:
+                                    // Continue
+                                    break;
+
+                                case SyncMode.ExcludeAllByDefault:
+                                    // Ignore this file
+                                    continue;
+
+                                default:
+                                    throw new ArgumentOutOfRangeException(nameof(syncMode), $"Sync mode '{syncMode}' is not supported");
+                            }
+                        }
+
+                        itemsToSync.Add(new SyncItem
+                        {
+                            Parts = new Parts($"{sourceRepository.Owner}/{sourceRepository.Repository}",
+                                TreeEntryTargetType.Blob, sourceRepository.Branch, item),
+                            ToBeAdded = true,
+                            Target = null
+                        });
+                    }
+
+                    var targetRepositoryToSync = new RepoToSync
+                    {
+                        Owner = targetRepository.Owner,
+                        Repo = targetRepository.Repository,
+                        TargetBranch = targetRepository.Branch
+                    };
+
+                    var sourceMapper = targetRepositoryToSync.GetMapper(itemsToSync);
+                    var diff = await syncer.Diff(sourceMapper);
+                    if (diff.ToBeAddedOrUpdatedEntries.Count() > 0 ||
+                        diff.ToBeRemovedEntries.Count() > 0)
+                    {
+                        diffs.Add(diff);
+
+                        descriptionBuilder.AppendLine($"* {sourceRepositoryDisplayName}");
+                    }
+                }
+
+                var finalDiff = new Mapper();
+
+                foreach (var diff in diffs)
+                {
+                    foreach (var item in diff.ToBeAddedOrUpdatedEntries)
+                    {
+                        foreach (var value in item.Value)
+                        {
+                            log($"Mapping '{item.Key.Url}' => '{value.Url}'");
+
+                            finalDiff.Add(item.Key, value);
+                        }
+                    }
+
+                    // Note: how to deal with items to be removed
+                }
+
+                syncContext.Diff = finalDiff;
+                syncContext.Description = descriptionBuilder.ToString();
+            }
+
+            return syncContext;
         }
 
         public async Task Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)
         {
-            foreach (var target in targets)
+            foreach (var targetRepository in targets)
             {
-                using (var syncer = new Syncer(credentials, null, log))
+                var targetRepositoryDisplayName = $"{targetRepository.Owner}/{targetRepository.Repository}";
+
+                using (var syncer = new Syncer(targetRepository.Credentials, null, log))
                 {
-                    var mapper = target.GetMapper(itemsToSync);
-                    var diff = await syncer.Diff(mapper);
-                    var sync = await syncer.Sync(diff, syncOutput, labelsToApplyOnPullRequests);
+                    if (!await syncer.CanSynchronize(targetRepository, syncOutput))
+                    {
+                        continue;
+                    }
+
+                    var syncContext = await CalculateSyncContext(targetRepository);
+
+                    if (syncContext.Diff.ToBeAddedOrUpdatedEntries.Count() == 0)
+                    {
+                        log($"Repo {targetRepositoryDisplayName} is in sync");
+                        continue;
+                    }
+
+                    var sync = await syncer.Sync(syncContext.Diff, syncOutput, labelsToApplyOnPullRequests, syncContext.Description);
                     var createdSyncBranch = sync.FirstOrDefault();
 
                     if (string.IsNullOrEmpty(createdSyncBranch))
                     {
-                        log($"Repo {target} is in sync");
+                        log($"Repo {targetRepositoryDisplayName} is in sync");
                     }
                     else
                     {
-                        log($"Pull created for {target}, click here to review and pull: {createdSyncBranch}");
+                        log($"Pull created for {targetRepositoryDisplayName}, click here to review and pull: {createdSyncBranch}");
                     }
                 }
             }

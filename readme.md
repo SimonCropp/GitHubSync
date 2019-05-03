@@ -21,31 +21,42 @@ https://nuget.org/packages/GitHubSync/
 ```cs
 // Create a new RepoSync
 var repoSync = new RepoSync(
+    log: Console.WriteLine,
+    syncMode: SyncMode.IncludeAllByDefault);
+
+// Add source repo(s)
+repoSync.AddSourceRepository(new RepositoryInfo(
     // Valid credentials for the source repo and all target repos
     credentials: octokitCredentials,
-    sourceOwner: "UserOrOrg",
-    sourceRepository: "TheSingleSourceRepository",
-    branch: "master",
-    log: Console.WriteLine);
+    owner: "UserOrOrg",
+    repository: "TheSingleSourceRepository",
+    branch: "master"));
 
-// Add sources(s)
+// Add sources(s), only allowed when SyncMode == ExcludeAllByDefault
 repoSync.AddBlob("sourceFile.txt");
 repoSync.AddBlob("code.cs");
 
-// Add repo target(s)
-repoSync.AddTarget(
+// Remove sources(s), only allowed when SyncMode == IncludeAllByDefault
+repoSync.AddBlob("sourceFile.txt");
+repoSync.AddBlob("code.cs");
+
+// Add target repo(s)
+repoSync.AddTargetRepository(new RepositoryInfo(
+    credentials: octokitCredentials,
     owner: "UserOrOrg",
     repository: "TargetRepo1",
-    branch: "master");
-// Omitting owner will use the sourceOwner passed in to RepoSync
-repoSync.AddTarget(
+    branch: "master"));
+
+repoSync.AddTargetRepository(new RepositoryInfo(
+    credentials: octokitCredentials,
+    owner: "UserOrOrg",
     repository: "TargetRepo2",
-    branch: "master");
+    branch: "master"));
 
 // Run the sync
 await repoSync.Sync(syncOutput: SyncOutput.MergePullRequest);
 ```
-<sup>[snippet source](/src/Tests/Snippets.cs#L10-L37)</sup>
+<sup>[snippet source](/src/Tests/Snippets.cs#L10-L48)</sup>
 <!-- endsnippet -->
 
 

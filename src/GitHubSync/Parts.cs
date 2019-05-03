@@ -2,7 +2,7 @@
 using System.Linq;
 using GitHubSync;
 
-class Parts : IParts, IEquatable<Parts>
+public class Parts : IParts, IEquatable<Parts>
 {
     Lazy<Parts> parent;
     Lazy<Parts> root;
