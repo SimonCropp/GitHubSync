@@ -6,11 +6,12 @@ using Xunit;
 using Xunit.Abstractions;
 
 [Trait("Category", "Integration")]
-public class DiffTests: TestBase
+public class DiffTests :
+    XunitLoggingBase
 {
     Syncer BuildSyncer()
     {
-        return new Syncer(CredentialsHelper.Credentials, null, WriteLog);
+        return new Syncer(CredentialsHelper.Credentials, null, WriteLine);
     }
 
     [Fact]
@@ -171,7 +172,8 @@ public class DiffTests: TestBase
         }
     }
 
-    public DiffTests(ITestOutputHelper output) : base(output)
+    public DiffTests(ITestOutputHelper output) :
+        base(output)
     {
     }
 }

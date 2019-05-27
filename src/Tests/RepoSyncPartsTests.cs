@@ -4,7 +4,8 @@ using Xunit;
 using Xunit.Abstractions;
 
 [Trait("Category", "Integration")]
-public class RepoSyncPartsTests : TestBase
+public class RepoSyncPartsTests :
+    XunitLoggingBase
 {
     [Fact]
     public async Task Simple()
@@ -28,8 +29,8 @@ public class RepoSyncPartsTests : TestBase
         var repoSync = BuildRepoSync(SyncMode.ExcludeAllByDefault);
 
         repoSync.AddBlob("added1");
-        repoSync.AddBlob("added2","target2");
-        repoSync.AddBlob("sourceDir/added3","targetDir/target3");
+        repoSync.AddBlob("added2", "target2");
+        repoSync.AddBlob("sourceDir/added3", "targetDir/target3");
 
         await Verify(repoSync);
     }
@@ -40,8 +41,8 @@ public class RepoSyncPartsTests : TestBase
         var repoSync = BuildRepoSync(SyncMode.ExcludeAllByDefault);
 
         repoSync.AddSourceItem(TreeEntryTargetType.Tree, "added1");
-        repoSync.AddSourceItem(TreeEntryTargetType.Tree,"added2","target2");
-        repoSync.AddSourceItem(TreeEntryTargetType.Tree,"sourceDir/added3","targetDir/target3");
+        repoSync.AddSourceItem(TreeEntryTargetType.Tree, "added2", "target2");
+        repoSync.AddSourceItem(TreeEntryTargetType.Tree, "sourceDir/added3", "targetDir/target3");
 
         await Verify(repoSync);
     }
@@ -52,8 +53,8 @@ public class RepoSyncPartsTests : TestBase
         var repoSync = BuildRepoSync(SyncMode.IncludeAllByDefault);
 
         repoSync.RemoveBlob("added1");
-        repoSync.RemoveBlob("added2","target2");
-        repoSync.RemoveBlob("sourceDir/added3","targetDir/target3");
+        repoSync.RemoveBlob("added2", "target2");
+        repoSync.RemoveBlob("sourceDir/added3", "targetDir/target3");
 
         await Verify(repoSync);
     }
@@ -98,7 +99,8 @@ public class RepoSyncPartsTests : TestBase
         //}
     }
 
-    public RepoSyncPartsTests(ITestOutputHelper output) : base(output)
+    public RepoSyncPartsTests(ITestOutputHelper output) :
+        base(output)
     {
     }
 }

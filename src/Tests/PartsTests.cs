@@ -4,7 +4,8 @@ using ObjectApproval;
 using Xunit;
 using Xunit.Abstractions;
 
-public class PartsTests: TestBase
+public class PartsTests :
+    XunitLoggingBase
 {
     [Fact]
     public void Tree()
@@ -28,10 +29,14 @@ public class PartsTests: TestBase
 
         ObjectApprover.VerifyWithJson(parts);
 // ReSharper disable once UnusedVariable
-        Assert.Throws<Exception>(() => { var parent = parts.ParentTreePart; });
+        Assert.Throws<Exception>(() =>
+        {
+            var parent = parts.ParentTreePart;
+        });
     }
 
-    public PartsTests(ITestOutputHelper output) : base(output)
+    public PartsTests(ITestOutputHelper output) :
+        base(output)
     {
     }
 }

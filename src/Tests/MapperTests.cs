@@ -5,7 +5,8 @@ using ObjectApproval;
 using Xunit;
 using Xunit.Abstractions;
 
-public class MapperTests: TestBase
+public class MapperTests :
+    XunitLoggingBase
 {
     [Fact]
     public void CanAddAndEnumerate()
@@ -94,7 +95,7 @@ public class MapperTests: TestBase
         var to = new Parts("target/r", TreeEntryTargetType.Blob, "branch", "file.txt");
 
         m.Add(from, to);
-        Assert.Throws<InvalidOperationException>(()=> m.Remove(to));
+        Assert.Throws<InvalidOperationException>(() => m.Remove(to));
     }
 
     [Fact]
@@ -108,7 +109,8 @@ public class MapperTests: TestBase
         Assert.Throws<InvalidOperationException>(() => m.Add(from, to));
     }
 
-    public MapperTests(ITestOutputHelper output) : base(output)
+    public MapperTests(ITestOutputHelper output) :
+        base(output)
     {
     }
 }

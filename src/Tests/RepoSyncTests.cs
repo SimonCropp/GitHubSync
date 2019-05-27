@@ -4,13 +4,14 @@ using Xunit;
 using Xunit.Abstractions;
 
 [Trait("Category", "Integration")]
-public class RepoSyncTests : TestBase
+public class RepoSyncTests :
+    XunitLoggingBase
 {
     [Fact]
     public Task SyncPr()
     {
         var credentials = CredentialsHelper.Credentials;
-        var repoSync = new RepoSync(WriteLog);
+        var repoSync = new RepoSync(WriteLine);
 
         repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
         //repoSync.AddBlob("sourceFile.txt");
@@ -26,7 +27,7 @@ public class RepoSyncTests : TestBase
     public Task SyncPrMerge()
     {
         var credentials = CredentialsHelper.Credentials;
-        var repoSync = new RepoSync(WriteLog);
+        var repoSync = new RepoSync(WriteLine);
 
         repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
         //repoSync.AddBlob("sourceFile.txt");
@@ -41,7 +42,7 @@ public class RepoSyncTests : TestBase
     public Task SyncCommit()
     {
         var credentials = CredentialsHelper.Credentials;
-        var repoSync = new RepoSync(WriteLog);
+        var repoSync = new RepoSync(WriteLine);
 
         repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
         //repoSync.AddBlob("sourceFile.txt");
@@ -52,7 +53,8 @@ public class RepoSyncTests : TestBase
         return repoSync.Sync(SyncOutput.CreateCommit);
     }
 
-    public RepoSyncTests(ITestOutputHelper output) : base(output)
+    public RepoSyncTests(ITestOutputHelper output) :
+        base(output)
     {
     }
 }
