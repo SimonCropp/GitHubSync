@@ -21,8 +21,7 @@ https://nuget.org/packages/GitHubSync/
 ```cs
 // Create a new RepoSync
 var repoSync = new RepoSync(
-    log: Console.WriteLine,
-    syncMode: SyncMode.IncludeAllByDefault);
+    log: Console.WriteLine);
 
 // Add source repo(s)
 repoSync.AddSourceRepository(new RepositoryInfo(
@@ -56,7 +55,7 @@ repoSync.AddTargetRepository(new RepositoryInfo(
 // Run the sync
 await repoSync.Sync(syncOutput: SyncOutput.MergePullRequest);
 ```
-<sup>[snippet source](/src/Tests/Snippets.cs#L10-L48)</sup>
+<sup>[snippet source](/src/Tests/Snippets.cs#L10-L47)</sup>
 <!-- endsnippet -->
 
 

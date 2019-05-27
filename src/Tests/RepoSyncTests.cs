@@ -3,6 +3,7 @@ using GitHubSync;
 using Xunit;
 using Xunit.Abstractions;
 
+[Trait("Category", "Integration")]
 public class RepoSyncTests : TestBase
 {
     [Fact]

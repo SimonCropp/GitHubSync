@@ -5,6 +5,7 @@ using ObjectApproval;
 using Xunit;
 using Xunit.Abstractions;
 
+[Trait("Category", "Integration")]
 public class DiffTests: TestBase
 {
     Syncer BuildSyncer()
