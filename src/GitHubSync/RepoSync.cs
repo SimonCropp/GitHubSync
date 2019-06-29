@@ -3,24 +3,26 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Octokit;
 
 namespace GitHubSync
 {
     public class RepoSync
     {
-        private readonly Action<string> log;
-        private readonly List<string> labelsToApplyOnPullRequests;
-        private readonly SyncMode syncMode;
+        Action<string> log;
+        List<string> labelsToApplyOnPullRequests;
+        SyncMode syncMode;
+        Credentials defaultCredentials;
+        List<ManualSyncItem> manualSyncItems = new List<ManualSyncItem>();
+        List<RepositoryInfo> sources = new List<RepositoryInfo>();
+        List<RepositoryInfo> targets = new List<RepositoryInfo>();
 
-        private List<ManualSyncItem> manualSyncItems = new List<ManualSyncItem>();
-        internal List<RepositoryInfo> sources = new List<RepositoryInfo>();
-        internal List<RepositoryInfo> targets = new List<RepositoryInfo>();
-
-        public RepoSync(Action<string> log = null, List<string> labelsToApplyOnPullRequests = null, SyncMode syncMode = SyncMode.IncludeAllByDefault)
+        public RepoSync(Action<string> log = null, List<string> labelsToApplyOnPullRequests = null, SyncMode syncMode = SyncMode.IncludeAllByDefault, Credentials defaultCredentials = null)
         {
             this.log = log ?? Console.WriteLine;
             this.labelsToApplyOnPullRequests = labelsToApplyOnPullRequests;
             this.syncMode = syncMode;
+            this.defaultCredentials = defaultCredentials;
         }
 
         public void AddBlob(string path, string target = null)
@@ -74,9 +76,36 @@ namespace GitHubSync
             sources.Add(sourceRepository);
         }
 
+        public void AddSourceRepository(string owner, string repository, string branch, Credentials credentials = null)
+        {
+            PerhapsDefault(ref credentials);
+            sources.Add(new RepositoryInfo(credentials, owner, repository, branch));
+        }
+
         public void AddTargetRepository(RepositoryInfo targetRepository)
         {
             targets.Add(targetRepository);
+        }
+
+        public void AddTargetRepository(string owner, string repository, string branch, Credentials credentials = null)
+        {
+            PerhapsDefault(ref credentials);
+            targets.Add(new RepositoryInfo(credentials, owner, repository, branch));
+        }
+
+        void PerhapsDefault(ref Credentials credentials)
+        {
+            if (credentials != null)
+            {
+                return;
+            }
+
+            if (defaultCredentials == null)
+            {
+                throw new Exception("defaultCredentials required");
+            }
+
+            credentials = defaultCredentials;
         }
 
         public async Task<SyncContext> CalculateSyncContext(RepositoryInfo targetRepository)
@@ -144,8 +173,8 @@ namespace GitHubSync
 
                     var sourceMapper = targetRepositoryToSync.GetMapper(itemsToSync);
                     var diff = await syncer.Diff(sourceMapper);
-                    if (diff.ToBeAddedOrUpdatedEntries.Count() > 0 ||
-                        diff.ToBeRemovedEntries.Count() > 0)
+                    if (diff.ToBeAddedOrUpdatedEntries.Any() ||
+                        diff.ToBeRemovedEntries.Any())
                     {
                         diffs.Add(diff);
 
@@ -192,7 +221,7 @@ namespace GitHubSync
 
                     var syncContext = await CalculateSyncContext(targetRepository);
 
-                    if (syncContext.Diff.ToBeAddedOrUpdatedEntries.Count() == 0)
+                    if (!syncContext.Diff.ToBeAddedOrUpdatedEntries.Any())
                     {
                         log($"Repo {targetRepositoryDisplayName} is in sync");
                         continue;
