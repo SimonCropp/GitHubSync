@@ -13,8 +13,6 @@ A tool to help synchronizing specific files and folders across repositories
 
 https://nuget.org/packages/GitHubSync/
 
-    PM> Install-Package GitHubSync
-
 
 ## Usage
 
