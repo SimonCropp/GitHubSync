@@ -25,7 +25,7 @@ public class DiffTests :
         using (var syncer = BuildSyncer())
         {
             var diff = await syncer.Diff(map);
-            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
+            ObjectApprover.Verify(diff.ToBeAddedOrUpdatedEntries);
         }
     }
 
@@ -41,7 +41,7 @@ public class DiffTests :
         using (var som = BuildSyncer())
         {
             var diff = await som.Diff(map);
-            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
+            ObjectApprover.Verify(diff.ToBeAddedOrUpdatedEntries);
         }
     }
 
@@ -57,7 +57,7 @@ public class DiffTests :
         using (var som = BuildSyncer())
         {
             var diff = await som.Diff(map);
-            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
+            ObjectApprover.Verify(diff.ToBeAddedOrUpdatedEntries);
         }
     }
 
@@ -104,7 +104,7 @@ public class DiffTests :
         using (var syncer = BuildSyncer())
         {
             var diff = await syncer.Diff(map);
-            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
+            ObjectApprover.Verify(diff.ToBeAddedOrUpdatedEntries);
         }
     }
 
@@ -120,7 +120,7 @@ public class DiffTests :
         using (var syncer = BuildSyncer())
         {
             var diff = await syncer.Diff(map);
-            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
+            ObjectApprover.Verify(diff.ToBeAddedOrUpdatedEntries);
         }
     }
 
@@ -151,7 +151,7 @@ public class DiffTests :
         using (var syncer = BuildSyncer())
         {
             var diff = await syncer.Diff(map);
-            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
+            ObjectApprover.Verify(diff.ToBeAddedOrUpdatedEntries);
         }
     }
 
@@ -168,7 +168,7 @@ public class DiffTests :
         using (var syncer = BuildSyncer())
         {
             var diff = await syncer.Diff(map);
-            ObjectApprover.VerifyWithJson(diff.ToBeRemovedEntries);
+            ObjectApprover.Verify(diff.ToBeRemovedEntries);
         }
     }
 

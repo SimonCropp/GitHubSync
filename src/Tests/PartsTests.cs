@@ -11,7 +11,7 @@ public class PartsTests :
     public void Tree()
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Tree, "develop", "buildSupport");
-        ObjectApprover.VerifyWithJson(parts);
+        ObjectApprover.Verify(parts);
     }
 
     [Fact]
@@ -19,7 +19,7 @@ public class PartsTests :
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Blob, "develop", "src/settings");
 
-        ObjectApprover.VerifyWithJson(parts);
+        ObjectApprover.Verify(parts);
     }
 
     [Fact]
@@ -27,7 +27,7 @@ public class PartsTests :
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Tree, "develop", null);
 
-        ObjectApprover.VerifyWithJson(parts);
+        ObjectApprover.Verify(parts);
 // ReSharper disable once UnusedVariable
         Assert.Throws<Exception>(() =>
         {

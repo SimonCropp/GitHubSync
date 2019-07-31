@@ -22,7 +22,7 @@ public class MapperTests :
             .Add(a, one)
             .Add(a, two)
             .Add(c, three);
-        ObjectApprover.VerifyWithJson(m.ToBeAddedOrUpdatedEntries);
+        ObjectApprover.Verify(m.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class MapperTests :
         var orbs = t.Keys.ToList();
         orbs.Sort(StringComparer.Ordinal);
 
-        ObjectApprover.VerifyWithJson(orbs);
+        ObjectApprover.Verify(orbs);
     }
 
     [Fact]

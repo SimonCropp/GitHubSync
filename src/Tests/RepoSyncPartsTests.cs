@@ -89,7 +89,7 @@ public class RepoSyncPartsTests :
         //{
         //    var syncContext = await repoSync.CalculateSyncContext(target);
 
-        //    ObjectApprover.VerifyWithJson(
+        //    ObjectApprover.Verify(
         //        new
         //        {
         //            syncContext.Diff,
