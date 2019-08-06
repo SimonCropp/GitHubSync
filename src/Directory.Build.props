@@ -1,19 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project>
   <PropertyGroup>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <LangVersion>latest</LangVersion>
     <NoWarn>CS1591</NoWarn>
     <Version>0.6.0</Version>
     <Description>A tool to help synchronizing specific files and folders across GitHub hosted repositories.</Description>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <Copyright>Copyright $([System.DateTime]::UtcNow.ToString(yyyy)). All rights reserved</Copyright>
     <PackageTags>GitHub</PackageTags>
-    <PackageIconUrl>https://raw.githubusercontent.com/SimonCropp/GitHubSync/master/src/icon.png</PackageIconUrl>
-    <PackageProjectUrl>http://github.com/SimonCropp/GitHubSync</PackageProjectUrl>
-    <PackageOutputPath>..\..\nugets</PackageOutputPath>
-    <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <DebugType>embedded</DebugType>
-    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
 </Project>
