@@ -9,7 +9,7 @@
     <PackageReference Include="LibGit2Sharp" Version="0.26.0" />
     <PackageReference Include="Fody" Version="5.1.1" PrivateAssets="All" />
     <PackageReference Include="Octokit" Version="0.32.0" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.3" PrivateAssets="All" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.6" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
