@@ -1,4 +1,4 @@
-# <img src="https://raw.github.com/SimonCropp/CaptureSnippet/master/src/icon.png" height="40px"> GitHubSync
+# <img src="/src/icon.png" height="40px"> GitHubSync
 
 A tool to help synchronizing specific files and folders across repositories
 
@@ -15,4 +15,4 @@ snippet: usage
 
 ## Icon
 
-<a href="http://thenounproject.com/term/sync/290/">Sync</a> designed by <a href="http://www.thenounproject.com/edward">Edward Boatman</a> from The Noun Project
+[Sync](https://thenounproject.com/term/sync/290/) designed by [Edward Boatman](https://thenounproject.com/edward) from [The Noun Project](https://thenounproject.com).
