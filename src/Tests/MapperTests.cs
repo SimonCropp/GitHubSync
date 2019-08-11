@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using GitHubSync;
-using ObjectApproval;
 using Xunit;
 using Xunit.Abstractions;
 

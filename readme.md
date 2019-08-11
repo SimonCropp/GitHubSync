@@ -18,6 +18,7 @@ https://nuget.org/packages/GitHubSync/
 ## Usage
 
 <!-- snippet: usage -->
+<a id='snippet-usage'/></a>
 ```cs
 // Create a new RepoSync
 var repoSync = new RepoSync(
@@ -55,7 +56,7 @@ repoSync.AddTargetRepository(new RepositoryInfo(
 // Run the sync
 await repoSync.Sync(syncOutput: SyncOutput.MergePullRequest);
 ```
-<sup>[snippet source](/src/Tests/Snippets.cs#L10-L47)</sup>
+<sup>[snippet source](/src/Tests/Snippets.cs#L10-L47) / [anchor](#snippet-usage)</sup>
 <!-- endsnippet -->
 
 
