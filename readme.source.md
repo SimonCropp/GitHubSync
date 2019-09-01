@@ -1,9 +1,13 @@
-# <img src="/src/icon.png" height="40px"> GitHubSync
+# <img src="/src/icon.png" height="30px"> GitHubSync
+
+[![Build status](https://ci.appveyor.com/api/projects/status/4slgloi1twtolvg0/branch/master?svg=true)](https://ci.appveyor.com/project/SimonCropp/GitHubSync/branch/master) [![NuGet Status](http://img.shields.io/nuget/v/GitHubSync.svg?cacheSeconds=86400)](https://www.nuget.org/packages/GitHubSync/)
 
 A tool to help synchronizing specific files and folders across repositories
 
+toc
 
-## NuGet [![NuGet Status](http://img.shields.io/nuget/v/GitHubSync.svg?longCache=true&style=flat)](https://www.nuget.org/packages/GitHubSync/)
+
+## NuGet
 
 https://nuget.org/packages/GitHubSync/
 
@@ -11,6 +15,11 @@ https://nuget.org/packages/GitHubSync/
 ## Usage
 
 snippet: usage
+
+
+## Release Notes
+
+See [closed milestones](../../milestones?state=closed).
 
 
 ## Icon
