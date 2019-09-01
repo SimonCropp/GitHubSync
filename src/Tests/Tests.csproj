@@ -11,10 +11,10 @@
     <PackageReference Include="Octokit" Version="0.32.0" />
     <PackageReference Include="Xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
-    <PackageReference Include="MarkdownSnippets.MsBuild" Version="16.4.0" PrivateAssets="All" />
+    <PackageReference Include="MarkdownSnippets.MsBuild" Version="16.4.1" PrivateAssets="all" />
     <PackageReference Include="XunitLogger" Version="2.5.0" />
     <ProjectReference Include="..\GitHubSync\GitHubSync.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.19" PrivateAssets="All" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.20" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
