@@ -5,7 +5,7 @@ using Xunit.Abstractions;
 
 [Trait("Category", "Integration")]
 public class RepoSyncTests :
-    XunitLoggingBase
+    XunitApprovalBase
 {
     [Fact]
     public Task SyncPr()

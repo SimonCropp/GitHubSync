@@ -4,7 +4,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class PartsTests :
-    XunitLoggingBase
+    XunitApprovalBase
 {
     [Fact]
     public void Tree()

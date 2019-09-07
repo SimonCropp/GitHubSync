@@ -6,7 +6,7 @@ using Xunit.Abstractions;
 
 [Trait("Category", "Integration")]
 public class DiffTests :
-    XunitLoggingBase
+    XunitApprovalBase
 {
     Syncer BuildSyncer()
     {
