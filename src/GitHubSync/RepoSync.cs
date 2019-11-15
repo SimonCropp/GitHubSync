@@ -212,32 +212,30 @@ namespace GitHubSync
             {
                 var targetRepositoryDisplayName = $"{targetRepository.Owner}/{targetRepository.Repository}";
 
-                using (var syncer = new Syncer(targetRepository.Credentials, null, log))
+                using var syncer = new Syncer(targetRepository.Credentials, null, log);
+                if (!await syncer.CanSynchronize(targetRepository, syncOutput))
                 {
-                    if (!await syncer.CanSynchronize(targetRepository, syncOutput))
-                    {
-                        continue;
-                    }
+                    continue;
+                }
 
-                    var syncContext = await CalculateSyncContext(targetRepository);
+                var syncContext = await CalculateSyncContext(targetRepository);
 
-                    if (!syncContext.Diff.ToBeAddedOrUpdatedEntries.Any())
-                    {
-                        log($"Repo {targetRepositoryDisplayName} is in sync");
-                        continue;
-                    }
+                if (!syncContext.Diff.ToBeAddedOrUpdatedEntries.Any())
+                {
+                    log($"Repo {targetRepositoryDisplayName} is in sync");
+                    continue;
+                }
 
-                    var sync = await syncer.Sync(syncContext.Diff, syncOutput, labelsToApplyOnPullRequests, syncContext.Description);
-                    var createdSyncBranch = sync.FirstOrDefault();
+                var sync = await syncer.Sync(syncContext.Diff, syncOutput, labelsToApplyOnPullRequests, syncContext.Description);
+                var createdSyncBranch = sync.FirstOrDefault();
 
-                    if (string.IsNullOrEmpty(createdSyncBranch))
-                    {
-                        log($"Repo {targetRepositoryDisplayName} is in sync");
-                    }
-                    else
-                    {
-                        log($"Pull created for {targetRepositoryDisplayName}, click here to review and pull: {createdSyncBranch}");
-                    }
+                if (string.IsNullOrEmpty(createdSyncBranch))
+                {
+                    log($"Repo {targetRepositoryDisplayName} is in sync");
+                }
+                else
+                {
+                    log($"Pull created for {targetRepositoryDisplayName}, click here to review and pull: {createdSyncBranch}");
                 }
             }
         }

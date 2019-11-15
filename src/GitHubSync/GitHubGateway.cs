@@ -77,12 +77,10 @@ class GitHubGateway : IDisposable
 
         log($"Downloading blob from '{downloadUrl}'");
 
-        using (var client = new HttpClient())
-        using (var response = await client.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead))
-        using (var streamToReadFrom = await response.Content.ReadAsStreamAsync())
-        {
-             await streamToReadFrom.CopyToAsync(targetStream);
-        }
+        using var httpClient = new HttpClient();
+        using var response = await httpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead);
+        using var streamToReadFrom = await response.Content.ReadAsStreamAsync();
+        await streamToReadFrom.CopyToAsync(targetStream);
     }
 
     public async Task<bool> HasOpenPullRequests(string owner, string name, string prTitle)

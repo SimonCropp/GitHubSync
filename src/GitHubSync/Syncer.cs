@@ -170,7 +170,7 @@ class Syncer : IDisposable
             {
                 await gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
             }
-            
+
             return $"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}";
         }
 
@@ -231,82 +231,75 @@ class Syncer : IDisposable
         var currentUser = await gateway.GetCurrentUser();
         var commitSignature = new LibGit2Sharp.Signature(currentUser.Name, currentUser.Email ?? "hidden@protected.com", DateTimeOffset.Now);
 
-        using (var repository = new LibGit2Sharp.Repository(repositoryPath))
+        using var repository = new LibGit2Sharp.Repository(repositoryPath);
+        // Step 2: ensure upstream
+        var remotes = repository.Network.Remotes;
+        var originRemote = remotes["origin"];
+        var upstreamRemote = remotes["upstream"] ?? remotes.Add("upstream", $"https://github.com/{root.Owner}/{root.Repository}");
+
+        LibGit2Sharp.Commands.Fetch(repository, "upstream", upstreamRemote.FetchRefSpecs.Select(x => x.Specification), null, null);
+
+        // Step 3: create local branch
+        var tempBranch = repository.Branches.Add(temporaryBranchName, "HEAD");
+        repository.Branches.Update(tempBranch, b =>
         {
-            // Step 2: ensure upstream
-            var remotes = repository.Network.Remotes;
-            var originRemote = remotes["origin"];
-            var upstreamRemote = remotes["upstream"];
+            b.Remote = originRemote.Name;
+            b.UpstreamBranch = tempBranch.CanonicalName;
+            //b.Upstream = $"refs/heads/{temporaryBranchName}";
+            //b.UpstreamBranch = $""
+        });
 
-            if (upstreamRemote is null)
+        LibGit2Sharp.Commands.Checkout(repository, tempBranch);
+
+        // Step 4: ensure we have the latest
+        var upstreamMasterBranch = repository.Branches["upstream/master"];
+
+        repository.Merge(upstreamMasterBranch, commitSignature, new LibGit2Sharp.MergeOptions());
+
+        // Step 5: create delta
+        foreach (var change in updatesPerOwnerRepositoryBranch)
+        {
+            var source = change.Item2;
+            var destination = change.Item1;
+            var fullDestination = Path.Combine(temporaryPath, destination.Path.Replace('/', Path.DirectorySeparatorChar));
+
+            switch (source)
             {
-                upstreamRemote = remotes.Add("upstream", $"https://github.com/{root.Owner}/{root.Repository}");
+                case Parts _:
+                    // Directly download raw bytes into file
+                    using (var fileStream = new FileStream(fullDestination, System.IO.FileMode.Create))
+                    {
+                        await gateway.DownloadBlob((Parts)source, fileStream);
+                    }
+                    break;
+
+                case Parts.NullParts _:
+                    File.Delete(fullDestination);
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"Unsupported 'from' type ({source.GetType().FullName}).");
             }
-
-            LibGit2Sharp.Commands.Fetch(repository, "upstream", upstreamRemote.FetchRefSpecs.Select(x => x.Specification), null, null);
-
-            // Step 3: create local branch
-            var tempBranch = repository.Branches.Add(temporaryBranchName, "HEAD");
-            repository.Branches.Update(tempBranch, b =>
-            {
-                b.Remote = originRemote.Name;
-                b.UpstreamBranch = tempBranch.CanonicalName;
-                //b.Upstream = $"refs/heads/{temporaryBranchName}";
-                //b.UpstreamBranch = $""
-            });
-
-            LibGit2Sharp.Commands.Checkout(repository, tempBranch);
-
-            // Step 4: ensure we have the latest
-            var upstreamMasterBranch = repository.Branches["upstream/master"];
-
-            repository.Merge(upstreamMasterBranch, commitSignature, new LibGit2Sharp.MergeOptions());
-
-            // Step 5: create delta
-            foreach (var change in updatesPerOwnerRepositoryBranch)
-            {
-                var source = change.Item2;
-                var destination = change.Item1;
-                var fullDestination = Path.Combine(temporaryPath, destination.Path.Replace('/', Path.DirectorySeparatorChar));
-
-                switch (source)
-                {
-                    case Parts _:
-                        // Directly download raw bytes into file
-                        using (var fileStream = new FileStream(fullDestination, System.IO.FileMode.Create))
-                        {
-                            await gateway.DownloadBlob((Parts)source, fileStream);
-                        }
-                        break;
-
-                    case Parts.NullParts _:
-                        File.Delete(fullDestination);
-                        break;
-
-                    default:
-                        throw new InvalidOperationException($"Unsupported 'from' type ({source.GetType().FullName}).");
-                }
-            }
-
-            // Step 6: stage all files
-            LibGit2Sharp.Commands.Stage(repository, "*");
-
-            // Step 7: create & push commit
-            var commit = repository.Commit("Apply GitHubSync changes", commitSignature, commitSignature, 
-                new LibGit2Sharp.CommitOptions());
-
-            repository.Network.Push(tempBranch, new LibGit2Sharp.PushOptions()
-            {
-                CredentialsProvider = (_url, _user, _cred) => new LibGit2Sharp.UsernamePasswordCredentials
-                {
-                    // Since we are using tokens, the username should be the token
-                    Username = credentials.Password,
-                    Password = string.Empty
-                }
-            });
-
-            return commit.Sha;
         }
+
+        // Step 6: stage all files
+        LibGit2Sharp.Commands.Stage(repository, "*");
+
+        // Step 7: create & push commit
+        var commit = repository.Commit("Apply GitHubSync changes", commitSignature, commitSignature,
+            new LibGit2Sharp.CommitOptions());
+
+        repository.Network.Push(tempBranch, new LibGit2Sharp.PushOptions
+        {
+            CredentialsProvider = (_url, _user, _cred) => new LibGit2Sharp.UsernamePasswordCredentials
+            {
+                // Since we are using tokens, the username should be the token
+                Username = credentials.Password,
+                Password = string.Empty
+            }
+        });
+
+        return commit.Sha;
     }
 
     string UrlSanitize(string branch)
