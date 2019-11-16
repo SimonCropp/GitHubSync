@@ -5,5 +5,11 @@
   Additions: 1,
   ChangedFiles: 1,
   State: 'closed',
-  Target: 'SyncPrMerge'
+  Target: 'SyncPrMerge',
+  Files: [
+    {
+      FileName: 'sourceFile.txt',
+      Status: 'added'
+    }
+  ]
 }

@@ -5,5 +5,11 @@
   Additions: 1,
   ChangedFiles: 1,
   State: 'open',
-  Target: 'SyncPrIncludeAllByDefault'
+  Target: 'SyncPrIncludeAllByDefault',
+  Files: [
+    {
+      FileName: 'sourceFile.txt',
+      Status: 'added'
+    }
+  ]
 }

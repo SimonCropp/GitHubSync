@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using GitHubSync;
 using Octokit;
@@ -37,6 +38,7 @@ public class TempRepoContext :
 
     public async Task VerifyPullRequest(UpdateResult updateResult)
     {
+        var files = await Client.GitHubClient.PullRequest.Files("SimonCropp", "GitHubSync.TestRepository", updateResult.PullRequestId);
         var branch = await Client.GitHubClient.PullRequest.Get("SimonCropp", "GitHubSync.TestRepository", updateResult.PullRequestId);
         ObjectApprover.Verify(new
         {
@@ -46,7 +48,8 @@ public class TempRepoContext :
             branch.Additions,
             branch.ChangedFiles,
             State = branch.State.StringValue,
-            Target = branch.Base.Ref
+            Target = branch.Base.Ref,
+            Files = files.Select(x=>new {x.FileName,x.Status})
         });
     }
 
