@@ -206,9 +206,9 @@ namespace GitHubSync
             return syncContext;
         }
 
-        public async Task<List<string>> Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)
+        public async Task<List<UpdateResult>> Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)
         {
-            var list = new List<string>();
+            var list = new List<UpdateResult>();
             foreach (var targetRepository in targets)
             {
                 var targetRepositoryDisplayName = $"{targetRepository.Owner}/{targetRepository.Repository}";
@@ -230,7 +230,7 @@ namespace GitHubSync
                 var sync = await syncer.Sync(syncContext.Diff, syncOutput, labelsToApplyOnPullRequests, syncContext.Description);
                 var createdSyncBranch = sync.FirstOrDefault();
 
-                if (string.IsNullOrEmpty(createdSyncBranch))
+                if (createdSyncBranch == null)
                 {
                     log($"Repo {targetRepositoryDisplayName} is in sync");
                 }

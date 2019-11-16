@@ -1,29 +1,47 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using GitHubSync;
 using Xunit;
 using Xunit.Abstractions;
 
-[Trait("Category", "Integration")]
+[Trait("Category", "Local")]
 public class RepoSyncTests :
     XunitApprovalBase
 {
     [Fact]
-    public Task SyncPr()
+    public async Task SyncPrIncludeAllByDefault()
     {
         var credentials = CredentialsHelper.Credentials;
         var repoSync = new RepoSync(WriteLine);
+        var repoContext = await TempRepoContext.Create(Context.MethodName);
+        {
+            repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+            repoSync.RemoveBlob("README.md");
+            repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
 
-        repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
-        //repoSync.AddBlob("sourceFile.txt");
-        repoSync.RemoveBlob("IDoNotExist/MeNeither.txt");
-        repoSync.RemoveBlob("a/b/c/file.txt");
-        repoSync.RemoveBlob("a/b/file.txt");
-        repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "target"));
+            var sync = await repoSync.Sync();
+            await repoContext.VerifyPullRequest(sync.Single());
+        }
+    }
+    [Fact]
+    [Trait("Category", "Integration")]
+    public async Task SyncPrExcludeAllByDefault()
+    {
+        var credentials = CredentialsHelper.Credentials;
+        var repoSync = new RepoSync(WriteLine, syncMode:SyncMode.ExcludeAllByDefault);
+        var repoContext = await TempRepoContext.Create(Context.MethodName);
+        {
+            repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+            repoSync.AddBlob("sourceFile.txt");
+            repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
 
-        return repoSync.Sync();
+            var sync = await repoSync.Sync();
+            await repoContext.VerifyPullRequest(sync.Single());
+        }
     }
 
     [Fact]
+    [Trait("Category", "Integration")]
     public Task SyncPrMerge()
     {
         var credentials = CredentialsHelper.Credentials;
@@ -39,6 +57,7 @@ public class RepoSyncTests :
     }
 
     [Fact]
+    [Trait("Category", "Integration")]
     public Task SyncCommit()
     {
         var credentials = CredentialsHelper.Credentials;

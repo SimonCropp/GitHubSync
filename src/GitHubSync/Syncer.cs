@@ -86,7 +86,7 @@ class Syncer : IDisposable
         return true;
     }
 
-    internal async Task<IEnumerable<string>> Sync(
+    internal async Task<IEnumerable<UpdateResult>> Sync(
         Mapper diff,
         SyncOutput expectedOutput,
         IEnumerable<string> labelsToApplyOnPullRequests = null,
@@ -103,7 +103,7 @@ class Syncer : IDisposable
 
         var t = diff.Transpose();
 
-        var results = new List<string>();
+        var results = new List<UpdateResult>();
 
         foreach (var updatesPerOwnerRepositoryBranch in t.Values)
         {
@@ -114,13 +114,13 @@ class Syncer : IDisposable
         return results;
     }
 
-    async Task<string> ProcessUpdates(SyncOutput expectedOutput, IList<Tuple<Parts, IParts>> updatesPerOwnerRepositoryBranch,
+    async Task<UpdateResult> ProcessUpdates(SyncOutput expectedOutput, IList<Tuple<Parts, IParts>> updatesPerOwnerRepositoryBranch,
         string[] labels, string description)
     {
         var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
         var root = updatesPerOwnerRepositoryBranch.First().Item1.RootTreePart;
 
-        var commitSha = string.Empty;
+        string commitSha;
 
         var isCollaborator = await gateway.IsCollaborator(root.Owner, root.Repository);
         if (!isCollaborator)
@@ -141,13 +141,22 @@ class Syncer : IDisposable
 
         if (expectedOutput == SyncOutput.CreateCommit)
         {
-            return $"https://github.com/{root.Owner}/{root.Repository}/commit/{commitSha}";
+            return new UpdateResult
+            {
+                Url = $"https://github.com/{root.Owner}/{root.Repository}/commit/{commitSha}",
+                CommitSha = commitSha
+            };
         }
 
         if (expectedOutput == SyncOutput.CreateBranch)
         {
             branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, commitSha);
-            return $"https://github.com/{root.Owner}/{root.Repository}/compare/{UrlSanitize(root.Branch)}...{UrlSanitize(branchName)}";
+            return new UpdateResult
+            {
+                Url = $"https://github.com/{root.Owner}/{root.Repository}/compare/{UrlSanitize(root.Branch)}...{UrlSanitize(branchName)}",
+                CommitSha = commitSha,
+                BranchName = branchName
+            };
         }
 
         if (expectedOutput == SyncOutput.CreatePullRequest || expectedOutput == SyncOutput.MergePullRequest)
@@ -175,7 +184,13 @@ class Syncer : IDisposable
                 await gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
             }
 
-            return $"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}";
+            return new UpdateResult
+            {
+                Url = $"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}",
+                CommitSha = commitSha,
+                BranchName = root.Branch,
+                PullRequestId = prNumber
+            };
         }
 
         throw new NotSupportedException();
@@ -537,4 +552,8 @@ class Syncer : IDisposable
     {
         gateway.Dispose();
     }
+}
+
+namespace GitHubSync
+{
 }

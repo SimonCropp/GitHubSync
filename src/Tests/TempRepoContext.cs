@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using GitHubSync;
 using Octokit;
 
 public class TempRepoContext :
@@ -25,10 +26,19 @@ public class TempRepoContext :
         return new TempRepoContext(tempBranchReference, tempBranchName, $"refs/heads/{tempBranchName}");
     }
 
-    public async Task VerifyPullRequest(string name)
+    public async Task VerifyPullRequest(UpdateResult updateResult)
     {
-        var branch = await Client.GitHubClient.Repository.Branch.Get("SimonCropp", "GitHubSync.TestRepository", name);
-        ObjectApprover.Verify(branch);
+        var branch = await Client.GitHubClient.PullRequest.Get("SimonCropp", "GitHubSync.TestRepository", updateResult.PullRequestId);
+        ObjectApprover.Verify(new
+        {
+            branch.Title,
+            branch.Body,
+            branch.Commits,
+            branch.Additions,
+            branch.ChangedFiles,
+            State = branch.State.StringValue,
+            Target = branch.Base.Ref
+        });
     }
 
     public async ValueTask DisposeAsync()
