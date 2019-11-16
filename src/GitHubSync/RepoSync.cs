@@ -207,7 +207,9 @@ namespace GitHubSync
         }
 
         public async Task Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)
+        public async Task<List<string>> Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)
         {
+            var list = new List<string>();
             foreach (var targetRepository in targets)
             {
                 var targetRepositoryDisplayName = $"{targetRepository.Owner}/{targetRepository.Repository}";
@@ -237,7 +239,10 @@ namespace GitHubSync
                 {
                     log($"Pull created for {targetRepositoryDisplayName}, click here to review and pull: {createdSyncBranch}");
                 }
+                list.Add(createdSyncBranch);
             }
+
+            return list;
         }
     }
 }
