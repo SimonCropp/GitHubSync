@@ -81,6 +81,7 @@ public class RepoSyncPartsTests :
     }
 
 #pragma warning disable CS1998
+    // ReSharper disable once UnusedParameter.Local
     static async Task Verify(RepoSync repoSync)
 #pragma warning restore CS1998
     {
