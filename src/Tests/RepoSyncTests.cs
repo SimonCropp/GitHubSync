@@ -13,18 +13,16 @@ public class RepoSyncTests :
     {
         var credentials = CredentialsHelper.Credentials;
         var repoSync = new RepoSync(WriteLine);
-        var repoContext = await TempRepoContext.Create(Context.MethodName);
-        {
-            repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
-            repoSync.RemoveBlob("README.md");
-            repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
+        await using var repoContext = await TempRepoContext.Create(Context.MethodName);
+        repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+        repoSync.RemoveBlob("README.md");
+        repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
 
-            var sync = await repoSync.Sync();
-            await repoContext.VerifyPullRequest(sync.Single());
-        }
+        var sync = await repoSync.Sync();
+        await repoContext.VerifyPullRequest(sync.Single());
     }
+
     [Fact]
-    [Trait("Category", "Integration")]
     public async Task SyncPrExcludeAllByDefault()
     {
         var credentials = CredentialsHelper.Credentials;
