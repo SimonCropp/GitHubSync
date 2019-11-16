@@ -86,8 +86,11 @@ class Syncer : IDisposable
         return true;
     }
 
-    internal async Task<IEnumerable<string>> Sync(Mapper diff, SyncOutput expectedOutput,
-        IEnumerable<string> labelsToApplyOnPullRequests = null, string description = null)
+    internal async Task<IEnumerable<string>> Sync(
+        Mapper diff,
+        SyncOutput expectedOutput,
+        IEnumerable<string> labelsToApplyOnPullRequests = null,
+        string description = null)
     {
         Guard.AgainstNull(diff, nameof(diff));
         Guard.AgainstNull(expectedOutput, nameof(expectedOutput));
@@ -104,7 +107,8 @@ class Syncer : IDisposable
 
         foreach (var updatesPerOwnerRepositoryBranch in t.Values)
         {
-            results.Add(await ProcessUpdates(expectedOutput, updatesPerOwnerRepositoryBranch, labels, description).ConfigureAwait(false));
+            var updates = await ProcessUpdates(expectedOutput, updatesPerOwnerRepositoryBranch, labels, description);
+            results.Add(updates);
         }
 
         return results;
@@ -361,7 +365,7 @@ class Syncer : IDisposable
             switch (source.Type)
             {
                 case TreeEntryTargetType.Blob:
-                    var sourceBlobItem = (await gateway.BlobFrom(source, true).ConfigureAwait(false)).Item2;
+                    var sourceBlobItem = (await gateway.BlobFrom(source, true)).Item2;
                     newTree.Tree.Add(
                         new NewTreeItem
                         {
