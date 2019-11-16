@@ -11,7 +11,7 @@ public static class OctokitEx
         return items;
     }
 
-    static async Task GetRecursive(Credentials credentials, string sourceOwner, string sourceRepository, string path, List<string> items)
+    static Task GetRecursive(Credentials credentials, string sourceOwner, string sourceRepository, string path, List<string> items)
     {
         var client = new GitHubClient(new ProductHeaderValue("GitHubSync"));
 
@@ -20,7 +20,7 @@ public static class OctokitEx
             client.Credentials = credentials;
         }
 
-        await GetRecursive(client, sourceOwner, sourceRepository, path, items);
+        return GetRecursive(client, sourceOwner, sourceRepository, path, items);
     }
 
     static async Task GetRecursive(GitHubClient client, string sourceOwner, string sourceRepository, string path, List<string> items)
