@@ -206,7 +206,6 @@ namespace GitHubSync
             return syncContext;
         }
 
-        public async Task Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)
         public async Task<List<string>> Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)
         {
             var list = new List<string>();
