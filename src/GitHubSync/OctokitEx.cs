@@ -4,14 +4,14 @@ using Octokit;
 
 public static class OctokitEx
 {
-    public static async Task<List<string>> GetRecursive(Credentials credentials, string sourceOwner, string sourceRepository, string path = null)
+    public static async Task<List<string>> GetRecursive(Credentials credentials, string sourceOwner, string sourceRepository, string path = null, string branch = null)
     {
         var items = new List<string>();
-        await GetRecursive(credentials, sourceOwner, sourceRepository, path, items);
+        await GetRecursive(credentials, sourceOwner, sourceRepository, path, items, branch);
         return items;
     }
 
-    static Task GetRecursive(Credentials credentials, string sourceOwner, string sourceRepository, string path, List<string> items)
+    static Task GetRecursive(Credentials credentials, string sourceOwner, string sourceRepository, string path, List<string> items, string branch)
     {
         var client = new GitHubClient(new ProductHeaderValue("GitHubSync"));
 
@@ -20,12 +20,12 @@ public static class OctokitEx
             client.Credentials = credentials;
         }
 
-        return GetRecursive(client, sourceOwner, sourceRepository, path, items);
+        return GetRecursive(client, sourceOwner, sourceRepository, path, items,branch);
     }
 
-    static async Task GetRecursive(GitHubClient client, string sourceOwner, string sourceRepository, string path, List<string> items)
+    static async Task GetRecursive(GitHubClient client, string sourceOwner, string sourceRepository, string path, List<string> items, string branch)
     {
-        foreach (var content in await client.Repository.Content.GetAllContentsEx(sourceOwner, sourceRepository, path))
+        foreach (var content in await client.Repository.Content.GetAllContentsEx(sourceOwner, sourceRepository, path,branch))
         {
             var contentPath = content.Path;
             if (content.Type.Value == ContentType.File)
@@ -35,7 +35,7 @@ public static class OctokitEx
 
             if (content.Type.Value == ContentType.Dir)
             {
-                await GetRecursive(client, sourceOwner, sourceRepository, contentPath, items);
+                await GetRecursive(client, sourceOwner, sourceRepository, contentPath, items,branch);
             }
         }
     }

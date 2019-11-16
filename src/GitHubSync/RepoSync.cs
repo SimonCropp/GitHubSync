@@ -125,11 +125,11 @@ namespace GitHubSync
                 // Note: iterate backwards, later registered sources should override earlier registrations
                 for (var i = sources.Count - 1; i >= 0; i--)
                 {
-                    var sourceRepository = sources[i];
-                    var sourceRepositoryDisplayName = $"{sourceRepository.Owner}/{sourceRepository.Repository}";
+                    var source = sources[i];
+                    var displayName = $"{source.Owner}/{source.Repository}";
                     var itemsToSync = new List<SyncItem>();
 
-                    foreach (var item in await OctokitEx.GetRecursive(sourceRepository.Credentials, sourceRepository.Owner, sourceRepository.Repository))
+                    foreach (var item in await OctokitEx.GetRecursive(source.Credentials, source.Owner, source.Repository, null, source.Branch))
                     {
                         if (includedPaths.Contains(item))
                         {
@@ -157,8 +157,8 @@ namespace GitHubSync
 
                         itemsToSync.Add(new SyncItem
                         {
-                            Parts = new Parts($"{sourceRepository.Owner}/{sourceRepository.Repository}",
-                                TreeEntryTargetType.Blob, sourceRepository.Branch, item),
+                            Parts = new Parts($"{source.Owner}/{source.Repository}",
+                                TreeEntryTargetType.Blob, source.Branch, item),
                             ToBeAdded = true,
                             Target = null
                         });
@@ -178,7 +178,7 @@ namespace GitHubSync
                     {
                         diffs.Add(diff);
 
-                        descriptionBuilder.AppendLine($"* {sourceRepositoryDisplayName}");
+                        descriptionBuilder.AppendLine($"* {displayName}");
                     }
                 }
 
