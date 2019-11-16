@@ -26,6 +26,15 @@ public class TempRepoContext :
         return new TempRepoContext(tempBranchReference, tempBranchName, $"refs/heads/{tempBranchName}");
     }
 
+    public async Task VerifyCommit(UpdateResult updateResult)
+    {
+        var commit = await Client.GitHubClient.Git.Commit.Get("SimonCropp", "GitHubSync.TestRepository", updateResult.CommitSha);
+        ObjectApprover.Verify(new
+        {
+            commit.Message
+        });
+    }
+
     public async Task VerifyPullRequest(UpdateResult updateResult)
     {
         var branch = await Client.GitHubClient.PullRequest.Get("SimonCropp", "GitHubSync.TestRepository", updateResult.PullRequestId);

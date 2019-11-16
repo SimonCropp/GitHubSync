@@ -26,48 +26,43 @@ public class RepoSyncTests :
     public async Task SyncPrExcludeAllByDefault()
     {
         var credentials = CredentialsHelper.Credentials;
-        var repoSync = new RepoSync(WriteLine, syncMode:SyncMode.ExcludeAllByDefault);
-        var repoContext = await TempRepoContext.Create(Context.MethodName);
-        {
-            repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
-            repoSync.AddBlob("sourceFile.txt");
-            repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
+        var repoSync = new RepoSync(WriteLine, syncMode: SyncMode.ExcludeAllByDefault);
+        await using var repoContext = await TempRepoContext.Create(Context.MethodName);
+        repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+        repoSync.AddBlob("sourceFile.txt");
+        repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
 
-            var sync = await repoSync.Sync();
-            await repoContext.VerifyPullRequest(sync.Single());
-        }
+        var sync = await repoSync.Sync();
+        await repoContext.VerifyPullRequest(sync.Single());
     }
 
     [Fact]
-    [Trait("Category", "Integration")]
-    public Task SyncPrMerge()
+    public async Task SyncPrMerge()
+    {
+        var credentials = CredentialsHelper.Credentials;
+        var repoSync = new RepoSync(WriteLine);
+        await using var repoContext = await TempRepoContext.Create(Context.MethodName);
+        repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+        repoSync.RemoveBlob("README.md");
+        repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
+
+        var sync = await repoSync.Sync(SyncOutput.MergePullRequest);
+        await repoContext.VerifyPullRequest(sync.Single());
+    }
+
+    [Fact]
+    public async Task SyncCommit()
     {
         var credentials = CredentialsHelper.Credentials;
         var repoSync = new RepoSync(WriteLine);
 
+        await using var repoContext = await TempRepoContext.Create(Context.MethodName);
         repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
-        //repoSync.AddBlob("sourceFile.txt");
-        repoSync.RemoveBlob("IDoNotExist/MeNeither.txt");
         repoSync.RemoveBlob("README.md");
-        repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "targetForMerge"));
+        repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
 
-        return repoSync.Sync(SyncOutput.MergePullRequest);
-    }
-
-    [Fact]
-    [Trait("Category", "Integration")]
-    public Task SyncCommit()
-    {
-        var credentials = CredentialsHelper.Credentials;
-        var repoSync = new RepoSync(WriteLine);
-
-        repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
-        //repoSync.AddBlob("sourceFile.txt");
-        repoSync.RemoveBlob("IDoNotExist/MeNeither.txt");
-        repoSync.RemoveBlob("README.md");
-        repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "targetForCommit"));
-
-        return repoSync.Sync(SyncOutput.CreateCommit);
+        var sync = await repoSync.Sync(SyncOutput.CreateCommit);
+        await repoContext.VerifyCommit(sync.Single());
     }
 
     public RepoSyncTests(ITestOutputHelper output) :
