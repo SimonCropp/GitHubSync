@@ -4,7 +4,7 @@ using GitHubSync;
 using Xunit;
 using Xunit.Abstractions;
 
-[Trait("Category", "Integration")]
+[Trait("Category", "Local")]
 public class DiffTests :
     XunitApprovalBase
 {

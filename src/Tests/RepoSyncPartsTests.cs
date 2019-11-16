@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-[Trait("Category", "Integration")]
+[Trait("Category", "Local")]
 public class RepoSyncPartsTests :
     XunitApprovalBase
 {
