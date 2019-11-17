@@ -206,7 +206,7 @@ namespace GitHubSync
             return syncContext;
         }
 
-        public async Task<List<UpdateResult>> Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)
+        public async Task<IReadOnlyList<UpdateResult>> Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)
         {
             var list = new List<UpdateResult>();
             foreach (var targetRepository in targets)

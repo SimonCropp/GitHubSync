@@ -79,7 +79,7 @@ class GitHubGateway : IDisposable
 
         using var httpClient = new HttpClient();
         using var response = await httpClient.GetAsync(downloadUrl, HttpCompletionOption.ResponseHeadersRead);
-        using var streamToReadFrom = await response.Content.ReadAsStreamAsync();
+        await using var streamToReadFrom = await response.Content.ReadAsStreamAsync();
         await streamToReadFrom.CopyToAsync(targetStream);
     }
 

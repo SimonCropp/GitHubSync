@@ -289,7 +289,7 @@ class Syncer : IDisposable
             {
                 case Parts _:
                     // Directly download raw bytes into file
-                    using (var fileStream = new FileStream(fullDestination, System.IO.FileMode.Create))
+                    await using (var fileStream = new FileStream(fullDestination, System.IO.FileMode.Create))
                     {
                         await gateway.DownloadBlob((Parts)source, fileStream);
                     }

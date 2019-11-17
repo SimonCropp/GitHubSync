@@ -8,7 +8,7 @@ class TargetTree
     public Dictionary<string, Tuple<Parts, Parts>> LeavesToCreate;
     public Dictionary<string, Parts> LeavesToDrop;
     public Parts Current;
-    public static readonly string EmptyTreeSha = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
+    public static string EmptyTreeSha = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
 
     public TargetTree(Parts root)
     {
