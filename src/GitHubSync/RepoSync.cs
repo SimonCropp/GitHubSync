@@ -71,7 +71,8 @@ namespace GitHubSync
 
             manualSyncItems.Add(new ManualSyncItem
             {
-                Path = path
+                Path = path,
+                Target = target
             });
         }
 
@@ -192,30 +193,51 @@ namespace GitHubSync
             var parts = new Parts(
                 $"{source.Owner}/{source.Repository}",
                 TreeEntryTargetType.Blob, source.Branch, item);
-            var isManualSyncItem = manualSyncItems.Any(x => item.StartsWith(x.Path, StringComparison.OrdinalIgnoreCase));
-            if (syncMode == SyncMode.IncludeAllByDefault)
+            var localManualSyncItems = manualSyncItems.Where(x => item == x.Path).ToList();
+            var isManualSyncItem = localManualSyncItems.Any();
+            if (isManualSyncItem)
             {
-                itemsToSync.Add(new SyncItem
+                foreach (var manualSyncItem in localManualSyncItems)
                 {
-                    Parts = parts,
-                    ToBeAdded = !isManualSyncItem,
-                    Target = null
-                });
+                    switch (syncMode)
+                    {
+                        case SyncMode.IncludeAllByDefault:
+                            itemsToSync.Add(new SyncItem
+                            {
+                                Parts = parts,
+                                ToBeAdded = false,
+                                Target = manualSyncItem?.Target
+                            });
+                            continue;
+                        case SyncMode.ExcludeAllByDefault:
+                            itemsToSync.Add(new SyncItem
+                            {
+                                Parts = parts,
+                                ToBeAdded = true,
+                                Target = manualSyncItem?.Target
+                            });
+                            continue;
+                    }
+                }
                 return;
             }
-
-            if (syncMode == SyncMode.ExcludeAllByDefault)
+            switch (syncMode)
             {
-                itemsToSync.Add(new SyncItem
-                {
-                    Parts = parts,
-                    ToBeAdded = isManualSyncItem,
-                    Target = null
-                });
-                return;
+                case SyncMode.IncludeAllByDefault:
+                    itemsToSync.Add(new SyncItem
+                    {
+                        Parts = parts,
+                        ToBeAdded = true,
+                    });
+                    return;
+                case SyncMode.ExcludeAllByDefault:
+                    itemsToSync.Add(new SyncItem
+                    {
+                        Parts = parts,
+                        ToBeAdded = false,
+                    });
+                    return;
             }
-
-            throw new ArgumentOutOfRangeException(nameof(syncMode), $"Sync mode '{syncMode}' is not supported");
         }
 
         public async Task<IReadOnlyList<UpdateResult>> Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)

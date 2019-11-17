@@ -30,6 +30,7 @@ public class RepoSyncTests :
         await using var repoContext = await TempRepoContext.Create(Context.MethodName);
         repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
         repoSync.AddBlob("sourceFile.txt");
+        repoSync.AddSourceItem(TreeEntryTargetType.Blob,"sourceFile.txt", "nested/sourceFile.txt");
         repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
 
         var sync = await repoSync.Sync();
