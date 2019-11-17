@@ -86,7 +86,7 @@ class Syncer : IDisposable
         return true;
     }
 
-    internal async Task<IEnumerable<UpdateResult>> Sync(
+    internal async Task<IReadOnlyList<UpdateResult>> Sync(
         Mapper diff,
         SyncOutput expectedOutput,
         IEnumerable<string> labelsToApplyOnPullRequests = null,
@@ -114,8 +114,11 @@ class Syncer : IDisposable
         return results;
     }
 
-    async Task<UpdateResult> ProcessUpdates(SyncOutput expectedOutput, IList<Tuple<Parts, IParts>> updatesPerOwnerRepositoryBranch,
-        string[] labels, string description)
+    async Task<UpdateResult> ProcessUpdates(
+        SyncOutput expectedOutput,
+        IList<Tuple<Parts, IParts>> updatesPerOwnerRepositoryBranch,
+        string[] labels,
+        string description)
     {
         var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
         var root = updatesPerOwnerRepositoryBranch.First().Item1.RootTreePart;
@@ -123,7 +126,11 @@ class Syncer : IDisposable
         string commitSha;
 
         var isCollaborator = await gateway.IsCollaborator(root.Owner, root.Repository);
-        if (!isCollaborator)
+        if (isCollaborator)
+        {
+            commitSha = await ProcessUpdatesInTargetRepository(root, updatesPerOwnerRepositoryBranch);
+        }
+        else
         {
             log("User is not a collaborator, need to create a fork");
 
@@ -133,10 +140,6 @@ class Syncer : IDisposable
             }
 
             commitSha = await ProcessUpdatesInFork(root, branchName, updatesPerOwnerRepositoryBranch);
-        }
-        else
-        {
-            commitSha = await ProcessUpdatesInTargetRepository(root, updatesPerOwnerRepositoryBranch);
         }
 
         if (expectedOutput == SyncOutput.CreateCommit)
