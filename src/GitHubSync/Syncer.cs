@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 using GitHubSync;
 using Octokit;
 
-class Syncer : IDisposable
+class Syncer :
+    IDisposable
 {
     const string PullRequestTitle = "GitHubSync update";
 
     GitHubGateway gateway;
-    readonly Action<string> log;
-    readonly Credentials credentials;
+    Action<string> log;
+    Credentials credentials;
 
     public Syncer(
         Credentials credentials,

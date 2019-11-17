@@ -17,7 +17,11 @@ namespace GitHubSync
         List<RepositoryInfo> sources = new List<RepositoryInfo>();
         List<RepositoryInfo> targets = new List<RepositoryInfo>();
 
-        public RepoSync(Action<string> log = null, List<string> labelsToApplyOnPullRequests = null, SyncMode syncMode = SyncMode.IncludeAllByDefault, Credentials defaultCredentials = null)
+        public RepoSync(
+            Action<string> log = null,
+            List<string> labelsToApplyOnPullRequests = null,
+            SyncMode syncMode = SyncMode.IncludeAllByDefault,
+            Credentials defaultCredentials = null)
         {
             this.log = log ?? Console.WriteLine;
             this.labelsToApplyOnPullRequests = labelsToApplyOnPullRequests;
@@ -138,30 +142,7 @@ namespace GitHubSync
 
                         includedPaths.Add(item);
 
-                        if (manualSyncItems.Any(x => item.StartsWith(x.Path, StringComparison.OrdinalIgnoreCase)))
-                        {
-                            switch (syncMode)
-                            {
-                                case SyncMode.IncludeAllByDefault:
-                                    // Continue
-                                    break;
-
-                                case SyncMode.ExcludeAllByDefault:
-                                    // Ignore this file
-                                    continue;
-
-                                default:
-                                    throw new ArgumentOutOfRangeException(nameof(syncMode), $"Sync mode '{syncMode}' is not supported");
-                            }
-                        }
-
-                        itemsToSync.Add(new SyncItem
-                        {
-                            Parts = new Parts($"{source.Owner}/{source.Repository}",
-                                TreeEntryTargetType.Blob, source.Branch, item),
-                            ToBeAdded = true,
-                            Target = null
-                        });
+                        ProcessItem(item, itemsToSync, source);
                     }
 
                     var targetRepositoryToSync = new RepoToSync
@@ -204,6 +185,37 @@ namespace GitHubSync
             }
 
             return syncContext;
+        }
+
+        void ProcessItem(string item, List<SyncItem> itemsToSync, RepositoryInfo source)
+        {
+            var parts = new Parts(
+                $"{source.Owner}/{source.Repository}",
+                TreeEntryTargetType.Blob, source.Branch, item);
+            var isManualSyncItem = manualSyncItems.Any(x => item.StartsWith(x.Path, StringComparison.OrdinalIgnoreCase));
+            if (syncMode == SyncMode.IncludeAllByDefault)
+            {
+                itemsToSync.Add(new SyncItem
+                {
+                    Parts = parts,
+                    ToBeAdded = !isManualSyncItem,
+                    Target = null
+                });
+                return;
+            }
+
+            if (syncMode == SyncMode.ExcludeAllByDefault)
+            {
+                itemsToSync.Add(new SyncItem
+                {
+                    Parts = parts,
+                    ToBeAdded = isManualSyncItem,
+                    Target = null
+                });
+                return;
+            }
+
+            throw new ArgumentOutOfRangeException(nameof(syncMode), $"Sync mode '{syncMode}' is not supported");
         }
 
         public async Task<IReadOnlyList<UpdateResult>> Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)

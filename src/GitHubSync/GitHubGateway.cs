@@ -11,7 +11,8 @@ using Octokit.Internal;
 using GitHubSync;
 using System.Net.Http;
 
-class GitHubGateway : IDisposable
+class GitHubGateway :
+    IDisposable
 {
     Action<string> log;
     Dictionary<string, Commit> commitCachePerOwnerRepositoryBranch = new Dictionary<string, Commit>();
