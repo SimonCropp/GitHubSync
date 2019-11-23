@@ -1,14 +1,15 @@
 ﻿using GitHubSync;
 using System.Threading.Tasks;
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
 [Trait("Category", "Local")]
 public class RepoSyncPartsTests :
-    XunitApprovalBase
+    VerifyBase
 {
     [Fact]
-    public async Task Simple()
+    public Task Simple()
     {
         var repoSync = BuildRepoSync(SyncMode.IncludeAllByDefault);
 
@@ -20,11 +21,11 @@ public class RepoSyncPartsTests :
         repoSync.AddTargetRepository(new RepositoryInfo(null, "owner1", "repo1", "branch1"));
         repoSync.AddTargetRepository(new RepositoryInfo(null, "owner2", "repo2", "branch2"));
 
-        await Verify(repoSync);
+        return Verify(repoSync);
     }
 
     [Fact]
-    public async Task AddBlob()
+    public Task AddBlob()
     {
         var repoSync = BuildRepoSync(SyncMode.ExcludeAllByDefault);
 
@@ -32,11 +33,11 @@ public class RepoSyncPartsTests :
         repoSync.AddBlob("added2", "target2");
         repoSync.AddBlob("sourceDir/added3", "targetDir/target3");
 
-        await Verify(repoSync);
+        return Verify(repoSync);
     }
 
     [Fact]
-    public async Task AddTree()
+    public Task AddTree()
     {
         var repoSync = BuildRepoSync(SyncMode.ExcludeAllByDefault);
 
@@ -44,11 +45,11 @@ public class RepoSyncPartsTests :
         repoSync.AddSourceItem(TreeEntryTargetType.Tree, "added2", "target2");
         repoSync.AddSourceItem(TreeEntryTargetType.Tree, "sourceDir/added3", "targetDir/target3");
 
-        await Verify(repoSync);
+        return Verify(repoSync);
     }
 
     [Fact]
-    public async Task RemoveBlob()
+    public Task RemoveBlob()
     {
         var repoSync = BuildRepoSync(SyncMode.IncludeAllByDefault);
 
@@ -56,18 +57,18 @@ public class RepoSyncPartsTests :
         repoSync.RemoveBlob("added2", "target2");
         repoSync.RemoveBlob("sourceDir/added3", "targetDir/target3");
 
-        await Verify(repoSync);
+        return Verify(repoSync);
     }
 
     [Fact]
-    public async Task AddTarget()
+    public Task AddTarget()
     {
         var repoSync = BuildRepoSync(SyncMode.IncludeAllByDefault);
 
         repoSync.AddTargetRepository(new RepositoryInfo(null, "owner1", "repo1", "branch1"));
         repoSync.AddTargetRepository(new RepositoryInfo(null, "owner2", "repo2", "branch2"));
 
-        await Verify(repoSync);
+        return Verify(repoSync);
     }
 
     static RepoSync BuildRepoSync(SyncMode syncMode)
@@ -90,7 +91,7 @@ public class RepoSyncPartsTests :
         //{
         //    var syncContext = await repoSync.CalculateSyncContext(target);
 
-        //    ObjectApprover.Verify(
+        //    await Verify(
         //        new
         //        {
         //            syncContext.Diff,

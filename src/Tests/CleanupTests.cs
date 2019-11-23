@@ -1,11 +1,12 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
 [Trait("Category", "Integration")]
 public class CleanupTests :
-    XunitApprovalBase
+    VerifyBase
 {
     [Fact]
     public async Task Run()

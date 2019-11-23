@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using GitHubSync;
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
 public class MapperTests :
-    XunitApprovalBase
+    VerifyBase
 {
     [Fact]
-    public void CanAddAndEnumerate()
+    public Task CanAddAndEnumerate()
     {
         var a = new Parts("o/r1", TreeEntryTargetType.Blob, "b1", "a");
         var c = new Parts("o/r1", TreeEntryTargetType.Tree, "b1", "c");
@@ -21,7 +23,7 @@ public class MapperTests :
             .Add(a, one)
             .Add(a, two)
             .Add(c, three);
-        ObjectApprover.Verify(m.ToBeAddedOrUpdatedEntries);
+        return Verify(m.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -37,7 +39,7 @@ public class MapperTests :
     }
 
     [Fact]
-    public void TransposeRegroupsPerTargetRepositoryAndBranch()
+    public Task TransposeRegroupsPerTargetRepositoryAndBranch()
     {
         var m = new Mapper()
             .Add(new Parts("o1/r1", TreeEntryTargetType.Blob, "b1", "a"),
@@ -63,7 +65,7 @@ public class MapperTests :
         var orbs = t.Keys.ToList();
         orbs.Sort(StringComparer.Ordinal);
 
-        ObjectApprover.Verify(orbs);
+        return Verify(orbs);
     }
 
     [Fact]

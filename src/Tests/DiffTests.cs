@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GitHubSync;
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
 [Trait("Category", "Local")]
 public class DiffTests :
-    XunitApprovalBase
+    VerifyBase
 {
     Syncer BuildSyncer()
     {
@@ -23,7 +24,7 @@ public class DiffTests :
 
         using var syncer = BuildSyncer();
         var diff = await syncer.Diff(map);
-        ObjectApprover.Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -37,7 +38,7 @@ public class DiffTests :
 
         using var som = BuildSyncer();
         var diff = await som.Diff(map);
-        ObjectApprover.Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -51,7 +52,7 @@ public class DiffTests :
 
         using var som = BuildSyncer();
         var diff = await som.Diff(map);
-        ObjectApprover.Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -92,7 +93,7 @@ public class DiffTests :
 
         using var syncer = BuildSyncer();
         var diff = await syncer.Diff(map);
-        ObjectApprover.Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -106,7 +107,7 @@ public class DiffTests :
 
         using var syncer = BuildSyncer();
         var diff = await syncer.Diff(map);
-        ObjectApprover.Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -133,7 +134,7 @@ public class DiffTests :
 
         using var syncer = BuildSyncer();
         var diff = await syncer.Diff(map);
-        ObjectApprover.Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -148,7 +149,7 @@ public class DiffTests :
 
         using var syncer = BuildSyncer();
         var diff = await syncer.Diff(map);
-        ObjectApprover.Verify(diff.ToBeRemovedEntries);
+        await Verify(diff.ToBeRemovedEntries);
     }
 
     public DiffTests(ITestOutputHelper output) :
