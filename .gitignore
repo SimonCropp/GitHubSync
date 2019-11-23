@@ -10,3 +10,4 @@ NuGetBuild
 [Bb]in
 [Oo]bj
 *.nupkg
+*.received.txt
