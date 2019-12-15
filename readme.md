@@ -15,9 +15,7 @@ A tool to help synchronizing specific files and folders across repositories
 ## Contents
 
   * [NuGet](#nuget)
-  * [Usage](#usage)
-<!-- endtoc -->
-
+  * [Usage](#usage)<!-- endtoc -->
 
 
 ## NuGet
@@ -66,7 +64,7 @@ repoSync.AddTargetRepository(new RepositoryInfo(
 // Run the sync
 await repoSync.Sync(syncOutput: SyncOutput.MergePullRequest);
 ```
-<sup>[snippet source](/src/Tests/Snippets.cs#L10-L47) / [anchor](#snippet-usage)</sup>
+<sup><a href='/src/Tests/Snippets.cs#L10-L47' title='File snippet `usage` was extracted from'>snippet source</a> | <a href='#snippet-usage' title='Navigate to start of snippet `usage`'>anchor</a></sup>
 <!-- endsnippet -->
 
 
