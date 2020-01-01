@@ -8,7 +8,7 @@ A tool to help synchronizing specific files and folders across repositories
 toc
 
 
-## NuGet
+## NuGet package
 
 https://nuget.org/packages/GitHubSync/
 
