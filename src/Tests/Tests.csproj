@@ -13,7 +13,7 @@
     <PackageReference Include="MarkdownSnippets.MsBuild" Version="17.6.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
     <ProjectReference Include="..\GitHubSync\GitHubSync.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.39" PrivateAssets="All" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.40" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
