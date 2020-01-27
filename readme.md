@@ -68,11 +68,6 @@ await repoSync.Sync(syncOutput: SyncOutput.MergePullRequest);
 <!-- endsnippet -->
 
 
-## Release Notes
-
-See [closed milestones](../../milestones?state=closed).
-
-
 ## Icon
 
 [Sync](https://thenounproject.com/term/sync/290/) designed by [Edward Boatman](https://thenounproject.com/edward) from [The Noun Project](https://thenounproject.com).
