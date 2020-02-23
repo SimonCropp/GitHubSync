@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using GitHubSync;
-using ObjectApproval;
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
-public class MapperTests: TestBase
+public class MapperTests :
+    VerifyBase
 {
     [Fact]
-    public void CanAddAndEnumerate()
+    public Task CanAddAndEnumerate()
     {
         var a = new Parts("o/r1", TreeEntryTargetType.Blob, "b1", "a");
         var c = new Parts("o/r1", TreeEntryTargetType.Tree, "b1", "c");
@@ -21,7 +23,7 @@ public class MapperTests: TestBase
             .Add(a, one)
             .Add(a, two)
             .Add(c, three);
-        ObjectApprover.VerifyWithJson(m.ToBeAddedOrUpdatedEntries);
+        return Verify(m.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -37,7 +39,7 @@ public class MapperTests: TestBase
     }
 
     [Fact]
-    public void TransposeRegroupsPerTargetRepositoryAndBranch()
+    public Task TransposeRegroupsPerTargetRepositoryAndBranch()
     {
         var m = new Mapper()
             .Add(new Parts("o1/r1", TreeEntryTargetType.Blob, "b1", "a"),
@@ -63,7 +65,7 @@ public class MapperTests: TestBase
         var orbs = t.Keys.ToList();
         orbs.Sort(StringComparer.Ordinal);
 
-        ObjectApprover.VerifyWithJson(orbs);
+        return Verify(orbs);
     }
 
     [Fact]
@@ -94,7 +96,7 @@ public class MapperTests: TestBase
         var to = new Parts("target/r", TreeEntryTargetType.Blob, "branch", "file.txt");
 
         m.Add(from, to);
-        Assert.Throws<InvalidOperationException>(()=> m.Remove(to));
+        Assert.Throws<InvalidOperationException>(() => m.Remove(to));
     }
 
     [Fact]
@@ -108,7 +110,8 @@ public class MapperTests: TestBase
         Assert.Throws<InvalidOperationException>(() => m.Add(from, to));
     }
 
-    public MapperTests(ITestOutputHelper output) : base(output)
+    public MapperTests(ITestOutputHelper output) :
+        base(output)
     {
     }
 }

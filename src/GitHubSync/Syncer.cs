@@ -8,13 +8,14 @@ using System.Threading.Tasks;
 using GitHubSync;
 using Octokit;
 
-class Syncer : IDisposable
+class Syncer :
+    IDisposable
 {
     const string PullRequestTitle = "GitHubSync update";
 
     GitHubGateway gateway;
-    readonly Action<string> log;
-    readonly Credentials credentials;
+    Action<string> log;
+    Credentials credentials;
 
     public Syncer(
         Credentials credentials,
@@ -86,8 +87,11 @@ class Syncer : IDisposable
         return true;
     }
 
-    internal async Task<IEnumerable<string>> Sync(Mapper diff, SyncOutput expectedOutput,
-        IEnumerable<string> labelsToApplyOnPullRequests = null, string description = null)
+    internal async Task<IReadOnlyList<UpdateResult>> Sync(
+        Mapper diff,
+        SyncOutput expectedOutput,
+        IEnumerable<string> labelsToApplyOnPullRequests = null,
+        string description = null)
     {
         Guard.AgainstNull(diff, nameof(diff));
         Guard.AgainstNull(expectedOutput, nameof(expectedOutput));
@@ -100,26 +104,34 @@ class Syncer : IDisposable
 
         var t = diff.Transpose();
 
-        var results = new List<string>();
+        var results = new List<UpdateResult>();
 
         foreach (var updatesPerOwnerRepositoryBranch in t.Values)
         {
-            results.Add(await ProcessUpdates(expectedOutput, updatesPerOwnerRepositoryBranch, labels, description).ConfigureAwait(false));
+            var updates = await ProcessUpdates(expectedOutput, updatesPerOwnerRepositoryBranch, labels, description);
+            results.Add(updates);
         }
 
         return results;
     }
 
-    async Task<string> ProcessUpdates(SyncOutput expectedOutput, IList<Tuple<Parts, IParts>> updatesPerOwnerRepositoryBranch,
-        string[] labels, string description)
+    async Task<UpdateResult> ProcessUpdates(
+        SyncOutput expectedOutput,
+        IList<Tuple<Parts, IParts>> updatesPerOwnerRepositoryBranch,
+        string[] labels,
+        string description)
     {
         var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
         var root = updatesPerOwnerRepositoryBranch.First().Item1.RootTreePart;
 
-        var commitSha = string.Empty;
+        string commitSha;
 
         var isCollaborator = await gateway.IsCollaborator(root.Owner, root.Repository);
-        if (!isCollaborator)
+        if (isCollaborator)
+        {
+            commitSha = await ProcessUpdatesInTargetRepository(root, updatesPerOwnerRepositoryBranch);
+        }
+        else
         {
             log("User is not a collaborator, need to create a fork");
 
@@ -130,20 +142,25 @@ class Syncer : IDisposable
 
             commitSha = await ProcessUpdatesInFork(root, branchName, updatesPerOwnerRepositoryBranch);
         }
-        else
-        {
-            commitSha = await ProcessUpdatesInTargetRepository(root, updatesPerOwnerRepositoryBranch);
-        }
 
         if (expectedOutput == SyncOutput.CreateCommit)
         {
-            return $"https://github.com/{root.Owner}/{root.Repository}/commit/{commitSha}";
+            return new UpdateResult
+            {
+                Url = $"https://github.com/{root.Owner}/{root.Repository}/commit/{commitSha}",
+                CommitSha = commitSha
+            };
         }
 
         if (expectedOutput == SyncOutput.CreateBranch)
         {
             branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, commitSha);
-            return $"https://github.com/{root.Owner}/{root.Repository}/compare/{UrlSanitize(root.Branch)}...{UrlSanitize(branchName)}";
+            return new UpdateResult
+            {
+                Url = $"https://github.com/{root.Owner}/{root.Repository}/compare/{UrlSanitize(root.Branch)}...{UrlSanitize(branchName)}",
+                CommitSha = commitSha,
+                BranchName = branchName
+            };
         }
 
         if (expectedOutput == SyncOutput.CreatePullRequest || expectedOutput == SyncOutput.MergePullRequest)
@@ -170,8 +187,14 @@ class Syncer : IDisposable
             {
                 await gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
             }
-            
-            return $"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}";
+
+            return new UpdateResult
+            {
+                Url = $"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}",
+                CommitSha = commitSha,
+                BranchName = root.Branch,
+                PullRequestId = prNumber
+            };
         }
 
         throw new NotSupportedException();
@@ -231,82 +254,75 @@ class Syncer : IDisposable
         var currentUser = await gateway.GetCurrentUser();
         var commitSignature = new LibGit2Sharp.Signature(currentUser.Name, currentUser.Email ?? "hidden@protected.com", DateTimeOffset.Now);
 
-        using (var repository = new LibGit2Sharp.Repository(repositoryPath))
+        using var repository = new LibGit2Sharp.Repository(repositoryPath);
+        // Step 2: ensure upstream
+        var remotes = repository.Network.Remotes;
+        var originRemote = remotes["origin"];
+        var upstreamRemote = remotes["upstream"] ?? remotes.Add("upstream", $"https://github.com/{root.Owner}/{root.Repository}");
+
+        LibGit2Sharp.Commands.Fetch(repository, "upstream", upstreamRemote.FetchRefSpecs.Select(x => x.Specification), null, null);
+
+        // Step 3: create local branch
+        var tempBranch = repository.Branches.Add(temporaryBranchName, "HEAD");
+        repository.Branches.Update(tempBranch, b =>
         {
-            // Step 2: ensure upstream
-            var remotes = repository.Network.Remotes;
-            var originRemote = remotes["origin"];
-            var upstreamRemote = remotes["upstream"];
+            b.Remote = originRemote.Name;
+            b.UpstreamBranch = tempBranch.CanonicalName;
+            //b.Upstream = $"refs/heads/{temporaryBranchName}";
+            //b.UpstreamBranch = $""
+        });
 
-            if (upstreamRemote is null)
+        LibGit2Sharp.Commands.Checkout(repository, tempBranch);
+
+        // Step 4: ensure we have the latest
+        var upstreamMasterBranch = repository.Branches["upstream/master"];
+
+        repository.Merge(upstreamMasterBranch, commitSignature, new LibGit2Sharp.MergeOptions());
+
+        // Step 5: create delta
+        foreach (var change in updatesPerOwnerRepositoryBranch)
+        {
+            var source = change.Item2;
+            var destination = change.Item1;
+            var fullDestination = Path.Combine(temporaryPath, destination.Path.Replace('/', Path.DirectorySeparatorChar));
+
+            switch (source)
             {
-                upstreamRemote = remotes.Add("upstream", $"https://github.com/{root.Owner}/{root.Repository}");
+                case Parts _:
+                    // Directly download raw bytes into file
+                    await using (var fileStream = new FileStream(fullDestination, System.IO.FileMode.Create))
+                    {
+                        await gateway.DownloadBlob((Parts)source, fileStream);
+                    }
+                    break;
+
+                case Parts.NullParts _:
+                    File.Delete(fullDestination);
+                    break;
+
+                default:
+                    throw new InvalidOperationException($"Unsupported 'from' type ({source.GetType().FullName}).");
             }
-
-            LibGit2Sharp.Commands.Fetch(repository, "upstream", upstreamRemote.FetchRefSpecs.Select(x => x.Specification), null, null);
-
-            // Step 3: create local branch
-            var tempBranch = repository.Branches.Add(temporaryBranchName, "HEAD");
-            repository.Branches.Update(tempBranch, b =>
-            {
-                b.Remote = originRemote.Name;
-                b.UpstreamBranch = tempBranch.CanonicalName;
-                //b.Upstream = $"refs/heads/{temporaryBranchName}";
-                //b.UpstreamBranch = $""
-            });
-
-            LibGit2Sharp.Commands.Checkout(repository, tempBranch);
-
-            // Step 4: ensure we have the latest
-            var upstreamMasterBranch = repository.Branches["upstream/master"];
-
-            repository.Merge(upstreamMasterBranch, commitSignature, new LibGit2Sharp.MergeOptions());
-
-            // Step 5: create delta
-            foreach (var change in updatesPerOwnerRepositoryBranch)
-            {
-                var source = change.Item2;
-                var destination = change.Item1;
-                var fullDestination = Path.Combine(temporaryPath, destination.Path.Replace('/', Path.DirectorySeparatorChar));
-
-                switch (source)
-                {
-                    case Parts _:
-                        // Directly download raw bytes into file
-                        using (var fileStream = new FileStream(fullDestination, System.IO.FileMode.Create))
-                        {
-                            await gateway.DownloadBlob((Parts)source, fileStream);
-                        }
-                        break;
-
-                    case Parts.NullParts _:
-                        File.Delete(fullDestination);
-                        break;
-
-                    default:
-                        throw new InvalidOperationException($"Unsupported 'from' type ({source.GetType().FullName}).");
-                }
-            }
-
-            // Step 6: stage all files
-            LibGit2Sharp.Commands.Stage(repository, "*");
-
-            // Step 7: create & push commit
-            var commit = repository.Commit("Apply GitHubSync changes", commitSignature, commitSignature, 
-                new LibGit2Sharp.CommitOptions());
-
-            repository.Network.Push(tempBranch, new LibGit2Sharp.PushOptions()
-            {
-                CredentialsProvider = (_url, _user, _cred) => new LibGit2Sharp.UsernamePasswordCredentials
-                {
-                    // Since we are using tokens, the username should be the token
-                    Username = credentials.Password,
-                    Password = string.Empty
-                }
-            });
-
-            return commit.Sha;
         }
+
+        // Step 6: stage all files
+        LibGit2Sharp.Commands.Stage(repository, "*");
+
+        // Step 7: create & push commit
+        var commit = repository.Commit("Apply GitHubSync changes", commitSignature, commitSignature,
+            new LibGit2Sharp.CommitOptions());
+
+        repository.Network.Push(tempBranch, new LibGit2Sharp.PushOptions
+        {
+            CredentialsProvider = (_url, _user, _cred) => new LibGit2Sharp.UsernamePasswordCredentials
+            {
+                // Since we are using tokens, the username should be the token
+                Username = credentials.Password,
+                Password = string.Empty
+            }
+        });
+
+        return commit.Sha;
     }
 
     string UrlSanitize(string branch)
@@ -368,7 +384,7 @@ class Syncer : IDisposable
             switch (source.Type)
             {
                 case TreeEntryTargetType.Blob:
-                    var sourceBlobItem = (await gateway.BlobFrom(source, true).ConfigureAwait(false)).Item2;
+                    var sourceBlobItem = (await gateway.BlobFrom(source, true)).Item2;
                     newTree.Tree.Add(
                         new NewTreeItem
                         {
@@ -540,4 +556,8 @@ class Syncer : IDisposable
     {
         gateway.Dispose();
     }
+}
+
+namespace GitHubSync
+{
 }

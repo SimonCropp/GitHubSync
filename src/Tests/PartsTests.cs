@@ -1,37 +1,43 @@
 ﻿using System;
+using System.Threading.Tasks;
 using GitHubSync;
-using ObjectApproval;
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
-public class PartsTests: TestBase
+public class PartsTests :
+    VerifyBase
 {
     [Fact]
-    public void Tree()
+    public Task Tree()
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Tree, "develop", "buildSupport");
-        ObjectApprover.VerifyWithJson(parts);
+        return Verify(parts);
     }
 
     [Fact]
-    public void Blob()
+    public Task Blob()
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Blob, "develop", "src/settings");
 
-        ObjectApprover.VerifyWithJson(parts);
+        return Verify(parts);
     }
 
     [Fact]
-    public void CannotEscapeOutOfARootTree()
+    public async Task CannotEscapeOutOfARootTree()
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Tree, "develop", null);
 
-        ObjectApprover.VerifyWithJson(parts);
+        await Verify(parts);
 // ReSharper disable once UnusedVariable
-        Assert.Throws<Exception>(() => { var parent = parts.ParentTreePart; });
+        Assert.Throws<Exception>(() =>
+        {
+            var parent = parts.ParentTreePart;
+        });
     }
 
-    public PartsTests(ITestOutputHelper output) : base(output)
+    public PartsTests(ITestOutputHelper output) :
+        base(output)
     {
     }
 }

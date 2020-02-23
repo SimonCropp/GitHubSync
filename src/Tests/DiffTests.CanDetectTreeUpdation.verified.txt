@@ -1,0 +1,54 @@
+[
+  {
+    Key: {
+      Owner: 'SimonCropp',
+      Repository: 'GitHubSync.TestRepository',
+      Type: 'Tree',
+      Branch: 'blessed-source',
+      Path: 'folder',
+      Name: 'folder',
+      NumberOfPathSegments: 1,
+      Url: 'https://github.com/SimonCropp/GitHubSync.TestRepository/tree/blessed-source/folder',
+      ParentTreePart: {
+        Owner: 'SimonCropp',
+        Repository: 'GitHubSync.TestRepository',
+        Type: 'Tree',
+        Branch: 'blessed-source',
+        Url: 'https://github.com/SimonCropp/GitHubSync.TestRepository/tree/blessed-source'
+      },
+      RootTreePart: {
+        Owner: 'SimonCropp',
+        Repository: 'GitHubSync.TestRepository',
+        Type: 'Tree',
+        Branch: 'blessed-source',
+        Url: 'https://github.com/SimonCropp/GitHubSync.TestRepository/tree/blessed-source'
+      }
+    },
+    Value: [
+      {
+        Owner: 'SimonCropp',
+        Repository: 'GitHubSync.TestRepository',
+        Type: 'Tree',
+        Branch: 'consumer-one',
+        Path: 'folder',
+        Name: 'folder',
+        NumberOfPathSegments: 1,
+        Url: 'https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one/folder',
+        ParentTreePart: {
+          Owner: 'SimonCropp',
+          Repository: 'GitHubSync.TestRepository',
+          Type: 'Tree',
+          Branch: 'consumer-one',
+          Url: 'https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one'
+        },
+        RootTreePart: {
+          Owner: 'SimonCropp',
+          Repository: 'GitHubSync.TestRepository',
+          Type: 'Tree',
+          Branch: 'consumer-one',
+          Url: 'https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one'
+        }
+      }
+    ]
+  }
+]

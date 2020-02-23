@@ -1,13 +1,18 @@
-# <img src="https://raw.github.com/SimonCropp/CaptureSnippet/master/src/icon.png" height="40px"> GitHubSync
+# <img src="/src/icon.png" height="30px"> GitHubSync
+
+[![Build status](https://ci.appveyor.com/api/projects/status/sjkccpx6avnw8vbv/branch/master?svg=true)](https://ci.appveyor.com/project/SimonCropp/GitHubSync)
+[![NuGet Status](https://img.shields.io/nuget/v/GitHubSync.svg)](https://www.nuget.org/packages/GitHubSync/)
 
 A tool to help synchronizing specific files and folders across repositories
 
+Support is available via a [Tidelift Subscription](https://tidelift.com/subscription/pkg/nuget-githubsync?utm_source=nuget-githubsync&utm_medium=referral&utm_campaign=enterprise).
 
-## NuGet [![NuGet Status](http://img.shields.io/nuget/v/GitHubSync.svg?longCache=true&style=flat)](https://www.nuget.org/packages/GitHubSync/)
+toc
+
+
+## NuGet package
 
 https://nuget.org/packages/GitHubSync/
-
-    PM> Install-Package GitHubSync
 
 
 ## Usage
@@ -17,4 +22,4 @@ snippet: usage
 
 ## Icon
 
-<a href="http://thenounproject.com/term/sync/290/" target="_blank">Sync</a> designed by <a href="http://www.thenounproject.com/edward" target="_blank">Edward Boatman</a> from The Noun Project
+[Sync](https://thenounproject.com/term/sync/290/) designed by [Edward Boatman](https://thenounproject.com/edward) from [The Noun Project](https://thenounproject.com).

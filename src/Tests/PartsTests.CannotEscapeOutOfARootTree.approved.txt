@@ -1,7 +1,0 @@
-﻿{
-  Owner: 'SimonCropp',
-  Repository: 'Fake',
-  Type: 'Tree',
-  Branch: 'develop',
-  Url: 'https://github.com/SimonCropp/Fake/tree/develop'
-}

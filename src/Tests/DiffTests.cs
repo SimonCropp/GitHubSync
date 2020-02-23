@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Threading.Tasks;
 using GitHubSync;
-using ObjectApproval;
+using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
-public class DiffTests: TestBase
+[Trait("Category", "Local")]
+public class DiffTests :
+    VerifyBase
 {
     Syncer BuildSyncer()
     {
-        return new Syncer(CredentialsHelper.Credentials, null, WriteLog);
+        return new Syncer(CredentialsHelper.Credentials, null, WriteLine);
     }
 
     [Fact]
@@ -20,11 +22,9 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(blob, blob);
 
-        using (var syncer = BuildSyncer())
-        {
-            var diff = await syncer.Diff(map);
-            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
-        }
+        using var syncer = BuildSyncer();
+        var diff = await syncer.Diff(map);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -36,11 +36,9 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(sourceBlob, destinationBlob);
 
-        using (var som = BuildSyncer())
-        {
-            var diff = await som.Diff(map);
-            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
-        }
+        using var som = BuildSyncer();
+        var diff = await som.Diff(map);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -52,11 +50,9 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(sourceBlob, destinationBlob);
 
-        using (var som = BuildSyncer())
-        {
-            var diff = await som.Diff(map);
-            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
-        }
+        using var som = BuildSyncer();
+        var diff = await som.Diff(map);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -68,10 +64,8 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(sourceBlob, destinationBlob);
 
-        using (var syncer = BuildSyncer())
-        {
-            await Assert.ThrowsAsync<Exception>(async () => await syncer.Diff(map));
-        }
+        using var syncer = BuildSyncer();
+        await Assert.ThrowsAsync<Exception>(async () => await syncer.Diff(map));
     }
 
     [Fact]
@@ -82,12 +76,10 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(tree, tree);
 
-        using (var syncer = BuildSyncer())
-        {
-            var diff = await syncer.Diff(map);
-            Assert.Empty(diff.ToBeAddedOrUpdatedEntries);
-            Assert.Empty(diff.ToBeRemovedEntries);
-        }
+        using var syncer = BuildSyncer();
+        var diff = await syncer.Diff(map);
+        Assert.Empty(diff.ToBeAddedOrUpdatedEntries);
+        Assert.Empty(diff.ToBeRemovedEntries);
     }
 
     [Fact]
@@ -99,11 +91,9 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(sourceTree, destinationTree);
 
-        using (var syncer = BuildSyncer())
-        {
-            var diff = await syncer.Diff(map);
-            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
-        }
+        using var syncer = BuildSyncer();
+        var diff = await syncer.Diff(map);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -115,11 +105,9 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(sourceTree, destinationTree);
 
-        using (var syncer = BuildSyncer())
-        {
-            var diff = await syncer.Diff(map);
-            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
-        }
+        using var syncer = BuildSyncer();
+        var diff = await syncer.Diff(map);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -131,10 +119,8 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(sourceTree, destinationTree);
 
-        using (var syncer = BuildSyncer())
-        {
-            await Assert.ThrowsAsync<Exception>(async () => await syncer.Diff(map));
-        }
+        using var syncer = BuildSyncer();
+        await Assert.ThrowsAsync<Exception>(async () => await syncer.Diff(map));
     }
 
     [Fact]
@@ -146,11 +132,9 @@ public class DiffTests: TestBase
         var map = new Mapper()
             .Add(sourceBlob, destinationBlob);
 
-        using (var syncer = BuildSyncer())
-        {
-            var diff = await syncer.Diff(map);
-            ObjectApprover.VerifyWithJson(diff.ToBeAddedOrUpdatedEntries);
-        }
+        using var syncer = BuildSyncer();
+        var diff = await syncer.Diff(map);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -163,14 +147,13 @@ public class DiffTests: TestBase
             .Remove(destinationBlob1)
             .Remove(destinationBlob2);
 
-        using (var syncer = BuildSyncer())
-        {
-            var diff = await syncer.Diff(map);
-            ObjectApprover.VerifyWithJson(diff.ToBeRemovedEntries);
-        }
+        using var syncer = BuildSyncer();
+        var diff = await syncer.Diff(map);
+        await Verify(diff.ToBeRemovedEntries);
     }
 
-    public DiffTests(ITestOutputHelper output) : base(output)
+    public DiffTests(ITestOutputHelper output) :
+        base(output)
     {
     }
 }
