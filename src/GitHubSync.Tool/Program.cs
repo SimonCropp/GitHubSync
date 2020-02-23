@@ -31,45 +31,13 @@ static class Program
             return SynchronizeRepositoriesAsync(path, credentials);
         }
 
-        return SynchronizeRepositoriesAsync(".\\synchronization.yaml", credentials);
+        return SynchronizeRepositoriesAsync("githubsync.yaml", credentials);
     }
 
     static async Task<int> SynchronizeRepositoriesAsync(string fileName, Credentials credentials)
     {
         var context = ContextLoader.Load(fileName);
 
-        var returnValue = 0;
-        var repositories = context.Repositories;
-        for (var i = 0; i < repositories.Count; i++)
-        {
-            var targetRepository = repositories[i];
-
-            var prefix = $"({i + 1} / {repositories.Count})]";
-
-            Console.WriteLine($"{prefix} Setting up synchronization for '{targetRepository}'");
-            var stopwatch = Stopwatch.StartNew();
-
-            try
-            {
-                await SyncRepository(context, targetRepository, credentials);
-
-                Console.WriteLine($"{prefix} Synchronized '{targetRepository}', took {stopwatch.Elapsed:hh\\:mm\\:ss}");
-            }
-            catch (Exception exception)
-            {
-                returnValue = 1;
-                Console.WriteLine($"Failed to synchronize '{targetRepository}'. Exception: {exception}");
-
-                Console.WriteLine("Press a key to continue...");
-                Console.ReadKey();
-            }
-        }
-
-        return returnValue;
-    }
-
-    static async Task<int> SynchronizeRepositoriesAsync(Context context, Credentials credentials)
-    {
         var returnValue = 0;
         var repositories = context.Repositories;
         for (var i = 0; i < repositories.Count; i++)
