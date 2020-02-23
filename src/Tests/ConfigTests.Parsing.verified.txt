@@ -1,0 +1,53 @@
+{
+  Templates: [
+    {
+      name: 'geertvanhorrik',
+      url: 'https://github.com/geertvanhorrik/repositorytemplate',
+      branch: 'master'
+    },
+    {
+      name: 'catel',
+      url: 'https://github.com/Catel/RepositoryTemplate.Components',
+      branch: 'master'
+    },
+    {
+      name: 'wildgums-components-public',
+      url: 'https://github.com/wildgums/RepositoryTemplate.Components.Public',
+      branch: 'master'
+    }
+  ],
+  Repositories: [
+    {
+      Name: 'CsvHelper',
+      Url: 'https://github.com/JoshClose/CsvHelper',
+      Branch: 'master',
+      Templates: [
+        'geertvanhorrik'
+      ]
+    },
+    {
+      Name: 'Catel',
+      Url: 'https://github.com/catel/catel',
+      Branch: 'develop',
+      AutoMerge: true,
+      Templates: [
+        'geertvanhorrik',
+        'catel'
+      ]
+    },
+    {
+      Name: 'Orc.Controls',
+      Url: 'https://github.com/wildgums/orc.controls',
+      Branch: 'develop',
+      AutoMerge: true,
+      Templates: [
+        'geertvanhorrik',
+        'wildgums-components-public'
+      ]
+    }
+  ],
+  Credentials: {
+    Password: '18b54e64fe5951b54f44cb0a0a4052359a81608b',
+    AuthenticationType: 'Oauth'
+  }
+}

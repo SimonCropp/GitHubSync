@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="*yaml">
+    <Content Include="*.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <PackageReference Include="XunitContext" Version="1.8.0" />
@@ -15,6 +15,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1" />
     <PackageReference Include="MarkdownSnippets.MsBuild" Version="18.0.0" PrivateAssets="all" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.5.0" />
+    <ProjectReference Include="..\GitHubSync.Tool\GitHubSync.Tool.csproj" />
     <ProjectReference Include="..\GitHubSync\GitHubSync.csproj" />
     <PackageReference Include="ProjectDefaults" Version="1.0.41" PrivateAssets="All" />
   </ItemGroup>
