@@ -1,6 +1,4 @@
-﻿using Octokit;
-using System;
-using System.IO;
+﻿using System.IO;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -14,14 +12,6 @@ static class ContextLoader
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 
-        var context = deserializer.Deserialize<Context>(configurationContent);
-
-        var githubToken = Environment.GetEnvironmentVariable("Octokit_OAuthToken");
-        if (!string.IsNullOrWhiteSpace(githubToken))
-        {
-            context.Credentials = new Credentials(githubToken);
-        }
-
-        return context;
+        return deserializer.Deserialize<Context>(configurationContent);
     }
 }

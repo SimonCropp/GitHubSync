@@ -45,9 +45,5 @@
         'wildgums-components-public'
       ]
     }
-  ],
-  Credentials: {
-    Password: '18b54e64fe5951b54f44cb0a0a4052359a81608b',
-    AuthenticationType: 'Oauth'
-  }
+  ]
 }

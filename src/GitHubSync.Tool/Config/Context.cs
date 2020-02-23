@@ -1,5 +1,4 @@
-﻿using Octokit;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 class Context
 {
@@ -12,6 +11,4 @@ class Context
     public List<Template> Templates { get; set; }
 
     public List<Repository> Repositories { get; set; }
-
-    public Credentials Credentials { get; set; } = null!;
 }
