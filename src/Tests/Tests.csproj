@@ -17,7 +17,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.6.1" />
     <ProjectReference Include="..\GitHubSync.Tool\GitHubSync.Tool.csproj" />
     <ProjectReference Include="..\GitHubSync\GitHubSync.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.42" PrivateAssets="All" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.43" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
