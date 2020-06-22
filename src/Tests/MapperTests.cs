@@ -6,8 +6,9 @@ using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
+[UsesVerify]
 public class MapperTests :
-    VerifyBase
+    XunitContextBase
 {
     [Fact]
     public Task CanAddAndEnumerate()
@@ -23,7 +24,7 @@ public class MapperTests :
             .Add(a, one)
             .Add(a, two)
             .Add(c, three);
-        return Verify(m.ToBeAddedOrUpdatedEntries);
+        return Verifier.Verify(m.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -65,7 +66,7 @@ public class MapperTests :
         var orbs = t.Keys.ToList();
         orbs.Sort(StringComparer.Ordinal);
 
-        return Verify(orbs);
+        return Verifier.Verify(orbs);
     }
 
     [Fact]

@@ -6,13 +6,13 @@ using Xunit;
 using Xunit.Abstractions;
 
 public class PartsTests :
-    VerifyBase
+    XunitContextBase
 {
     [Fact]
     public Task Tree()
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Tree, "develop", "buildSupport");
-        return Verify(parts);
+        return Verifier.Verify(parts);
     }
 
     [Fact]
@@ -20,7 +20,7 @@ public class PartsTests :
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Blob, "develop", "src/settings");
 
-        return Verify(parts);
+        return Verifier.Verify(parts);
     }
 
     [Fact]
@@ -28,7 +28,7 @@ public class PartsTests :
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Tree, "develop", null);
 
-        await Verify(parts);
+        await Verifier.Verify(parts);
 // ReSharper disable once UnusedVariable
         Assert.Throws<Exception>(() =>
         {

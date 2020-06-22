@@ -5,9 +5,10 @@ using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
+[UsesVerify]
 [Trait("Category", "Local")]
 public class DiffTests :
-    VerifyBase
+    XunitContextBase
 {
     Syncer BuildSyncer()
     {
@@ -24,7 +25,7 @@ public class DiffTests :
 
         using var syncer = BuildSyncer();
         var diff = await syncer.Diff(map);
-        await Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verifier.Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -38,7 +39,7 @@ public class DiffTests :
 
         using var som = BuildSyncer();
         var diff = await som.Diff(map);
-        await Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verifier.Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -52,7 +53,7 @@ public class DiffTests :
 
         using var som = BuildSyncer();
         var diff = await som.Diff(map);
-        await Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verifier.Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -93,7 +94,7 @@ public class DiffTests :
 
         using var syncer = BuildSyncer();
         var diff = await syncer.Diff(map);
-        await Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verifier.Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -107,7 +108,7 @@ public class DiffTests :
 
         using var syncer = BuildSyncer();
         var diff = await syncer.Diff(map);
-        await Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verifier.Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -134,7 +135,7 @@ public class DiffTests :
 
         using var syncer = BuildSyncer();
         var diff = await syncer.Diff(map);
-        await Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verifier.Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -149,7 +150,7 @@ public class DiffTests :
 
         using var syncer = BuildSyncer();
         var diff = await syncer.Diff(map);
-        await Verify(diff.ToBeRemovedEntries);
+        await Verifier.Verify(diff.ToBeRemovedEntries);
     }
 
     public DiffTests(ITestOutputHelper output) :

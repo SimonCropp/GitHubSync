@@ -1,12 +1,9 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using VerifyXunit;
 using Xunit;
-using Xunit.Abstractions;
 
 [Trait("Category", "Integration")]
-public class CleanupTests :
-    VerifyBase
+public class CleanupTests
 {
     [Fact]
     public async Task Run()
@@ -16,10 +13,5 @@ public class CleanupTests :
         {
             await Client.DeleteBranch(branch.Name);
         }
-    }
-
-    public CleanupTests(ITestOutputHelper output) :
-        base(output)
-    {
     }
 }

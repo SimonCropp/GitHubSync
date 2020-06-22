@@ -1,13 +1,12 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using GitHubSync;
-using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;
 
 [Trait("Category", "Local")]
 public class RepoSyncTests :
-    VerifyBase
+    XunitContextBase
 {
     [Fact]
     public async Task SyncPrIncludeAllByDefault()

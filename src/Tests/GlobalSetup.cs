@@ -1,4 +1,4 @@
-﻿using Verify;
+﻿using VerifyTests;
 using Xunit;
 
 [GlobalSetUp]
@@ -6,7 +6,7 @@ public static class GlobalSetup
 {
     public static void Setup()
     {
-        SharedVerifySettings.ModifySerialization(settings =>
+        VerifierSettings.ModifySerialization(settings =>
         {
             settings.IgnoreMembersThatThrow(x => x.Message == "Cannot escape out of a Tree.");
             settings.IgnoreMember<Parts>(x => x.Sha);

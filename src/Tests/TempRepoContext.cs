@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using GitHubSync;
 using Octokit;
 using VerifyXunit;
+using Xunit;
 
 public class TempRepoContext :
     IAsyncDisposable
@@ -11,9 +12,9 @@ public class TempRepoContext :
     Reference tempBranchReference;
     public string TempBranchName;
     string tempBranchRefName;
-    VerifyBase verifyBase;
+    XunitContextBase verifyBase;
 
-    TempRepoContext(Reference tempBranchReference, string tempBranchName, string tempBranchRefName, VerifyBase verifyBase)
+    TempRepoContext(Reference tempBranchReference, string tempBranchName, string tempBranchRefName, XunitContextBase verifyBase)
     {
         this.tempBranchReference = tempBranchReference;
         TempBranchName = tempBranchName;
@@ -21,7 +22,7 @@ public class TempRepoContext :
         this.verifyBase = verifyBase;
     }
 
-    public static async Task<TempRepoContext> Create(string tempBranchName, VerifyBase verifyBase)
+    public static async Task<TempRepoContext> Create(string tempBranchName, XunitContextBase verifyBase)
     {
         var newReference = new NewReference($"refs/heads/{tempBranchName}", "af72f8e44eb53d26969b1316491a294f3401f203");
 
@@ -33,7 +34,7 @@ public class TempRepoContext :
     public async Task VerifyCommit(UpdateResult updateResult)
     {
         var commit = await Client.GitHubClient.Git.Commit.Get("SimonCropp", "GitHubSync.TestRepository", updateResult.CommitSha);
-        await verifyBase.Verify(new
+        await Verifier.Verify(new
         {
             commit.Message
         });
@@ -43,7 +44,7 @@ public class TempRepoContext :
     {
         var files = await Client.GitHubClient.PullRequest.Files("SimonCropp", "GitHubSync.TestRepository", updateResult.PullRequestId);
         var branch = await Client.GitHubClient.PullRequest.Get("SimonCropp", "GitHubSync.TestRepository", updateResult.PullRequestId);
-        await verifyBase.Verify(new
+        await Verifier.Verify(new
         {
             branch.Title,
             branch.Body,
