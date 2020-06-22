@@ -2,6 +2,7 @@
 using VerifyXunit;
 using Xunit;
 
+[UsesVerify]
 public class UrlHelperTests
 {
     [Fact]
