@@ -38,7 +38,7 @@ https://nuget.org/packages/GitHubSync/
 ### Usage
 
 <!-- snippet: usage -->
-<a id='snippet-usage'/></a>
+<a id='snippet-usage'></a>
 ```cs
 // Create a new RepoSync
 var repoSync = new RepoSync(
