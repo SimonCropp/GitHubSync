@@ -8,7 +8,7 @@
     <Content Include="*.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <PackageReference Include="Verify.Xunit" Version="6.7.0" />
+    <PackageReference Include="Verify.Xunit" Version="6.8.0" />
     <PackageReference Include="XunitContext" Version="2.0.1" />
     <PackageReference Include="Octokit" Version="0.48.0" />
     <PackageReference Include="Xunit" Version="2.4.1" />
