@@ -24,7 +24,7 @@ Support is available via a [Tidelift Subscription](https://tidelift.com/subscrip
     * [Installation](#installation)
     * [Usage](#usage-1)
     * [Configuration definition](#configuration-definition)
-    * [Example](#example)<!-- endtoc -->
+    * [Example](#example)<!-- endToc -->
 
 
 ## .net API
@@ -77,7 +77,7 @@ repoSync.AddTargetRepository(new RepositoryInfo(
 await repoSync.Sync(syncOutput: SyncOutput.MergePullRequest);
 ```
 <sup><a href='/src/Tests/Snippets.cs#L10-L47' title='File snippet `usage` was extracted from'>snippet source</a> | <a href='#snippet-usage' title='Navigate to start of snippet `usage`'>anchor</a></sup>
-<!-- endsnippet -->
+<!-- endSnippet -->
 
 
 ## dotnet Tool
