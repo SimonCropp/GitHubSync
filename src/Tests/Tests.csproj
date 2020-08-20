@@ -14,7 +14,7 @@
     <PackageReference Include="Xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3" />
     <PackageReference Include="MarkdownSnippets.MsBuild" Version="19.2.0" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.7.1" />
     <ProjectReference Include="..\GitHubSync.Tool\GitHubSync.Tool.csproj" />
     <ProjectReference Include="..\GitHubSync\GitHubSync.csproj" />
     <PackageReference Include="ProjectDefaults" Version="1.0.43" PrivateAssets="All" />
