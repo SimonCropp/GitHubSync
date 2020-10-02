@@ -71,12 +71,12 @@ class Syncer :
         return outMapper;
     }
 
-    internal async Task<bool> CanSynchronize(RepositoryInfo targetRepository, SyncOutput expectedOutput)
+    internal async Task<bool> CanSynchronize(RepositoryInfo targetRepository, SyncOutput expectedOutput, string branch)
     {
         if (expectedOutput == SyncOutput.CreatePullRequest ||
             expectedOutput == SyncOutput.MergePullRequest)
         {
-            var hasOpenPullRequests = await gateway.HasOpenPullRequests(targetRepository.Owner, targetRepository.Repository, PullRequestTitle);
+            var hasOpenPullRequests = await gateway.HasOpenPullRequests(targetRepository.Owner, targetRepository.Repository, $"{PullRequestTitle} - {branch}");
             if (hasOpenPullRequests)
             {
                 log("Cannot create pull request, there is an existing open pull request, close or merge that first");
@@ -228,7 +228,7 @@ class Syncer :
 
         var parentCommit = await gateway.RootCommitFrom(root);
 
-        var commitSha = await gateway.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha);
+        var commitSha = await gateway.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha, root.Branch);
         return commitSha;
     }
 

@@ -248,7 +248,7 @@ namespace GitHubSync
                 var targetRepositoryDisplayName = $"{targetRepository.Owner}/{targetRepository.Repository}";
 
                 using var syncer = new Syncer(targetRepository.Credentials, null, log);
-                if (!await syncer.CanSynchronize(targetRepository, syncOutput))
+                if (!await syncer.CanSynchronize(targetRepository, syncOutput, targetRepository.Branch))
                 {
                     continue;
                 }
