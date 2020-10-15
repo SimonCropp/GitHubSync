@@ -392,7 +392,7 @@ class GitHubGateway :
     public async Task<int> CreatePullRequest(string owner, string repository, string branch, string targetBranch,
         bool merge, string description)
     {
-        var newPullRequest = new NewPullRequest($"GitHubSync update - {branch}", branch, targetBranch);
+        var newPullRequest = new NewPullRequest($"GitHubSync update - {targetBranch}", branch, targetBranch);
 
         if (!string.IsNullOrWhiteSpace(description))
         {
