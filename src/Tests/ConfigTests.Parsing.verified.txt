@@ -1,48 +1,48 @@
 {
   Templates: [
     {
-      name: 'geertvanhorrik',
-      url: 'https://github.com/geertvanhorrik/repositorytemplate',
-      branch: 'master'
+      name: geertvanhorrik,
+      url: https://github.com/geertvanhorrik/repositorytemplate,
+      branch: master
     },
     {
-      name: 'catel',
-      url: 'https://github.com/Catel/RepositoryTemplate.Components',
-      branch: 'master'
+      name: catel,
+      url: https://github.com/Catel/RepositoryTemplate.Components,
+      branch: master
     },
     {
-      name: 'wildgums-components-public',
-      url: 'https://github.com/wildgums/RepositoryTemplate.Components.Public',
-      branch: 'master'
+      name: wildgums-components-public,
+      url: https://github.com/wildgums/RepositoryTemplate.Components.Public,
+      branch: master
     }
   ],
   Repositories: [
     {
-      Name: 'CsvHelper',
-      Url: 'https://github.com/JoshClose/CsvHelper',
-      Branch: 'master',
+      Name: CsvHelper,
+      Url: https://github.com/JoshClose/CsvHelper,
+      Branch: master,
       Templates: [
-        'geertvanhorrik'
+        geertvanhorrik
       ]
     },
     {
-      Name: 'Catel',
-      Url: 'https://github.com/catel/catel',
-      Branch: 'develop',
+      Name: Catel,
+      Url: https://github.com/catel/catel,
+      Branch: develop,
       AutoMerge: true,
       Templates: [
-        'geertvanhorrik',
-        'catel'
+        geertvanhorrik,
+        catel
       ]
     },
     {
-      Name: 'Orc.Controls',
-      Url: 'https://github.com/wildgums/orc.controls',
-      Branch: 'develop',
+      Name: Orc.Controls,
+      Url: https://github.com/wildgums/orc.controls,
+      Branch: develop,
       AutoMerge: true,
       Templates: [
-        'geertvanhorrik',
-        'wildgums-components-public'
+        geertvanhorrik,
+        wildgums-components-public
       ]
     }
   ]

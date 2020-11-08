@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFramework>net5.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <Content Include="*.yaml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <PackageReference Include="Verify.Xunit" Version="7.0.2" />
+    <PackageReference Include="Verify.Xunit" Version="8.0.0-beta.2" />
     <PackageReference Include="XunitContext" Version="3.0.0" />
     <PackageReference Include="Octokit" Version="0.48.0" />
     <PackageReference Include="Xunit" Version="2.4.1" />

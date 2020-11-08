@@ -1,9 +1,9 @@
-﻿using VerifyTests;
-using Xunit;
+﻿using System.Runtime.CompilerServices;
+using VerifyTests;
 
-[GlobalSetUp]
 public static class GlobalSetup
 {
+    [ModuleInitializer]
     public static void Setup()
     {
         VerifierSettings.ModifySerialization(settings =>

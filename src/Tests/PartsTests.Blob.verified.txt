@@ -1,40 +1,40 @@
 {
-  Owner: 'SimonCropp',
-  Repository: 'Fake',
-  Branch: 'develop',
-  Path: 'src/settings',
-  Name: 'settings',
+  Owner: SimonCropp,
+  Repository: Fake,
+  Branch: develop,
+  Path: src/settings,
+  Name: settings,
   NumberOfPathSegments: 2,
-  Url: 'https://github.com/SimonCropp/Fake/blob/develop/src/settings',
+  Url: https://github.com/SimonCropp/Fake/blob/develop/src/settings,
   ParentTreePart: {
-    Owner: 'SimonCropp',
-    Repository: 'Fake',
-    Type: 'Tree',
-    Branch: 'develop',
-    Path: 'src',
-    Name: 'src',
+    Owner: SimonCropp,
+    Repository: Fake,
+    Type: Tree,
+    Branch: develop,
+    Path: src,
+    Name: src,
     NumberOfPathSegments: 1,
-    Url: 'https://github.com/SimonCropp/Fake/tree/develop/src',
+    Url: https://github.com/SimonCropp/Fake/tree/develop/src,
     ParentTreePart: {
-      Owner: 'SimonCropp',
-      Repository: 'Fake',
-      Type: 'Tree',
-      Branch: 'develop',
-      Url: 'https://github.com/SimonCropp/Fake/tree/develop'
+      Owner: SimonCropp,
+      Repository: Fake,
+      Type: Tree,
+      Branch: develop,
+      Url: https://github.com/SimonCropp/Fake/tree/develop
     },
     RootTreePart: {
-      Owner: 'SimonCropp',
-      Repository: 'Fake',
-      Type: 'Tree',
-      Branch: 'develop',
-      Url: 'https://github.com/SimonCropp/Fake/tree/develop'
+      Owner: SimonCropp,
+      Repository: Fake,
+      Type: Tree,
+      Branch: develop,
+      Url: https://github.com/SimonCropp/Fake/tree/develop
     }
   },
   RootTreePart: {
-    Owner: 'SimonCropp',
-    Repository: 'Fake',
-    Type: 'Tree',
-    Branch: 'develop',
-    Url: 'https://github.com/SimonCropp/Fake/tree/develop'
+    Owner: SimonCropp,
+    Repository: Fake,
+    Type: Tree,
+    Branch: develop,
+    Url: https://github.com/SimonCropp/Fake/tree/develop
   }
 }
