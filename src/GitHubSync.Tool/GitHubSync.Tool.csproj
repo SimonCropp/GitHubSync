@@ -9,7 +9,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\GitHubSync\AssemblyInfo.cs" Link="AssemblyInfo.cs" />
-    <PackageReference Include="YamlDotNet" Version="11.0.1" />
+    <PackageReference Include="YamlDotNet" Version="11.1.0" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <ProjectReference Include="..\GitHubSync\GitHubSync.csproj" />
     <PackageReference Include="ProjectDefaults" Version="1.0.54" PrivateAssets="All" />
