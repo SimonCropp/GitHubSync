@@ -13,19 +13,6 @@ To change this file edit the source file and then run MarkdownSnippets.
 
 A tool to help synchronizing specific files and folders across repositories
 
-Support is available via a [Tidelift Subscription](https://tidelift.com/subscription/pkg/nuget-githubsync?utm_source=nuget-githubsync&utm_medium=referral&utm_campaign=enterprise).
-
-<!-- toc -->
-## Contents
-
-  * [.net API](#net-api)
-    * [Usage](#usage)
-  * [dotnet Tool](#dotnet-tool)
-    * [Installation](#installation)
-    * [Usage](#usage-1)
-    * [Configuration definition](#configuration-definition)
-    * [Example](#example)<!-- endToc -->
-
 
 ## .net API
 
