@@ -6,10 +6,6 @@
 
 A tool to help synchronizing specific files and folders across repositories
 
-Support is available via a [Tidelift Subscription](https://tidelift.com/subscription/pkg/nuget-githubsync?utm_source=nuget-githubsync&utm_medium=referral&utm_campaign=enterprise).
-
-toc
-
 
 ## .net API
 
