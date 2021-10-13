@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using GitHubSync;
+﻿using GitHubSync;
 using Octokit;
 
 public class Snippets

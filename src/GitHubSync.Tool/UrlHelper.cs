@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-
-static class UrlHelper
+﻿static class UrlHelper
 {
     public static string GetCompany(string url)
     {

@@ -1,5 +1,4 @@
-﻿using System;
-using Octokit;
+﻿using Octokit;
 
 public static class CredentialsHelper
 {

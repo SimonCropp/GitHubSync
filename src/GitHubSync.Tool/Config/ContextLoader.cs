@@ -1,5 +1,4 @@
-﻿using System.IO;
-using YamlDotNet.Serialization;
+﻿using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
 static class ContextLoader

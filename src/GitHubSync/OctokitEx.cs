@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Octokit;
+﻿using Octokit;
 
 public static class OctokitEx
 {

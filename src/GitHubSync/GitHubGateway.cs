@@ -1,15 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using Octokit;
 using Octokit.Internal;
 using GitHubSync;
-using System.Net.Http;
 
 class GitHubGateway :
     IDisposable

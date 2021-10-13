@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Xunit;
+﻿using Xunit;
 
 [Trait("Category", "Integration")]
 public class CleanupTests

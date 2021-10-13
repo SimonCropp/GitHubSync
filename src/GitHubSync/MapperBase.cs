@@ -1,8 +1,5 @@
 ﻿using GitHubSync;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 public abstract class MapperBase
 {

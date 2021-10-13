@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq;
-using GitHubSync;
+﻿using GitHubSync;
 
 public class Parts : IParts, IEquatable<Parts>
 {

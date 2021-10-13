@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 class RepoToSync
 {
     public override string ToString()

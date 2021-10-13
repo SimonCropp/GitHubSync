@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
+﻿using System.Net;
 using GitHubSync;
 using Octokit;
 
@@ -314,7 +308,7 @@ class Syncer :
 
         repository.Network.Push(tempBranch, new LibGit2Sharp.PushOptions
         {
-            CredentialsProvider = (_url, _user, _cred) => new LibGit2Sharp.UsernamePasswordCredentials
+            CredentialsProvider = (_, _, _) => new LibGit2Sharp.UsernamePasswordCredentials
             {
                 // Since we are using tokens, the username should be the token
                 Username = credentials.Password,

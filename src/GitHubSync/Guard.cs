@@ -1,6 +1,3 @@
-using System;
-using System.Linq;
-
 static class Guard
 {
     // ReSharper disable UnusedParameter.Global

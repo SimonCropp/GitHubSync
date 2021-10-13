@@ -1,8 +1,7 @@
-﻿namespace GitHubSync
+﻿namespace GitHubSync;
+
+public enum SyncMode
 {
-    public enum SyncMode
-    {
-        IncludeAllByDefault,
-        ExcludeAllByDefault
-    }
+    IncludeAllByDefault,
+    ExcludeAllByDefault
 }

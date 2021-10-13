@@ -1,6 +1,4 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using Octokit;
+﻿using Octokit;
 
 public static class Client
 {

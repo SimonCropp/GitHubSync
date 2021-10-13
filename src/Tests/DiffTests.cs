@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using GitHubSync;
+﻿using GitHubSync;
 using VerifyXunit;
 using Xunit;
 using Xunit.Abstractions;

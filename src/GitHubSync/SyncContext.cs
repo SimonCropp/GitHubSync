@@ -1,16 +1,15 @@
-﻿namespace GitHubSync
+﻿namespace GitHubSync;
+
+public class SyncContext
 {
-    public class SyncContext
+    public SyncContext(RepositoryInfo targetRepository)
     {
-        public SyncContext(RepositoryInfo targetRepository)
-        {
-            TargetRepository = targetRepository;
-        }
-
-        public RepositoryInfo TargetRepository { get; }
-
-        public string Description { get; set; }
-
-        public Mapper Diff { get; set; }
+        TargetRepository = targetRepository;
     }
+
+    public RepositoryInfo TargetRepository { get; }
+
+    public string Description { get; set; }
+
+    public Mapper Diff { get; set; }
 }

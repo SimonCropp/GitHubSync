@@ -1,10 +1,9 @@
-namespace GitHubSync
+namespace GitHubSync;
+
+public enum SyncOutput
 {
-    public enum SyncOutput
-    {
-        CreateCommit,
-        CreateBranch,
-        CreatePullRequest,
-        MergePullRequest
-    }
+    CreateCommit,
+    CreateBranch,
+    CreatePullRequest,
+    MergePullRequest
 }

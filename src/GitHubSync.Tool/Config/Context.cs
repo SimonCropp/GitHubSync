@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-class Context
+﻿class Context
 {
     public Context()
     {

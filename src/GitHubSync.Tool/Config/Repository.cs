@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-class Repository
+﻿class Repository
 {
     public Repository()
     {
