@@ -282,15 +282,15 @@ class Syncer :
 
             switch (source)
             {
-                case Parts _:
+                case Parts parts:
                     // Directly download raw bytes into file
                     await using (var fileStream = new FileStream(fullDestination, System.IO.FileMode.Create))
                     {
-                        await gateway.DownloadBlob((Parts)source, fileStream);
+                        await gateway.DownloadBlob(parts, fileStream);
                     }
                     break;
 
-                case Parts.NullParts _:
+                case Parts.NullParts:
                     File.Delete(fullDestination);
                     break;
 
