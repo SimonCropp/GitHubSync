@@ -1,50 +1,50 @@
-[
+﻿[
   {
     Key: {
-      Owner: 'SimonCropp',
-      Repository: 'GitHubSync.TestRepository',
-      Branch: 'blessed-source',
-      Path: 'new-file.txt',
-      Name: 'new-file.txt',
+      Owner: SimonCropp,
+      Repository: GitHubSync.TestRepository,
+      Branch: blessed-source,
+      Path: new-file.txt,
+      Name: new-file.txt,
       NumberOfPathSegments: 1,
-      Url: 'https://github.com/SimonCropp/GitHubSync.TestRepository/blob/blessed-source/new-file.txt',
+      Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/blessed-source/new-file.txt,
       ParentTreePart: {
-        Owner: 'SimonCropp',
-        Repository: 'GitHubSync.TestRepository',
-        Type: 'Tree',
-        Branch: 'blessed-source',
-        Url: 'https://github.com/SimonCropp/GitHubSync.TestRepository/tree/blessed-source'
+        Owner: SimonCropp,
+        Repository: GitHubSync.TestRepository,
+        Type: Tree,
+        Branch: blessed-source,
+        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/blessed-source
       },
       RootTreePart: {
-        Owner: 'SimonCropp',
-        Repository: 'GitHubSync.TestRepository',
-        Type: 'Tree',
-        Branch: 'blessed-source',
-        Url: 'https://github.com/SimonCropp/GitHubSync.TestRepository/tree/blessed-source'
+        Owner: SimonCropp,
+        Repository: GitHubSync.TestRepository,
+        Type: Tree,
+        Branch: blessed-source,
+        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/blessed-source
       }
     },
     Value: [
       {
-        Owner: 'SimonCropp',
-        Repository: 'GitHubSync.TestRepository',
-        Branch: 'consumer-one',
-        Path: 'new-file.txt',
-        Name: 'new-file.txt',
+        Owner: SimonCropp,
+        Repository: GitHubSync.TestRepository,
+        Branch: consumer-one,
+        Path: new-file.txt,
+        Name: new-file.txt,
         NumberOfPathSegments: 1,
-        Url: 'https://github.com/SimonCropp/GitHubSync.TestRepository/blob/consumer-one/new-file.txt',
+        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/consumer-one/new-file.txt,
         ParentTreePart: {
-          Owner: 'SimonCropp',
-          Repository: 'GitHubSync.TestRepository',
-          Type: 'Tree',
-          Branch: 'consumer-one',
-          Url: 'https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one'
+          Owner: SimonCropp,
+          Repository: GitHubSync.TestRepository,
+          Type: Tree,
+          Branch: consumer-one,
+          Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one
         },
         RootTreePart: {
-          Owner: 'SimonCropp',
-          Repository: 'GitHubSync.TestRepository',
-          Type: 'Tree',
-          Branch: 'consumer-one',
-          Url: 'https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one'
+          Owner: SimonCropp,
+          Repository: GitHubSync.TestRepository,
+          Type: Tree,
+          Branch: consumer-one,
+          Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one
         }
       }
     ]
