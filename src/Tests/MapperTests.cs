@@ -21,7 +21,7 @@ public class MapperTests :
             .Add(a, one)
             .Add(a, two)
             .Add(c, three);
-        return Verifier.Verify(m.ToBeAddedOrUpdatedEntries);
+        return Verify(m.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public class MapperTests :
         var orbs = t.Keys.ToList();
         orbs.Sort(StringComparer.Ordinal);
 
-        return Verifier.Verify(orbs);
+        return Verify(orbs);
     }
 
     [Fact]

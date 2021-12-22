@@ -23,7 +23,7 @@ public class DiffTests :
 
         using var syncer = BuildSyncer();
         var diff = await syncer.Diff(map);
-        await Verifier.Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -37,7 +37,7 @@ public class DiffTests :
 
         using var som = BuildSyncer();
         var diff = await som.Diff(map);
-        await Verifier.Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public class DiffTests :
 
         using var som = BuildSyncer();
         var diff = await som.Diff(map);
-        await Verifier.Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class DiffTests :
 
         using var syncer = BuildSyncer();
         var diff = await syncer.Diff(map);
-        await Verifier.Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -106,7 +106,7 @@ public class DiffTests :
 
         using var syncer = BuildSyncer();
         var diff = await syncer.Diff(map);
-        await Verifier.Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class DiffTests :
 
         using var syncer = BuildSyncer();
         var diff = await syncer.Diff(map);
-        await Verifier.Verify(diff.ToBeAddedOrUpdatedEntries);
+        await Verify(diff.ToBeAddedOrUpdatedEntries);
     }
 
     [Fact]
@@ -148,7 +148,7 @@ public class DiffTests :
 
         using var syncer = BuildSyncer();
         var diff = await syncer.Diff(map);
-        await Verifier.Verify(diff.ToBeRemovedEntries);
+        await Verify(diff.ToBeRemovedEntries);
     }
 
     public DiffTests(ITestOutputHelper output) :

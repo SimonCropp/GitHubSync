@@ -11,7 +11,7 @@ public class PartsTests :
     public Task Tree()
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Tree, "develop", "buildSupport");
-        return Verifier.Verify(parts);
+        return Verify(parts);
     }
 
     [Fact]
@@ -19,7 +19,7 @@ public class PartsTests :
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Blob, "develop", "src/settings");
 
-        return Verifier.Verify(parts);
+        return Verify(parts);
     }
 
     [Fact]
@@ -27,7 +27,7 @@ public class PartsTests :
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Tree, "develop", null);
 
-        await Verifier.Verify(parts);
+        await Verify(parts);
 // ReSharper disable once UnusedVariable
         Assert.Throws<Exception>(() =>
         {

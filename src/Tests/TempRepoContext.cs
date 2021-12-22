@@ -31,7 +31,7 @@ public class TempRepoContext :
     public async Task VerifyCommit(UpdateResult updateResult)
     {
         var commit = await Client.GitHubClient.Git.Commit.Get("SimonCropp", "GitHubSync.TestRepository", updateResult.CommitSha);
-        await Verifier.Verify(new
+        await Verify(new
         {
             commit.Message
         });
@@ -41,7 +41,7 @@ public class TempRepoContext :
     {
         var files = await Client.GitHubClient.PullRequest.Files("SimonCropp", "GitHubSync.TestRepository", updateResult.PullRequestId);
         var branch = await Client.GitHubClient.PullRequest.Get("SimonCropp", "GitHubSync.TestRepository", updateResult.PullRequestId);
-        await Verifier.Verify(new
+        await Verify(new
         {
             branch.Title,
             branch.Body,

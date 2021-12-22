@@ -8,6 +8,6 @@ public class ConfigTests
     public Task Parsing()
     {
         var context = ContextLoader.Load(@".\ConfigImport.yaml");
-        return Verifier.Verify(context);
+        return Verify(context);
     }
 }
