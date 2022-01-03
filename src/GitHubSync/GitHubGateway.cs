@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.Http;
 using Octokit;
 using Octokit.Internal;
 using GitHubSync;

@@ -1,6 +1,4 @@
 ﻿using GitHubSync;
-using Xunit;
-using Xunit.Abstractions;
 
 [Trait("Category", "Local")]
 public class RepoSyncPartsTests :

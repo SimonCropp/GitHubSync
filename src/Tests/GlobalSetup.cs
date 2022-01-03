@@ -1,6 +1,4 @@
-﻿using VerifyTests;
-
-public static class GlobalSetup
+﻿public static class GlobalSetup
 {
     [ModuleInitializer]
     public static void Setup()

@@ -1,7 +1,5 @@
 ﻿using GitHubSync;
 using Octokit;
-using VerifyXunit;
-using Xunit;
 
 public class TempRepoContext :
     IAsyncDisposable

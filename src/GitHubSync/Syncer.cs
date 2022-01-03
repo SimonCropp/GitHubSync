@@ -67,8 +67,7 @@ class Syncer :
 
     internal async Task<bool> CanSynchronize(RepositoryInfo targetRepository, SyncOutput expectedOutput, string branch)
     {
-        if (expectedOutput == SyncOutput.CreatePullRequest ||
-            expectedOutput == SyncOutput.MergePullRequest)
+        if (expectedOutput is SyncOutput.CreatePullRequest or SyncOutput.MergePullRequest)
         {
             var hasOpenPullRequests = await gateway.HasOpenPullRequests(targetRepository.Owner, targetRepository.Repository, $"{PullRequestTitle} - {branch}");
             if (hasOpenPullRequests)
@@ -157,7 +156,7 @@ class Syncer :
             };
         }
 
-        if (expectedOutput == SyncOutput.CreatePullRequest || expectedOutput == SyncOutput.MergePullRequest)
+        if (expectedOutput is SyncOutput.CreatePullRequest or SyncOutput.MergePullRequest)
         {
             var merge = expectedOutput == SyncOutput.MergePullRequest;
             var prSourceBranch = branchName;

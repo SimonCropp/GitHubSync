@@ -1,7 +1,4 @@
 ﻿using GitHubSync;
-using VerifyXunit;
-using Xunit;
-using Xunit.Abstractions;
 
 [UsesVerify]
 [Trait("Category", "Local")]

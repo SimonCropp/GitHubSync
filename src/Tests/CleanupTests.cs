@@ -1,6 +1,4 @@
-﻿using Xunit;
-
-[Trait("Category", "Integration")]
+﻿[Trait("Category", "Integration")]
 public class CleanupTests
 {
     [Fact]
