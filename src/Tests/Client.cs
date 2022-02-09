@@ -2,7 +2,7 @@
 
 public static class Client
 {
-    public static GitHubClient GitHubClient = new GitHubClient(new ProductHeaderValue("GitHubSync"))
+    public static GitHubClient GitHubClient = new(new ProductHeaderValue("GitHubSync"))
     {
         Credentials = CredentialsHelper.Credentials
     };

@@ -3,8 +3,8 @@ using System.Collections.ObjectModel;
 
 public abstract class MapperBase
 {
-    Dictionary<Parts, ICollection<Parts>> toBeAddedOrUpdatedEntries = new Dictionary<Parts, ICollection<Parts>>();
-    List<Parts> toBeRemovedEntries = new List<Parts>();
+    Dictionary<Parts, ICollection<Parts>> toBeAddedOrUpdatedEntries = new();
+    List<Parts> toBeRemovedEntries = new();
 
     protected void AddOrRemove_Internal(IParts from, Parts to)
     {

@@ -8,9 +8,9 @@ public class RepoSync
     List<string> labelsToApplyOnPullRequests;
     SyncMode syncMode;
     Credentials defaultCredentials;
-    List<ManualSyncItem> manualSyncItems = new List<ManualSyncItem>();
-    List<RepositoryInfo> sources = new List<RepositoryInfo>();
-    List<RepositoryInfo> targets = new List<RepositoryInfo>();
+    List<ManualSyncItem> manualSyncItems = new();
+    List<RepositoryInfo> sources = new();
+    List<RepositoryInfo> targets = new();
 
     public RepoSync(
         Action<string> log = null,

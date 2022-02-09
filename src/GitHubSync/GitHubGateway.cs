@@ -7,11 +7,11 @@ class GitHubGateway :
     IDisposable
 {
     Action<string> log;
-    Dictionary<string, Commit> commitCachePerOwnerRepositoryBranch = new Dictionary<string, Commit>();
-    Dictionary<string, Tuple<Parts, TreeItem>> blobCachePerPath = new Dictionary<string, Tuple<Parts, TreeItem>>();
-    Dictionary<string, Tuple<Parts, TreeResponse>> treeCachePerPath = new Dictionary<string, Tuple<Parts, TreeResponse>>();
-    Dictionary<string, IList<string>> knownBlobsPerRepository = new Dictionary<string, IList<string>>();
-    Dictionary<string, IList<string>> knownTreesPerRepository = new Dictionary<string, IList<string>>();
+    Dictionary<string, Commit> commitCachePerOwnerRepositoryBranch = new();
+    Dictionary<string, Tuple<Parts, TreeItem>> blobCachePerPath = new();
+    Dictionary<string, Tuple<Parts, TreeResponse>> treeCachePerPath = new();
+    Dictionary<string, IList<string>> knownBlobsPerRepository = new();
+    Dictionary<string, IList<string>> knownTreesPerRepository = new();
     GitHubClient client;
     string blobStoragePath;
 

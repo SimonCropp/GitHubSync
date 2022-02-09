@@ -62,7 +62,7 @@ public class Parts : IParts, IEquatable<Parts>
         return new Parts(Owner, Repository, TreeEntryTargetType.Tree, Branch, null, null);
     }
 
-    public static readonly NullParts Empty = new NullParts();
+    public static readonly NullParts Empty = new();
 
     public string Owner { get; }
     public string Repository { get; }
