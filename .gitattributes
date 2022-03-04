@@ -1,5 +1,7 @@
 # Auto detect text files and perform CRLF normalization
 * text=auto eol=crlf
+.editorconfig -text
+*.sln.DotSettings -text
 
 # Standard to msysgit
 *.doc	diff=astextplain
@@ -19,8 +21,7 @@
 *.gif 	-text -diff
 *.dll 	-text -diff
 *.pdb 	-text -diff
-*.pptx	-text -diff
-*.xap	-text -diff
+*.pptx	-text -diff	-text -diff
 *.ico	-text -diff
 *.ttf	-text -diff
 *.otf	-text -diff

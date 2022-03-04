@@ -12,7 +12,7 @@
     <PackageReference Include="YamlDotNet" Version="11.2.1" />
     <PackageReference Include="CommandLineParser" Version="2.8.0" />
     <ProjectReference Include="..\GitHubSync\GitHubSync.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.68" PrivateAssets="all" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.77" PrivateAssets="all" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" Condition="$(Configuration) == 'Release'" />
   </ItemGroup>
 </Project>
