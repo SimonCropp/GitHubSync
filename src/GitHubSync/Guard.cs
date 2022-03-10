@@ -9,30 +9,6 @@ static class Guard
         }
     }
 
-    public static void AgainstUpperCase(string value, string argumentName)
-    {
-        if (value.Any(char.IsUpper))
-        {
-            throw new ArgumentException("Cannot contain upper case", argumentName);
-        }
-    }
-
-    public static void AgainstNegativeAndZero(long value, string argumentName)
-    {
-        if (value <= 0)
-        {
-            throw new ArgumentOutOfRangeException(argumentName);
-        }
-    }
-
-    public static void AgainstNegativeAndZero(int value, string argumentName)
-    {
-        if (value <= 0)
-        {
-            throw new ArgumentOutOfRangeException(argumentName);
-        }
-    }
-
     public static void AgainstNullAndEmpty(string value, string argumentName)
     {
         if (string.IsNullOrWhiteSpace(value))
