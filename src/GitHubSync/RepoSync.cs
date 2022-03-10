@@ -1,22 +1,23 @@
-﻿using Octokit;
+﻿#nullable enable
+using Octokit;
 
 namespace GitHubSync;
 
 public class RepoSync
 {
     Action<string> log;
-    List<string> labelsToApplyOnPullRequests;
-    SyncMode syncMode;
-    Credentials defaultCredentials;
+    List<string>? labelsToApplyOnPullRequests;
+    SyncMode? syncMode;
+    Credentials? defaultCredentials;
     List<ManualSyncItem> manualSyncItems = new();
     List<RepositoryInfo> sources = new();
     List<RepositoryInfo> targets = new();
 
     public RepoSync(
-        Action<string> log = null,
-        List<string> labelsToApplyOnPullRequests = null,
-        SyncMode syncMode = SyncMode.IncludeAllByDefault,
-        Credentials defaultCredentials = null)
+        Action<string>? log = null,
+        List<string>? labelsToApplyOnPullRequests = null,
+        SyncMode? syncMode = SyncMode.IncludeAllByDefault,
+        Credentials? defaultCredentials = null)
     {
         this.log = log ?? Console.WriteLine;
         this.labelsToApplyOnPullRequests = labelsToApplyOnPullRequests;
@@ -24,16 +25,16 @@ public class RepoSync
         this.defaultCredentials = defaultCredentials;
     }
 
-    public void AddBlob(string path, string target = null) =>
+    public void AddBlob(string path, string? target = null) =>
         AddSourceItem(TreeEntryTargetType.Blob, path, target);
 
-    public void RemoveBlob(string path, string target = null) =>
+    public void RemoveBlob(string path, string? target = null) =>
         RemoveSourceItem(TreeEntryTargetType.Blob, path, target);
 
-    public void AddSourceItem(TreeEntryTargetType type, string path, string target = null) =>
+    public void AddSourceItem(TreeEntryTargetType type, string path, string? target = null) =>
         AddOrRemoveSourceItem(true, type, path, target);
 
-    public void RemoveSourceItem(TreeEntryTargetType type, string path, string target = null)
+    public void RemoveSourceItem(TreeEntryTargetType type, string path, string? target = null)
     {
         if (type == TreeEntryTargetType.Tree)
         {
@@ -43,7 +44,7 @@ public class RepoSync
         AddOrRemoveSourceItem(false, type, path, target);
     }
 
-    public void AddOrRemoveSourceItem(bool toBeAdded, TreeEntryTargetType type, string path, string target)
+    public void AddOrRemoveSourceItem(bool toBeAdded, TreeEntryTargetType type, string path, string? target)
     {
         Guard.AgainstNullAndEmpty(path, nameof(path));
         Guard.AgainstEmpty(target, nameof(target));
@@ -68,7 +69,7 @@ public class RepoSync
     public void AddSourceRepository(RepositoryInfo sourceRepository) =>
         sources.Add(sourceRepository);
 
-    public void AddSourceRepository(string owner, string repository, string branch, Credentials credentials = null)
+    public void AddSourceRepository(string owner, string repository, string branch, Credentials? credentials = null)
     {
         PerhapsDefault(ref credentials);
         sources.Add(new(credentials, owner, repository, branch));
@@ -77,13 +78,13 @@ public class RepoSync
     public void AddTargetRepository(RepositoryInfo targetRepository) =>
         targets.Add(targetRepository);
 
-    public void AddTargetRepository(string owner, string repository, string branch, Credentials credentials = null)
+    public void AddTargetRepository(string owner, string repository, string branch, Credentials? credentials = null)
     {
         PerhapsDefault(ref credentials);
         targets.Add(new(credentials, owner, repository, branch));
     }
 
-    void PerhapsDefault(ref Credentials credentials)
+    void PerhapsDefault(ref Credentials? credentials)
     {
         if (credentials != null)
         {
