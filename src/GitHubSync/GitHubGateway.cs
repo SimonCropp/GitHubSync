@@ -27,10 +27,10 @@ class GitHubGateway :
         log($"Ctor - Create temp blob storage '{blobStoragePath}'.");
     }
 
-    GitHubClient ClientFrom(Credentials credentials, IWebProxy proxy)
+    static GitHubClient ClientFrom(Credentials credentials, IWebProxy proxy)
     {
         var connection = new Connection(
-            new ProductHeaderValue("GitHubSync"),
+            new("GitHubSync"),
             new HttpClientAdapter(() => HttpMessageHandlerFactory.CreateDefault(proxy)));
 
         var gitHubClient = new GitHubClient(connection);
@@ -61,7 +61,7 @@ class GitHubGateway :
         var apiConnection = new ApiConnection(client.Connection);
         var forkClient = new RepositoryForksClient(apiConnection);
 
-        return forkClient.Create(owner, name, new NewRepositoryFork());
+        return forkClient.Create(owner, name, new());
     }
 
     public async Task DownloadBlob(Parts source, Stream targetStream)
@@ -110,7 +110,7 @@ class GitHubGateway :
             return blobFrom;
         }
 
-        blobFrom = new Tuple<Parts, TreeItem>(parts, blobEntry);
+        blobFrom = new(parts, blobEntry);
         blobCachePerPath.Add(parts.Url, blobFrom);
         return blobFrom;
     }
@@ -122,7 +122,7 @@ class GitHubGateway :
             return treeFrom;
         }
 
-        treeFrom = new Tuple<Parts, TreeResponse>(parts, treeEntry);
+        treeFrom = new(parts, treeEntry);
         treeCachePerPath.Add(parts.Url, treeFrom);
         return treeFrom;
     }
@@ -160,7 +160,7 @@ class GitHubGateway :
             {
                 if (throwsIfNotFound)
                 {
-                    throw new Exception($"[{source.Type}: {source.Url}] doesn't exist.");
+                    throw new($"[{source.Type}: {source.Url}] doesn't exist.");
                 }
 
                 return null;
@@ -215,7 +215,7 @@ class GitHubGateway :
         {
             if (throwsIfNotFound)
             {
-                throw new Exception($"[{source.ParentTreePart.Type}: {source.ParentTreePart.Url}] doesn't exist.");
+                throw new($"[{source.ParentTreePart.Type}: {source.ParentTreePart.Url}] doesn't exist.");
             }
 
             return null;
@@ -228,7 +228,7 @@ class GitHubGateway :
         {
             if (throwsIfNotFound)
             {
-                throw new Exception($"[{source.Type}: {source.Url}] doesn't exist.");
+                throw new($"[{source.Type}: {source.Url}] doesn't exist.");
             }
 
             return null;
@@ -400,11 +400,11 @@ class GitHubGateway :
         {
             if (!pullRequest.Mergeable.GetValueOrDefault(true))
             {
-                throw new Exception($"PR not mergable: {prUrl}");
+                throw new($"PR not mergable: {prUrl}");
             }
 
             log($"API Query - Merge pull request '#{pullRequest.Number}' in '{owner}/{repository}'. -> {prUrl}");
-            await client.Repository.PullRequest.Merge(owner, repository, pullRequest.Number, new MergePullRequest());
+            await client.Repository.PullRequest.Merge(owner, repository, pullRequest.Number, new());
         }
 
         return pullRequest.Number;

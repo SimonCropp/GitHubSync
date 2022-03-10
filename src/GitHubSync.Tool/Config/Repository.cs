@@ -4,7 +4,7 @@
     {
         Branch = "master";
 
-        Templates = new List<string>();
+        Templates = new();
     }
 
     public string Name { get; set; } = null!;
@@ -17,8 +17,6 @@
 
     public List<string> Templates { get; set; } = null!;
 
-    public override string ToString()
-    {
-        return $"{Name} ({Url})";
-    }
+    public override string ToString() =>
+        $"{Name} ({Url})";
 }

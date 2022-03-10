@@ -2,10 +2,8 @@
 
 public class SyncContext
 {
-    public SyncContext(RepositoryInfo targetRepository)
-    {
+    public SyncContext(RepositoryInfo targetRepository) =>
         TargetRepository = targetRepository;
-    }
 
     public RepositoryInfo TargetRepository { get; }
 

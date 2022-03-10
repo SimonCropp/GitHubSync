@@ -11,7 +11,7 @@ public class Snippets
             log: Console.WriteLine);
 
         // Add source repo(s)
-        repoSync.AddSourceRepository(new RepositoryInfo(
+        repoSync.AddSourceRepository(new(
             // Valid credentials for the source repo and all target repos
             credentials: octokitCredentials,
             owner: "UserOrOrg",
@@ -27,13 +27,13 @@ public class Snippets
         repoSync.AddBlob("code.cs");
 
         // Add target repo(s)
-        repoSync.AddTargetRepository(new RepositoryInfo(
+        repoSync.AddTargetRepository(new(
             credentials: octokitCredentials,
             owner: "UserOrOrg",
             repository: "TargetRepo1",
             branch: "master"));
 
-        repoSync.AddTargetRepository(new RepositoryInfo(
+        repoSync.AddTargetRepository(new(
             credentials: octokitCredentials,
             owner: "UserOrOrg",
             repository: "TargetRepo2",

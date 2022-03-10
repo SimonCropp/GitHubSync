@@ -23,7 +23,7 @@ public class TempRepoContext :
 
         await Client.DeleteBranch(tempBranchName);
         var tempBranchReference = await Client.GitHubClient.Git.Reference.Create("SimonCropp", "GitHubSync.TestRepository", newReference);
-        return new TempRepoContext(tempBranchReference, tempBranchName, $"refs/heads/{tempBranchName}", verifyBase);
+        return new(tempBranchReference, tempBranchName, $"refs/heads/{tempBranchName}", verifyBase);
     }
 
     public async Task VerifyCommit(UpdateResult updateResult)
@@ -52,8 +52,6 @@ public class TempRepoContext :
         });
     }
 
-    public async ValueTask DisposeAsync()
-    {
+    public async ValueTask DisposeAsync() =>
         await Client.DeleteBranch(TempBranchName);
-    }
 }

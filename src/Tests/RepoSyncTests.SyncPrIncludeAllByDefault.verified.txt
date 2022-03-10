@@ -1,15 +1,20 @@
-{
-  Title: 'GitHubSync update',
-  Body: 'This is an automated synchronization PR.\r\n\r\nThe following source template repositories were used:\r\n* SimonCropp/GitHubSync.TestRepository\r\n',
+﻿{
+  Title: GitHubSync update - SyncPrIncludeAllByDefault,
+  Body:
+This is an automated synchronization PR.
+
+The following source template repositories were used:
+* SimonCropp/GitHubSync.TestRepository
+,
   Commits: 1,
   Additions: 1,
   ChangedFiles: 1,
-  State: 'open',
-  Target: 'SyncPrIncludeAllByDefault',
+  State: open,
+  Target: SyncPrIncludeAllByDefault,
   Files: [
     {
-      FileName: 'sourceFile.txt',
-      Status: 'added'
+      FileName: sourceFile.txt,
+      Status: added
     }
   ]
 }

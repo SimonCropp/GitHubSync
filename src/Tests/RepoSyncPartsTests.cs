@@ -14,8 +14,8 @@ public class RepoSyncPartsTests :
         repoSync.RemoveBlob("removed1");
         repoSync.RemoveBlob("removed2", "target2");
 
-        repoSync.AddTargetRepository(new RepositoryInfo(null, "owner1", "repo1", "branch1"));
-        repoSync.AddTargetRepository(new RepositoryInfo(null, "owner2", "repo2", "branch2"));
+        repoSync.AddTargetRepository(new(null, "owner1", "repo1", "branch1"));
+        repoSync.AddTargetRepository(new(null, "owner2", "repo2", "branch2"));
 
         return Verify(repoSync);
     }
@@ -61,8 +61,8 @@ public class RepoSyncPartsTests :
     {
         var repoSync = BuildRepoSync(SyncMode.IncludeAllByDefault);
 
-        repoSync.AddTargetRepository(new RepositoryInfo(null, "owner1", "repo1", "branch1"));
-        repoSync.AddTargetRepository(new RepositoryInfo(null, "owner2", "repo2", "branch2"));
+        repoSync.AddTargetRepository(new(null, "owner1", "repo1", "branch1"));
+        repoSync.AddTargetRepository(new(null, "owner2", "repo2", "branch2"));
 
         return Verify(repoSync);
     }
@@ -72,7 +72,7 @@ public class RepoSyncPartsTests :
         var credentials = CredentialsHelper.Credentials;
 
         var repoSync = new RepoSync(syncMode: syncMode);
-        repoSync.AddSourceRepository(new RepositoryInfo(credentials, "owner", "GitHubSync.TestRepository", "source"));
+        repoSync.AddSourceRepository(new(credentials, "owner", "GitHubSync.TestRepository", "source"));
 
         return repoSync;
     }

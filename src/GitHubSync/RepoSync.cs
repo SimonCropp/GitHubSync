@@ -24,20 +24,14 @@ public class RepoSync
         this.defaultCredentials = defaultCredentials;
     }
 
-    public void AddBlob(string path, string target = null)
-    {
+    public void AddBlob(string path, string target = null) =>
         AddSourceItem(TreeEntryTargetType.Blob, path, target);
-    }
 
-    public void RemoveBlob(string path, string target = null)
-    {
+    public void RemoveBlob(string path, string target = null) =>
         RemoveSourceItem(TreeEntryTargetType.Blob, path, target);
-    }
 
-    public void AddSourceItem(TreeEntryTargetType type, string path, string target = null)
-    {
+    public void AddSourceItem(TreeEntryTargetType type, string path, string target = null) =>
         AddOrRemoveSourceItem(true, type, path, target);
-    }
 
     public void RemoveSourceItem(TreeEntryTargetType type, string path, string target = null)
     {
@@ -64,33 +58,29 @@ public class RepoSync
             throw new NotSupportedException($"Adding items is not supported when mode is '{syncMode}'");
         }
 
-        manualSyncItems.Add(new ManualSyncItem
+        manualSyncItems.Add(new()
         {
             Path = path,
             Target = target
         });
     }
 
-    public void AddSourceRepository(RepositoryInfo sourceRepository)
-    {
+    public void AddSourceRepository(RepositoryInfo sourceRepository) =>
         sources.Add(sourceRepository);
-    }
 
     public void AddSourceRepository(string owner, string repository, string branch, Credentials credentials = null)
     {
         PerhapsDefault(ref credentials);
-        sources.Add(new RepositoryInfo(credentials, owner, repository, branch));
+        sources.Add(new(credentials, owner, repository, branch));
     }
 
-    public void AddTargetRepository(RepositoryInfo targetRepository)
-    {
+    public void AddTargetRepository(RepositoryInfo targetRepository) =>
         targets.Add(targetRepository);
-    }
 
     public void AddTargetRepository(string owner, string repository, string branch, Credentials credentials = null)
     {
         PerhapsDefault(ref credentials);
-        targets.Add(new RepositoryInfo(credentials, owner, repository, branch));
+        targets.Add(new(credentials, owner, repository, branch));
     }
 
     void PerhapsDefault(ref Credentials credentials)
@@ -102,7 +92,7 @@ public class RepoSync
 
         if (defaultCredentials == null)
         {
-            throw new Exception("defaultCredentials required");
+            throw new("defaultCredentials required");
         }
 
         credentials = defaultCredentials;
@@ -112,73 +102,71 @@ public class RepoSync
     {
         var syncContext = new SyncContext(targetRepository);
 
-        using (var syncer = new Syncer(targetRepository.Credentials, null, log))
+        using var syncer = new Syncer(targetRepository.Credentials, null, log);
+        var diffs = new List<Mapper>();
+        var includedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+        var descriptionBuilder = new StringBuilder();
+        descriptionBuilder.AppendLine("This is an automated synchronization PR.");
+        descriptionBuilder.AppendLine();
+        descriptionBuilder.AppendLine("The following source template repositories were used:");
+
+        // Note: iterate backwards, later registered sources should override earlier registrations
+        for (var i = sources.Count - 1; i >= 0; i--)
         {
-            var diffs = new List<Mapper>();
-            var includedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            var source = sources[i];
+            var displayName = $"{source.Owner}/{source.Repository}";
+            var itemsToSync = new List<SyncItem>();
 
-            var descriptionBuilder = new StringBuilder();
-            descriptionBuilder.AppendLine("This is an automated synchronization PR.");
-            descriptionBuilder.AppendLine();
-            descriptionBuilder.AppendLine("The following source template repositories were used:");
-
-            // Note: iterate backwards, later registered sources should override earlier registrations
-            for (var i = sources.Count - 1; i >= 0; i--)
+            foreach (var item in await OctokitEx.GetRecursive(source.Credentials, source.Owner, source.Repository, null, source.Branch))
             {
-                var source = sources[i];
-                var displayName = $"{source.Owner}/{source.Repository}";
-                var itemsToSync = new List<SyncItem>();
-
-                foreach (var item in await OctokitEx.GetRecursive(source.Credentials, source.Owner, source.Repository, null, source.Branch))
+                if (includedPaths.Contains(item))
                 {
-                    if (includedPaths.Contains(item))
-                    {
-                        continue;
-                    }
-
-                    includedPaths.Add(item);
-
-                    ProcessItem(item, itemsToSync, source);
+                    continue;
                 }
 
-                var targetRepositoryToSync = new RepoToSync
-                {
-                    Owner = targetRepository.Owner,
-                    Repo = targetRepository.Repository,
-                    TargetBranch = targetRepository.Branch
-                };
+                includedPaths.Add(item);
 
-                var sourceMapper = targetRepositoryToSync.GetMapper(itemsToSync);
-                var diff = await syncer.Diff(sourceMapper);
-                if (diff.ToBeAddedOrUpdatedEntries.Any() ||
-                    diff.ToBeRemovedEntries.Any())
-                {
-                    diffs.Add(diff);
-
-                    descriptionBuilder.AppendLine($"* {displayName}");
-                }
+                ProcessItem(item, itemsToSync, source);
             }
 
-            var finalDiff = new Mapper();
-
-            foreach (var diff in diffs)
+            var targetRepositoryToSync = new RepoToSync
             {
-                foreach (var item in diff.ToBeAddedOrUpdatedEntries)
-                {
-                    foreach (var value in item.Value)
-                    {
-                        log($"Mapping '{item.Key.Url}' => '{value.Url}'");
+                Owner = targetRepository.Owner,
+                Repo = targetRepository.Repository,
+                TargetBranch = targetRepository.Branch
+            };
 
-                        finalDiff.Add(item.Key, value);
-                    }
-                }
+            var sourceMapper = targetRepositoryToSync.GetMapper(itemsToSync);
+            var diff = await syncer.Diff(sourceMapper);
+            if (diff.ToBeAddedOrUpdatedEntries.Any() ||
+                diff.ToBeRemovedEntries.Any())
+            {
+                diffs.Add(diff);
 
-                // Note: how to deal with items to be removed
+                descriptionBuilder.AppendLine($"* {displayName}");
             }
-
-            syncContext.Diff = finalDiff;
-            syncContext.Description = descriptionBuilder.ToString();
         }
+
+        var finalDiff = new Mapper();
+
+        foreach (var diff in diffs)
+        {
+            foreach (var item in diff.ToBeAddedOrUpdatedEntries)
+            {
+                foreach (var value in item.Value)
+                {
+                    log($"Mapping '{item.Key.Url}' => '{value.Url}'");
+
+                    finalDiff.Add(item.Key, value);
+                }
+            }
+
+            // Note: how to deal with items to be removed
+        }
+
+        syncContext.Diff = finalDiff;
+        syncContext.Description = descriptionBuilder.ToString();
 
         return syncContext;
     }
@@ -197,7 +185,7 @@ public class RepoSync
                 switch (syncMode)
                 {
                     case SyncMode.IncludeAllByDefault:
-                        itemsToSync.Add(new SyncItem
+                        itemsToSync.Add(new()
                         {
                             Parts = parts,
                             ToBeAdded = false,
@@ -205,7 +193,7 @@ public class RepoSync
                         });
                         continue;
                     case SyncMode.ExcludeAllByDefault:
-                        itemsToSync.Add(new SyncItem
+                        itemsToSync.Add(new()
                         {
                             Parts = parts,
                             ToBeAdded = true,
@@ -219,14 +207,14 @@ public class RepoSync
         switch (syncMode)
         {
             case SyncMode.IncludeAllByDefault:
-                itemsToSync.Add(new SyncItem
+                itemsToSync.Add(new()
                 {
                     Parts = parts,
                     ToBeAdded = true,
                 });
                 return;
             case SyncMode.ExcludeAllByDefault:
-                itemsToSync.Add(new SyncItem
+                itemsToSync.Add(new()
                 {
                     Parts = parts,
                     ToBeAdded = false,

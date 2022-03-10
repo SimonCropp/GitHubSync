@@ -1,9 +1,7 @@
 ﻿class Template
 {
-    public Template()
-    {
+    public Template() =>
         branch = "master";
-    }
 
     public string name { get; set; } = null!;
 
@@ -11,8 +9,6 @@
 
     public string branch { get; set; }
 
-    public override string ToString()
-    {
-        return $"{name} ({url})";
-    }
+    public override string ToString() =>
+        $"{name} ({url})";
 }

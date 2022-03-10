@@ -57,14 +57,9 @@ public abstract class MapperBase
         }
     }
 
-    public IEnumerable<KeyValuePair<Parts, IEnumerable<Parts>>> ToBeAddedOrUpdatedEntries
-    {
-        get
-        {
-            return toBeAddedOrUpdatedEntries
-                .Select(e => new KeyValuePair<Parts, IEnumerable<Parts>>(e.Key, e.Value));
-        }
-    }
+    public IEnumerable<KeyValuePair<Parts, IEnumerable<Parts>>> ToBeAddedOrUpdatedEntries =>
+        toBeAddedOrUpdatedEntries
+            .Select(e => new KeyValuePair<Parts, IEnumerable<Parts>>(e.Key, e.Value));
 
     public IEnumerable<Parts> ToBeRemovedEntries => new ReadOnlyCollection<Parts>(toBeRemovedEntries);
 
@@ -86,7 +81,7 @@ public abstract class MapperBase
                     parts.Add(orb, items);
                 }
 
-                items.Add(new Tuple<Parts, IParts>(destination, source));
+                items.Add(new(destination, source));
             }
         }
 
@@ -100,7 +95,7 @@ public abstract class MapperBase
                 parts.Add(orb, items);
             }
 
-            items.Add(new Tuple<Parts, IParts>(destination, Parts.Empty));
+            items.Add(new(destination, Parts.Empty));
         }
 
         return parts;

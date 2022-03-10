@@ -5,10 +5,8 @@
 public class DiffTests :
     XunitContextBase
 {
-    Syncer BuildSyncer()
-    {
-        return new Syncer(CredentialsHelper.Credentials, null, WriteLine);
-    }
+    Syncer BuildSyncer() =>
+        new(CredentialsHelper.Credentials, null, WriteLine);
 
     [Fact]
     public async Task NothingToUpdateWhenSourceBlobAndDestinationBlobHaveTheSameSha()

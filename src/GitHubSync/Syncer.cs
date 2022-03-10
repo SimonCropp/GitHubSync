@@ -19,7 +19,7 @@ class Syncer :
         this.log = log ?? nullLogger;
 
         this.credentials = credentials;
-        gateway = new GitHubGateway(credentials, proxy, log);
+        gateway = new(credentials, proxy, log);
     }
 
     static Action<string> nullLogger = _ => { };
@@ -92,7 +92,7 @@ class Syncer :
 
         if (labels.Any() && expectedOutput != SyncOutput.CreatePullRequest)
         {
-            throw new Exception($"Labels can only be applied in '{SyncOutput.CreatePullRequest}' mode.");
+            throw new($"Labels can only be applied in '{SyncOutput.CreatePullRequest}' mode.");
         }
 
         var t = diff.Transpose();
@@ -138,7 +138,7 @@ class Syncer :
 
         if (expectedOutput == SyncOutput.CreateCommit)
         {
-            return new UpdateResult
+            return new()
             {
                 Url = $"https://github.com/{root.Owner}/{root.Repository}/commit/{commitSha}",
                 CommitSha = commitSha
@@ -148,7 +148,7 @@ class Syncer :
         if (expectedOutput == SyncOutput.CreateBranch)
         {
             branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, commitSha);
-            return new UpdateResult
+            return new()
             {
                 Url = $"https://github.com/{root.Owner}/{root.Repository}/compare/{UrlSanitize(root.Branch)}...{UrlSanitize(branchName)}",
                 CommitSha = commitSha,
@@ -181,7 +181,7 @@ class Syncer :
                 await gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
             }
 
-            return new UpdateResult
+            return new()
             {
                 Url = $"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}",
                 CommitSha = commitSha,
@@ -239,7 +239,7 @@ class Syncer :
         Directory.CreateDirectory(temporaryPath);
 
         // Step 1: clone the fork
-        var repositoryPath = LibGit2Sharp.Repository.Clone(forkedRepository.CloneUrl, temporaryPath, new LibGit2Sharp.CloneOptions
+        var repositoryPath = LibGit2Sharp.Repository.Clone(forkedRepository.CloneUrl, temporaryPath, new()
         {
             BranchName = root.Branch
         });
@@ -270,7 +270,7 @@ class Syncer :
         // Step 4: ensure we have the latest
         var upstreamMasterBranch = repository.Branches["upstream/master"];
 
-        repository.Merge(upstreamMasterBranch, commitSignature, new LibGit2Sharp.MergeOptions());
+        repository.Merge(upstreamMasterBranch, commitSignature, new());
 
         // Step 5: create delta
         foreach (var change in updatesPerOwnerRepositoryBranch)
@@ -303,9 +303,9 @@ class Syncer :
 
         // Step 7: create & push commit
         var commit = repository.Commit("Apply GitHubSync changes", commitSignature, commitSignature,
-            new LibGit2Sharp.CommitOptions());
+            new());
 
-        repository.Network.Push(tempBranch, new LibGit2Sharp.PushOptions
+        repository.Network.Push(tempBranch, new()
         {
             CredentialsProvider = (_, _, _) => new LibGit2Sharp.UsernamePasswordCredentials
             {
@@ -318,10 +318,8 @@ class Syncer :
         return commit.Sha;
     }
 
-    string UrlSanitize(string branch)
-    {
-        return branch.Replace("/", ";");
-    }
+    static string UrlSanitize(string branch) =>
+        branch.Replace("/", ";");
 
     async Task<string> BuildTargetTree(TargetTree tt)
     {
@@ -330,7 +328,7 @@ class Syncer :
         NewTree newTree;
         if (treeFrom == null)
         {
-            newTree = new NewTree();
+            newTree = new();
         }
         else
         {
@@ -379,7 +377,7 @@ class Syncer :
                 case TreeEntryTargetType.Blob:
                     var sourceBlobItem = (await gateway.BlobFrom(source, true)).Item2;
                     newTree.Tree.Add(
-                        new NewTreeItem
+                        new()
                         {
                             Mode = sourceBlobItem.Mode,
                             Path = destination.Name,
@@ -390,7 +388,7 @@ class Syncer :
 
                 case TreeEntryTargetType.Tree:
                     newTree.Tree.Add(
-                        new NewTreeItem
+                        new()
                         {
                             Mode = "040000",
                             Path = destination.Name,
@@ -428,7 +426,7 @@ class Syncer :
         }
     }
 
-    void RemoveTreeItemFrom(NewTree tree, string name)
+    static void RemoveTreeItemFrom(NewTree tree, string name)
     {
         var existing = tree.Tree.SingleOrDefault(ti => ti.Path == name);
 
@@ -499,7 +497,7 @@ class Syncer :
                     throw new NotSupportedException();
             }
 
-            newTree.Tree.Add(new NewTreeItem
+            newTree.Tree.Add(new()
             {
                 Type = value,
                 Path = i.Path,
@@ -545,12 +543,6 @@ class Syncer :
         return outPart;
     }
 
-    public void Dispose()
-    {
+    public void Dispose() =>
         gateway.Dispose();
-    }
-}
-
-namespace GitHubSync
-{
 }

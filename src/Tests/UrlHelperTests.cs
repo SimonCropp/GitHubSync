@@ -2,14 +2,10 @@
 public class UrlHelperTests
 {
     [Fact]
-    public Task Company()
-    {
-        return Verify(UrlHelper.GetCompany("https://github.com/org/repository"));
-    }
+    public Task Company() =>
+        Verify(UrlHelper.GetCompany("https://github.com/org/repository"));
 
     [Fact]
-    public Task Project()
-    {
-        return Verify(UrlHelper.GetProject("https://github.com/org/repository"));
-    }
+    public Task Project() =>
+        Verify(UrlHelper.GetProject("https://github.com/org/repository"));
 }

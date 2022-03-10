@@ -1,28 +1,19 @@
 class TargetTree
 {
-    public Dictionary<string, TargetTree> SubTreesToUpdate;
-    public Dictionary<string, Tuple<Parts, Parts>> LeavesToCreate;
-    public Dictionary<string, Parts> LeavesToDrop;
+    public Dictionary<string, TargetTree> SubTreesToUpdate = new();
+    public Dictionary<string, Tuple<Parts, Parts>> LeavesToCreate = new();
+    public Dictionary<string, Parts> LeavesToDrop = new();
     public Parts Current;
     public static string EmptyTreeSha = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
 
-    public TargetTree(Parts root)
-    {
+    public TargetTree(Parts root) =>
         Current = root;
-        SubTreesToUpdate = new Dictionary<string, TargetTree>();
-        LeavesToCreate = new Dictionary<string, Tuple<Parts, Parts>>();
-        LeavesToDrop = new Dictionary<string, Parts>();
-    }
 
-    public void Add(Parts destination, Parts source)
-    {
+    public void Add(Parts destination, Parts source) =>
         AddOrRemove(destination, source, 0);
-    }
 
-    public void Remove(Parts destination)
-    {
+    public void Remove(Parts destination) =>
         AddOrRemove(destination, Parts.Empty, 0);
-    }
 
     void AddOrRemove(Parts destination, IParts source, int level)
     {
@@ -51,7 +42,7 @@ class TargetTree
 
         if (!SubTreesToUpdate.TryGetValue(s.Name, out var targetTree))
         {
-            targetTree = new TargetTree(s);
+            targetTree = new(s);
             SubTreesToUpdate.Add(s.Name, targetTree);
         }
 

@@ -2,8 +2,8 @@
 {
     public Context()
     {
-        Templates = new List<Template>();
-        Repositories = new List<Repository>();
+        Templates = new();
+        Repositories = new();
     }
 
     public List<Template> Templates { get; set; }

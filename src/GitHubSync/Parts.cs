@@ -34,32 +34,32 @@ public class Parts : IParts, IEquatable<Parts>
             NumberOfPathSegments = segments.Length;
         }
 
-        parent = new Lazy<Parts>(BuildParent);
-        root = new Lazy<Parts>(BuildRoot);
+        parent = new(BuildParent);
+        root = new(BuildRoot);
     }
 
     Parts BuildParent()
     {
         if (Path == null)
         {
-            throw new Exception("Cannot escape out of a Tree.");
+            throw new("Cannot escape out of a Tree.");
         }
 
         var indexOf = Path.LastIndexOf('/');
 
         var parentPath = indexOf == -1 ? null : Path.Substring(0, indexOf);
 
-        return new Parts(Owner, Repository, TreeEntryTargetType.Tree, Branch, parentPath, null);
+        return new(Owner, Repository, TreeEntryTargetType.Tree, Branch, parentPath, null);
     }
 
     Parts BuildRoot()
     {
         if (Path == null)
         {
-            throw new Exception("Cannot escape out of a Tree.");
+            throw new("Cannot escape out of a Tree.");
         }
 
-        return new Parts(Owner, Repository, TreeEntryTargetType.Tree, Branch, null, null);
+        return new(Owner, Repository, TreeEntryTargetType.Tree, Branch, null, null);
     }
 
     public static readonly NullParts Empty = new();
@@ -87,10 +87,8 @@ public class Parts : IParts, IEquatable<Parts>
     // This doesn't participate as an equality contributor on purpose
     public Parts RootTreePart => root.Value;
 
-    internal Parts Combine(TreeEntryTargetType type, string name, string sha)
-    {
-        return new Parts(Owner, Repository, type, Branch, Path == null ? name : Path + "/" + name, sha);
-    }
+    internal Parts Combine(TreeEntryTargetType type, string name, string sha) =>
+        new(Owner, Repository, type, Branch, Path == null ? name : Path + "/" + name, sha);
 
     internal Parts SegmentPartsByNestingLevel(int level)
     {
@@ -103,7 +101,7 @@ public class Parts : IParts, IEquatable<Parts>
 
         var p = string.Join("/", s);
 
-        return new Parts(Owner, Repository, TreeEntryTargetType.Tree, Branch, p, null);
+        return new(Owner, Repository, TreeEntryTargetType.Tree, Branch, p, null);
     }
 
     public bool Equals(Parts other)
@@ -121,10 +119,8 @@ public class Parts : IParts, IEquatable<Parts>
         return string.Equals(Owner, other.Owner) && string.Equals(Repository, other.Repository) && Type == other.Type && string.Equals(Path, other.Path);
     }
 
-    public override bool Equals(object obj)
-    {
-        return Equals(obj as Parts);
-    }
+    public override bool Equals(object obj) =>
+        Equals(obj as Parts);
 
     public override int GetHashCode()
     {
@@ -136,21 +132,19 @@ public class Parts : IParts, IEquatable<Parts>
             hashCode = (hashCode * 397) ^ Branch.GetHashCode();
 
             if (Path != null)
+            {
                 hashCode = (hashCode * 397) ^ Path.GetHashCode();
+            }
 
             return hashCode;
         }
     }
 
-    public static bool operator ==(Parts left, Parts right)
-    {
-        return Equals(left, right);
-    }
+    public static bool operator ==(Parts left, Parts right) =>
+        Equals(left, right);
 
-    public static bool operator !=(Parts left, Parts right)
-    {
-        return !Equals(left, right);
-    }
+    public static bool operator !=(Parts left, Parts right) =>
+        !Equals(left, right);
 
     public class NullParts : IParts
     {

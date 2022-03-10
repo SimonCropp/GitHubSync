@@ -8,10 +8,10 @@ public static class CredentialsHelper
 
         if (githubToken == null)
         {
-            throw new Exception("Could not find EnvironmentVariable Octokit_OAuthToken");
+            throw new("Could not find EnvironmentVariable Octokit_OAuthToken");
         }
 
-        Credentials = new Credentials(githubToken);
+        Credentials = new(githubToken);
     }
 
     public static Credentials Credentials;

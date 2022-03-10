@@ -91,6 +91,6 @@ static class Program
     {
         var company = UrlHelper.GetCompany(url);
         var project = UrlHelper.GetProject(url);
-        return new RepositoryInfo(credentials, company, project, branch);
+        return new(credentials, company, project, branch);
     }
 }

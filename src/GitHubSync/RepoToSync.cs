@@ -1,9 +1,7 @@
 class RepoToSync
 {
-    public override string ToString()
-    {
-        return $"{Owner}/{Repo}/{TargetBranch}";
-    }
+    public override string ToString() =>
+        $"{Owner}/{Repo}/{TargetBranch}";
 
     public string Owner { get; set; }
     public string Repo { get; set; }

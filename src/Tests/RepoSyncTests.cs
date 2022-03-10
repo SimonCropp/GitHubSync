@@ -11,9 +11,9 @@ public class RepoSyncTests :
         var credentials = CredentialsHelper.Credentials;
         var repoSync = new RepoSync(WriteLine);
         await using var repoContext = await TempRepoContext.Create(Context.MethodName, this);
-        repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+        repoSync.AddSourceRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
         repoSync.RemoveBlob("README.md");
-        repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
+        repoSync.AddTargetRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
 
         var sync = await repoSync.Sync();
         await repoContext.VerifyPullRequest(sync.Single());
@@ -25,10 +25,10 @@ public class RepoSyncTests :
         var credentials = CredentialsHelper.Credentials;
         var repoSync = new RepoSync(WriteLine, syncMode: SyncMode.ExcludeAllByDefault);
         await using var repoContext = await TempRepoContext.Create(Context.MethodName, this);
-        repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+        repoSync.AddSourceRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
         repoSync.AddBlob("sourceFile.txt");
         repoSync.AddSourceItem(TreeEntryTargetType.Blob,"sourceFile.txt", "nested/sourceFile.txt");
-        repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
+        repoSync.AddTargetRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
 
         var sync = await repoSync.Sync();
         await repoContext.VerifyPullRequest(sync.Single());
@@ -40,9 +40,9 @@ public class RepoSyncTests :
         var credentials = CredentialsHelper.Credentials;
         var repoSync = new RepoSync(WriteLine);
         await using var repoContext = await TempRepoContext.Create(Context.MethodName, this);
-        repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+        repoSync.AddSourceRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
         repoSync.RemoveBlob("README.md");
-        repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
+        repoSync.AddTargetRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
 
         var sync = await repoSync.Sync(SyncOutput.MergePullRequest);
         await repoContext.VerifyPullRequest(sync.Single());
@@ -55,9 +55,9 @@ public class RepoSyncTests :
         var repoSync = new RepoSync(WriteLine);
 
         await using var repoContext = await TempRepoContext.Create(Context.MethodName, this);
-        repoSync.AddSourceRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+        repoSync.AddSourceRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
         repoSync.RemoveBlob("README.md");
-        repoSync.AddTargetRepository(new RepositoryInfo(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
+        repoSync.AddTargetRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
 
         var sync = await repoSync.Sync(SyncOutput.CreateCommit);
         await repoContext.VerifyCommit(sync.Single());
