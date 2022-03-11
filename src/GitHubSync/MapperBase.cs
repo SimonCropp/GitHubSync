@@ -1,5 +1,4 @@
-﻿
-#nullable enable
+﻿#nullable enable
 
 using GitHubSync;
 using System.Collections.ObjectModel;

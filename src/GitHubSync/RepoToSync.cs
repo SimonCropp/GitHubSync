@@ -1,3 +1,4 @@
+#nullable enable
 class RepoToSync
 {
     public override string ToString() =>

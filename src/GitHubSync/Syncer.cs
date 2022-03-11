@@ -1,5 +1,4 @@
-﻿
-#nullable enable
+﻿#nullable enable
 
 using System.Net;
 using GitHubSync;

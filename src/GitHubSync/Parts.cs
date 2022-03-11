@@ -1,4 +1,5 @@
-﻿using GitHubSync;
+﻿#nullable enable
+using GitHubSync;
 
 public class Parts : IParts, IEquatable<Parts>
 {

@@ -1,6 +1,4 @@
-
 #nullable enable
-
 
 class TargetTree
 {
