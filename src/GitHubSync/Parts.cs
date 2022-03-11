@@ -1,6 +1,6 @@
 ﻿using GitHubSync;
 
-public class Parts : IParts, IEquatable<Parts>
+public class Parts : IParts
 {
     public Parts(string owner, string repository, TreeEntryTargetType type, string branch, string path, string sha = null)
     {
@@ -48,48 +48,6 @@ public class Parts : IParts, IEquatable<Parts>
 
     internal Parts Combine(TreeEntryTargetType type, string name, string sha) =>
         new(Owner, Repository, type, Branch, Path == null ? name : Path + "/" + name, sha);
-
-    public bool Equals(Parts other)
-    {
-        if (other is null)
-        {
-            return false;
-        }
-
-        if (ReferenceEquals(this, other))
-        {
-            return true;
-        }
-
-        return string.Equals(Owner, other.Owner) && string.Equals(Repository, other.Repository) && Type == other.Type && string.Equals(Path, other.Path);
-    }
-
-    public override bool Equals(object obj) =>
-        Equals(obj as Parts);
-
-    public override int GetHashCode()
-    {
-        unchecked
-        {
-            var hashCode = Owner.GetHashCode();
-            hashCode = (hashCode * 397) ^ Repository.GetHashCode();
-            hashCode = (hashCode * 397) ^ (int) Type;
-            hashCode = (hashCode * 397) ^ Branch.GetHashCode();
-
-            if (Path != null)
-            {
-                hashCode = (hashCode * 397) ^ Path.GetHashCode();
-            }
-
-            return hashCode;
-        }
-    }
-
-    public static bool operator ==(Parts left, Parts right) =>
-        Equals(left, right);
-
-    public static bool operator !=(Parts left, Parts right) =>
-        !Equals(left, right);
 
     public class NullParts : IParts
     {
