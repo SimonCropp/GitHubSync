@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 
 public abstract class MapperBase
 {
-    Dictionary<Parts, ICollection<Parts>> toBeAddedOrUpdatedEntries = new();
+    Dictionary<Parts, ICollection<Parts>> toBeAddedOrUpdatedEntries = new(new PartsComparer());
     List<Parts> toBeRemovedEntries = new();
 
     protected void AddOrRemove_Internal(IParts from, Parts to)
