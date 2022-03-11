@@ -1,4 +1,5 @@
-﻿[Trait("Category", "Integration")]
+﻿#if DEBUG
+[Trait("Category", "Integration")]
 public class CleanupTests
 {
     [Fact]
@@ -11,3 +12,4 @@ public class CleanupTests
         }
     }
 }
+#endif

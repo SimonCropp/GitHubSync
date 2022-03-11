@@ -39,8 +39,20 @@ public class RepoSync
 
     public void AddOrRemoveSourceItem(bool toBeAdded, TreeEntryTargetType type, string path, string? target)
     {
+        if (target == null)
+        {
+            AddOrRemoveSourceItem(toBeAdded, type, path, (ResolveTarget?) null);
+            return;
+        }
+
+        AddOrRemoveSourceItem(toBeAdded, type, path, (_, _, _, _) => target);
+    }
+
+    public void AddOrRemoveSourceItem(bool toBeAdded, TreeEntryTargetType type, string path, ResolveTarget? target)
+    {
         Guard.AgainstNullAndEmpty(path, nameof(path));
-        Guard.AgainstEmpty(target, nameof(target));
+        //todo
+        //Guard.AgainstEmpty(target, nameof(target));
 
         if (!toBeAdded && type == TreeEntryTargetType.Tree)
         {

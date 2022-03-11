@@ -1,7 +1,7 @@
-﻿using GitHubSync;
+﻿#if DEBUG
+using GitHubSync;
 
 [UsesVerify]
-[Trait("Category", "Local")]
 public class DiffTests :
     XunitContextBase
 {
@@ -151,3 +151,4 @@ public class DiffTests :
     {
     }
 }
+#endif

@@ -2,7 +2,7 @@
 <Project>
   <PropertyGroup>
     <NoWarn>CS1591</NoWarn>
-    <Version>0.7.2</Version>
+    <Version>0.8.0</Version>
     <AssemblyVersion>1.0.0</AssemblyVersion>
     <Description>A tool to help synchronizing specific files and folders across GitHub hosted repositories.</Description>
     <PackageTags>GitHub</PackageTags>

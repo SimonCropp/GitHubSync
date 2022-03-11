@@ -1,7 +1,9 @@
 ﻿#nullable enable
+using GitHubSync;
+
 public class SyncItem
 {
-    public SyncItem(Parts parts, bool toBeAdded, string? target)
+    public SyncItem(Parts parts, bool toBeAdded, ResolveTarget? target)
     {
         Parts = parts;
         ToBeAdded = toBeAdded;
@@ -10,5 +12,5 @@ public class SyncItem
 
     public Parts Parts { get; }
     public bool ToBeAdded { get; }
-    public string? Target { get; }
+    public ResolveTarget? Target { get; }
 }

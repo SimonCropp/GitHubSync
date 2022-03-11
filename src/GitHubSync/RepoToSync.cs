@@ -39,11 +39,12 @@ class RepoToSync
     static string? ApplyTargetPathTemplate(SyncItem syncItem)
     {
         var target = syncItem.Target;
-        if (string.IsNullOrEmpty(target))
+        var parts = syncItem.Parts;
+        if (target == null)
         {
-            return syncItem.Parts.Path;
+            return parts.Path;
         }
 
-        return target;
+        return target(parts.Owner, parts.Repository, parts.Branch, parts.Path);
     }
 }

@@ -1,7 +1,7 @@
-﻿using GitHubSync;
+﻿#if DEBUG
+using GitHubSync;
 
 [UsesVerify]
-[Trait("Category", "Local")]
 public class RepoSyncTests :
     XunitContextBase
 {
@@ -68,3 +68,4 @@ public class RepoSyncTests :
     {
     }
 }
+#endif
