@@ -22,7 +22,7 @@ class Syncer :
         this.log = log ?? nullLogger;
 
         this.credentials = credentials;
-        gateway = new(credentials, proxy, log);
+        gateway = new(credentials, proxy, this.log);
     }
 
     static Action<string> nullLogger = _ => { };
