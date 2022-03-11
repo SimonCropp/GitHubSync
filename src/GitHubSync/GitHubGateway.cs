@@ -29,20 +29,16 @@ class GitHubGateway :
         log($"Ctor - Create temp blob storage '{blobStoragePath}'.");
     }
 
-    static GitHubClient ClientFrom(Credentials credentials, IWebProxy proxy)
+    static GitHubClient ClientFrom(Credentials credentials, IWebProxy? proxy)
     {
         var connection = new Connection(
             new("GitHubSync"),
             new HttpClientAdapter(() => HttpMessageHandlerFactory.CreateDefault(proxy)));
 
-        var gitHubClient = new GitHubClient(connection);
-
-        if (credentials != null)
+        return new(connection)
         {
-            gitHubClient.Credentials = credentials;
-        }
-
-        return gitHubClient;
+            Credentials = credentials
+        };
     }
 
     public async Task<User> GetCurrentUser()
@@ -383,8 +379,13 @@ class GitHubGateway :
         return reference.Ref.Substring("refs/heads/".Length);
     }
 
-    public async Task<int> CreatePullRequest(string owner, string repository, string branch, string targetBranch,
-        bool merge, string description)
+    public async Task<int> CreatePullRequest(
+        string owner,
+        string repository,
+        string branch,
+        string targetBranch,
+        bool merge,
+        string? description)
     {
         var newPullRequest = new NewPullRequest($"GitHubSync update - {targetBranch}", branch, targetBranch);
 
