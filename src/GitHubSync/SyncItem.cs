@@ -1,6 +1,12 @@
 ﻿public class SyncItem
 {
-    public Parts Parts { get; set; }
-    public bool ToBeAdded { get; set; }
-    public string Target { get; set; }
+    public SyncItem(Parts parts, bool toBeAdded, string target)
+    {
+        Parts = parts;
+        ToBeAdded = toBeAdded;
+        Target = target;
+    }
+    public Parts Parts { get; }
+    public bool ToBeAdded { get; }
+    public string Target { get; }
 }

@@ -183,20 +183,10 @@ public class RepoSync
                 switch (syncMode)
                 {
                     case SyncMode.IncludeAllByDefault:
-                        itemsToSync.Add(new()
-                        {
-                            Parts = parts,
-                            ToBeAdded = false,
-                            Target = manualSyncItem?.Target
-                        });
+                        itemsToSync.Add(new(parts, false, manualSyncItem?.Target));
                         continue;
                     case SyncMode.ExcludeAllByDefault:
-                        itemsToSync.Add(new()
-                        {
-                            Parts = parts,
-                            ToBeAdded = true,
-                            Target = manualSyncItem?.Target
-                        });
+                        itemsToSync.Add(new(parts, true, manualSyncItem?.Target));
                         continue;
                 }
             }
@@ -205,18 +195,10 @@ public class RepoSync
         switch (syncMode)
         {
             case SyncMode.IncludeAllByDefault:
-                itemsToSync.Add(new()
-                {
-                    Parts = parts,
-                    ToBeAdded = true,
-                });
+                itemsToSync.Add(new(parts, true, null));
                 return;
             case SyncMode.ExcludeAllByDefault:
-                itemsToSync.Add(new()
-                {
-                    Parts = parts,
-                    ToBeAdded = false,
-                });
+                itemsToSync.Add(new(parts, false, null));
                 return;
         }
     }
