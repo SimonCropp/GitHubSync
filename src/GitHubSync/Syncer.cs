@@ -378,7 +378,12 @@ class Syncer :
             switch (source.Type)
             {
                 case TreeEntryTargetType.Blob:
-                    var sourceBlobItem = (await gateway.BlobFrom(source, true)).Item2;
+                    var blobFrom = await gateway.BlobFrom(source, true);
+                    if (blobFrom == null)
+                    {
+                        continue;
+                    }
+                    var sourceBlobItem = blobFrom.Item2;
                     newTree.Tree.Add(
                         new()
                         {
@@ -481,6 +486,10 @@ class Syncer :
 
         var treeFrom = await gateway.TreeFrom(source, true);
 
+        if (treeFrom == null)
+        {
+            return;
+        }
         var newTree = new NewTree();
 
         foreach (var i in treeFrom.Item2.Tree)
