@@ -1,4 +1,4 @@
-{
+﻿{
   Owner: SimonCropp,
   Repository: Fake,
   Type: Tree,
@@ -7,13 +7,6 @@
   Name: buildSupport,
   NumberOfPathSegments: 1,
   Url: https://github.com/SimonCropp/Fake/tree/develop/buildSupport,
-  ParentTreePart: {
-    Owner: SimonCropp,
-    Repository: Fake,
-    Type: Tree,
-    Branch: develop,
-    Url: https://github.com/SimonCropp/Fake/tree/develop
-  },
   RootTreePart: {
     Owner: SimonCropp,
     Repository: Fake,

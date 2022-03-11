@@ -146,8 +146,7 @@ class GitHubGateway :
         }
         else
         {
-            var parentTreePart = source.ParentTreePart;
-            var parentTreeResponse = await TreeFrom(parentTreePart, throwsIfNotFound);
+            var parentTreeResponse = await TreeFrom(source.Parent(), throwsIfNotFound);
             if (parentTreeResponse == null)
             {
                 return null;
@@ -209,20 +208,21 @@ class GitHubGateway :
             return blobResponse;
         }
 
-        var parent = await TreeFrom(source.ParentTreePart, throwsIfNotFound);
+        var parentPart = source.Parent();
+        var parentTree = await TreeFrom(parentPart, throwsIfNotFound);
 
-        if (parent == null)
+        if (parentTree == null)
         {
             if (throwsIfNotFound)
             {
-                throw new($"[{source.ParentTreePart.Type}: {source.ParentTreePart.Url}] doesn't exist.");
+                throw new($"[{parentPart.Type}: {parentPart.Url}] doesn't exist.");
             }
 
             return null;
         }
 
         var blobName = source.Path.Split('/').Last();
-        var blobEntry = parent.Item2.Tree.FirstOrDefault(ti => ti.Type == TreeType.Blob && ti.Path == blobName);
+        var blobEntry = parentTree.Item2.Tree.FirstOrDefault(ti => ti.Type == TreeType.Blob && ti.Path == blobName);
 
         if (blobEntry == null)
         {

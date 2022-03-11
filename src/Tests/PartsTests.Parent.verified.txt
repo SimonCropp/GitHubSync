@@ -1,11 +1,12 @@
 ﻿{
   Owner: SimonCropp,
   Repository: Fake,
+  Type: Tree,
   Branch: develop,
-  Path: src/settings,
-  Name: settings,
+  Path: level1/level2,
+  Name: level2,
   NumberOfPathSegments: 2,
-  Url: https://github.com/SimonCropp/Fake/blob/develop/src/settings,
+  Url: https://github.com/SimonCropp/Fake/tree/develop/level1/level2,
   RootTreePart: {
     Owner: SimonCropp,
     Repository: Fake,

@@ -12,6 +12,13 @@ public class PartsTests :
     }
 
     [Fact]
+    public Task Parent()
+    {
+        var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Tree, "develop", "level1/level2/level3");
+        return Verify(parts.Parent());
+    }
+
+    [Fact]
     public Task Blob()
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Blob, "develop", "src/settings");
@@ -28,7 +35,7 @@ public class PartsTests :
 // ReSharper disable once UnusedVariable
         Assert.Throws<Exception>(() =>
         {
-            var parent = parts.ParentTreePart;
+            var parent = parts.Parent();
         });
     }
 

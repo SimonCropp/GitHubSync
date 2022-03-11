@@ -7,13 +7,6 @@
     Name: new-new-file.txt,
     NumberOfPathSegments: 1,
     Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/consumer-one/new-new-file.txt,
-    ParentTreePart: {
-      Owner: SimonCropp,
-      Repository: GitHubSync.TestRepository,
-      Type: Tree,
-      Branch: consumer-one,
-      Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one
-    },
     RootTreePart: {
       Owner: SimonCropp,
       Repository: GitHubSync.TestRepository,
@@ -30,47 +23,6 @@
     Name: new-file.txt,
     NumberOfPathSegments: 3,
     Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/consumer-one/IDoNotExist/MeNeither/new-file.txt,
-    ParentTreePart: {
-      Owner: SimonCropp,
-      Repository: GitHubSync.TestRepository,
-      Type: Tree,
-      Branch: consumer-one,
-      Path: IDoNotExist/MeNeither,
-      Name: MeNeither,
-      NumberOfPathSegments: 2,
-      Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one/IDoNotExist/MeNeither,
-      ParentTreePart: {
-        Owner: SimonCropp,
-        Repository: GitHubSync.TestRepository,
-        Type: Tree,
-        Branch: consumer-one,
-        Path: IDoNotExist,
-        Name: IDoNotExist,
-        NumberOfPathSegments: 1,
-        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one/IDoNotExist,
-        ParentTreePart: {
-          Owner: SimonCropp,
-          Repository: GitHubSync.TestRepository,
-          Type: Tree,
-          Branch: consumer-one,
-          Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one
-        },
-        RootTreePart: {
-          Owner: SimonCropp,
-          Repository: GitHubSync.TestRepository,
-          Type: Tree,
-          Branch: consumer-one,
-          Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one
-        }
-      },
-      RootTreePart: {
-        Owner: SimonCropp,
-        Repository: GitHubSync.TestRepository,
-        Type: Tree,
-        Branch: consumer-one,
-        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one
-      }
-    },
     RootTreePart: {
       Owner: SimonCropp,
       Repository: GitHubSync.TestRepository,
