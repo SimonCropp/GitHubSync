@@ -1,4 +1,7 @@
-﻿using GitHubSync;
+﻿
+#nullable enable
+
+using GitHubSync;
 using System.Collections.ObjectModel;
 
 public abstract class MapperBase
