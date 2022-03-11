@@ -253,8 +253,8 @@ public class RepoSync
             else
             {
                 log($"Pull created for {targetRepositoryDisplayName}, click here to review and pull: {createdSyncBranch}");
+                list.Add(createdSyncBranch);
             }
-            list.Add(createdSyncBranch);
         }
 
         return list;
