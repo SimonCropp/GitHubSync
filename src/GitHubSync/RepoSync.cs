@@ -72,7 +72,7 @@ public class RepoSync
     public void AddTargetRepository(string owner, string repository, string branch, Credentials? credentials = null) =>
         targets.Add(new(OrDefaultCredentials(credentials), owner, repository, branch));
 
-    Credentials OrDefaultCredentials(Credentials credentials) =>
+    Credentials OrDefaultCredentials(Credentials? credentials) =>
         credentials ?? defaultCredentials ?? throw new("defaultCredentials required");
 
     public async Task<SyncContext> CalculateSyncContext(RepositoryInfo targetRepository)
