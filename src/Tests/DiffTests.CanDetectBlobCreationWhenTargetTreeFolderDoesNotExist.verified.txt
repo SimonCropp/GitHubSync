@@ -7,14 +7,7 @@
       Path: new-file.txt,
       Name: new-file.txt,
       NumberOfPathSegments: 1,
-      Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/blessed-source/new-file.txt,
-      RootTreePart: {
-        Owner: SimonCropp,
-        Repository: GitHubSync.TestRepository,
-        Type: Tree,
-        Branch: blessed-source,
-        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/blessed-source
-      }
+      Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/blessed-source/new-file.txt
     },
     Value: [
       {
@@ -24,14 +17,7 @@
         Path: IDoNotExist/MeNeither/new-file.txt,
         Name: new-file.txt,
         NumberOfPathSegments: 3,
-        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/consumer-one/IDoNotExist/MeNeither/new-file.txt,
-        RootTreePart: {
-          Owner: SimonCropp,
-          Repository: GitHubSync.TestRepository,
-          Type: Tree,
-          Branch: consumer-one,
-          Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one
-        }
+        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/consumer-one/IDoNotExist/MeNeither/new-file.txt
       }
     ]
   }

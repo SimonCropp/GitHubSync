@@ -7,14 +7,7 @@
       Path: a,
       Name: a,
       NumberOfPathSegments: 1,
-      Url: https://github.com/o/r1/blob/b1/a,
-      RootTreePart: {
-        Owner: o,
-        Repository: r1,
-        Type: Tree,
-        Branch: b1,
-        Url: https://github.com/o/r1/tree/b1
-      }
+      Url: https://github.com/o/r1/blob/b1/a
     },
     Value: [
       {
@@ -24,14 +17,7 @@
         Path: a,
         Name: a,
         NumberOfPathSegments: 1,
-        Url: https://github.com/o/r2/blob/b1/a,
-        RootTreePart: {
-          Owner: o,
-          Repository: r2,
-          Type: Tree,
-          Branch: b1,
-          Url: https://github.com/o/r2/tree/b1
-        }
+        Url: https://github.com/o/r2/blob/b1/a
       },
       {
         Owner: o,
@@ -40,14 +26,7 @@
         Path: a,
         Name: a,
         NumberOfPathSegments: 1,
-        Url: https://github.com/o/r3/blob/b1/a,
-        RootTreePart: {
-          Owner: o,
-          Repository: r3,
-          Type: Tree,
-          Branch: b1,
-          Url: https://github.com/o/r3/tree/b1
-        }
+        Url: https://github.com/o/r3/blob/b1/a
       }
     ]
   },
@@ -60,14 +39,7 @@
       Path: c,
       Name: c,
       NumberOfPathSegments: 1,
-      Url: https://github.com/o/r1/tree/b1/c,
-      RootTreePart: {
-        Owner: o,
-        Repository: r1,
-        Type: Tree,
-        Branch: b1,
-        Url: https://github.com/o/r1/tree/b1
-      }
+      Url: https://github.com/o/r1/tree/b1/c
     },
     Value: [
       {
@@ -78,14 +50,7 @@
         Path: c,
         Name: c,
         NumberOfPathSegments: 1,
-        Url: https://github.com/o/r2/tree/b1/c,
-        RootTreePart: {
-          Owner: o,
-          Repository: r2,
-          Type: Tree,
-          Branch: b1,
-          Url: https://github.com/o/r2/tree/b1
-        }
+        Url: https://github.com/o/r2/tree/b1/c
       }
     ]
   }

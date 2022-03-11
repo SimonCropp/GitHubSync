@@ -6,14 +6,7 @@
     Path: new-new-file.txt,
     Name: new-new-file.txt,
     NumberOfPathSegments: 1,
-    Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/consumer-one/new-new-file.txt,
-    RootTreePart: {
-      Owner: SimonCropp,
-      Repository: GitHubSync.TestRepository,
-      Type: Tree,
-      Branch: consumer-one,
-      Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one
-    }
+    Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/consumer-one/new-new-file.txt
   },
   {
     Owner: SimonCropp,
@@ -22,13 +15,6 @@
     Path: IDoNotExist/MeNeither/new-file.txt,
     Name: new-file.txt,
     NumberOfPathSegments: 3,
-    Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/consumer-one/IDoNotExist/MeNeither/new-file.txt,
-    RootTreePart: {
-      Owner: SimonCropp,
-      Repository: GitHubSync.TestRepository,
-      Type: Tree,
-      Branch: consumer-one,
-      Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one
-    }
+    Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/consumer-one/IDoNotExist/MeNeither/new-file.txt
   }
 ]

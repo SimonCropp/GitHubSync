@@ -2,8 +2,6 @@
 
 public class Parts : IParts, IEquatable<Parts>
 {
-    Lazy<Parts> root;
-
     public Parts(string ownerRepository, TreeEntryTargetType type, string branch, string path)
         : this(ownerRepository.Split('/')[0], ownerRepository.Split('/')[1], type, branch, path, null)
     {
@@ -32,19 +30,6 @@ public class Parts : IParts, IEquatable<Parts>
             Name = segments.Last();
             NumberOfPathSegments = segments.Length;
         }
-
-        root = new(BuildRoot);
-    }
-
-
-    Parts BuildRoot()
-    {
-        if (Path == null)
-        {
-            throw new("Cannot escape out of a Tree.");
-        }
-
-        return new(Owner, Repository, TreeEntryTargetType.Tree, Branch, null, null);
     }
 
     public static readonly NullParts Empty = new();
@@ -65,9 +50,6 @@ public class Parts : IParts, IEquatable<Parts>
 
     // This doesn't participate as an equality contributor on purpose
     public string Sha { get; }
-
-    // This doesn't participate as an equality contributor on purpose
-    public Parts RootTreePart => root.Value;
 
     internal Parts Combine(TreeEntryTargetType type, string name, string sha) =>
         new(Owner, Repository, type, Branch, Path == null ? name : Path + "/" + name, sha);

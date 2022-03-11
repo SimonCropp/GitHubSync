@@ -8,14 +8,7 @@
       Path: folder,
       Name: folder,
       NumberOfPathSegments: 1,
-      Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/blessed-source/folder,
-      RootTreePart: {
-        Owner: SimonCropp,
-        Repository: GitHubSync.TestRepository,
-        Type: Tree,
-        Branch: blessed-source,
-        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/blessed-source
-      }
+      Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/blessed-source/folder
     },
     Value: [
       {
@@ -26,14 +19,7 @@
         Path: folder,
         Name: folder,
         NumberOfPathSegments: 1,
-        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one/folder,
-        RootTreePart: {
-          Owner: SimonCropp,
-          Repository: GitHubSync.TestRepository,
-          Type: Tree,
-          Branch: consumer-one,
-          Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one
-        }
+        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one/folder
       }
     ]
   }

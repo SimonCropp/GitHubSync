@@ -19,6 +19,13 @@ public class PartsTests :
     }
 
     [Fact]
+    public Task Root()
+    {
+        var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Tree, "develop", "level1/level2/level3");
+        return Verify(parts.Root());
+    }
+
+    [Fact]
     public Task Blob()
     {
         var parts = new Parts("SimonCropp/Fake", TreeEntryTargetType.Blob, "develop", "src/settings");

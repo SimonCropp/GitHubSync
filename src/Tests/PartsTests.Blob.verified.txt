@@ -5,12 +5,5 @@
   Path: src/settings,
   Name: settings,
   NumberOfPathSegments: 2,
-  Url: https://github.com/SimonCropp/Fake/blob/develop/src/settings,
-  RootTreePart: {
-    Owner: SimonCropp,
-    Repository: Fake,
-    Type: Tree,
-    Branch: develop,
-    Url: https://github.com/SimonCropp/Fake/tree/develop
-  }
+  Url: https://github.com/SimonCropp/Fake/blob/develop/src/settings
 }

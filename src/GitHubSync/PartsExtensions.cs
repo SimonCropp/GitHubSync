@@ -1,6 +1,7 @@
 using GitHubSync;
 
-public static class PartsExtensions{
+public static class PartsExtensions
+{
 
     public static Parts Parent(this Parts parts)
     {
@@ -15,4 +16,7 @@ public static class PartsExtensions{
 
         return new(parts.Owner, parts.Repository, TreeEntryTargetType.Tree, parts.Branch, parentPath, null);
     }
+
+    public static Parts Root(this Parts parts) =>
+        new(parts.Owner, parts.Repository, TreeEntryTargetType.Tree, parts.Branch, null, null);
 }
