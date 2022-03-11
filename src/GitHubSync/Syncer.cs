@@ -1,4 +1,7 @@
-﻿using System.Net;
+﻿
+#nullable enable
+
+using System.Net;
 using GitHubSync;
 using Octokit;
 
@@ -13,8 +16,8 @@ class Syncer :
 
     public Syncer(
         Credentials credentials,
-        IWebProxy proxy = null,
-        Action<string> log = null)
+        IWebProxy? proxy = null,
+        Action<string>? log = null)
     {
         this.log = log ?? nullLogger;
 
@@ -83,8 +86,8 @@ class Syncer :
     internal async Task<IReadOnlyList<UpdateResult>> Sync(
         Mapper diff,
         SyncOutput expectedOutput,
-        IEnumerable<string> labelsToApplyOnPullRequests = null,
-        string description = null)
+        IEnumerable<string>? labelsToApplyOnPullRequests = null,
+        string? description = null)
     {
         Guard.AgainstNull(diff, nameof(diff));
         Guard.AgainstNull(expectedOutput, nameof(expectedOutput));
@@ -112,7 +115,7 @@ class Syncer :
         SyncOutput expectedOutput,
         IList<Tuple<Parts, IParts>> updatesPerOwnerRepositoryBranch,
         string[] labels,
-        string description)
+        string? description)
     {
         var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
         var root = updatesPerOwnerRepositoryBranch.First().Item1.RootTreePart;
