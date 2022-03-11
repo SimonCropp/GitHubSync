@@ -34,20 +34,18 @@ public class RepoSync
     public void AddSourceItem(TreeEntryTargetType type, string path, string? target = null) =>
         AddOrRemoveSourceItem(true, type, path, target);
 
-    public void RemoveSourceItem(TreeEntryTargetType type, string path, string? target = null)
-    {
-        if (type == TreeEntryTargetType.Tree)
-        {
-            throw new NotSupportedException($"Removing a '{nameof(TreeEntryTargetType.Tree)}' isn't supported.");
-        }
-
+    public void RemoveSourceItem(TreeEntryTargetType type, string path, string? target = null) =>
         AddOrRemoveSourceItem(false, type, path, target);
-    }
 
     public void AddOrRemoveSourceItem(bool toBeAdded, TreeEntryTargetType type, string path, string? target)
     {
         Guard.AgainstNullAndEmpty(path, nameof(path));
         Guard.AgainstEmpty(target, nameof(target));
+
+        if (!toBeAdded && type == TreeEntryTargetType.Tree)
+        {
+            throw new NotSupportedException($"Removing a '{nameof(TreeEntryTargetType.Tree)}' isn't supported.");
+        }
 
         if (toBeAdded && syncMode == SyncMode.IncludeAllByDefault)
         {
