@@ -14,11 +14,11 @@ public static class PartsExtensions
 
         var parentPath = indexOf == -1 ? null : parts.Path.Substring(0, indexOf);
 
-        return new(parts.Owner, parts.Repository, TreeEntryTargetType.Tree, parts.Branch, parentPath, null);
+        return new(parts.Owner, parts.Repository, TreeEntryTargetType.Tree, parts.Branch, parentPath);
     }
 
     public static Parts Root(this Parts parts) =>
-        new(parts.Owner, parts.Repository, TreeEntryTargetType.Tree, parts.Branch, null, null);
+        new(parts.Owner, parts.Repository, TreeEntryTargetType.Tree, parts.Branch, null);
 
     internal static Parts SegmentPartsByNestingLevel(this Parts parts, int level)
     {
@@ -31,6 +31,6 @@ public static class PartsExtensions
 
         var p = string.Join("/", s);
 
-        return new(parts.Owner, parts.Repository, TreeEntryTargetType.Tree, parts.Branch, p, null);
+        return new(parts.Owner, parts.Repository, TreeEntryTargetType.Tree, parts.Branch, p);
     }
 }

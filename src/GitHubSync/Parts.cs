@@ -2,12 +2,7 @@
 
 public class Parts : IParts, IEquatable<Parts>
 {
-    public Parts(string ownerRepository, TreeEntryTargetType type, string branch, string path)
-        : this(ownerRepository.Split('/')[0], ownerRepository.Split('/')[1], type, branch, path, null)
-    {
-    }
-
-    internal Parts(string owner, string repository, TreeEntryTargetType type, string branch, string path, string sha)
+    public Parts(string owner, string repository, TreeEntryTargetType type, string branch, string path, string sha = null)
     {
         Owner = owner;
         Repository = repository;

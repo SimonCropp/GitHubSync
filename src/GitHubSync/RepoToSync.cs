@@ -20,7 +20,7 @@ class RepoToSync
 
         foreach (var syncItem in syncItems)
         {
-            var toPart = new Parts($"{Owner}/{Repo}", syncItem.Parts.Type, TargetBranch, ApplyTargetPathTemplate(syncItem));
+            var toPart = new Parts(Owner, Repo, syncItem.Parts.Type, TargetBranch, ApplyTargetPathTemplate(syncItem));
 
             if (syncItem.ToBeAdded)
             {

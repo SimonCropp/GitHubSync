@@ -140,8 +140,11 @@ public class RepoSync
     void ProcessItem(string item, List<SyncItem> itemsToSync, RepositoryInfo source)
     {
         var parts = new Parts(
-            $"{source.Owner}/{source.Repository}",
-            TreeEntryTargetType.Blob, source.Branch, item);
+            source.Owner,
+            source.Repository,
+            TreeEntryTargetType.Blob,
+            source.Branch,
+            item);
         var localManualSyncItems = manualSyncItems.Where(x => item == x.Path).ToList();
         if (localManualSyncItems.Any())
         {
