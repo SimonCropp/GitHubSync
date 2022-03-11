@@ -1,3 +1,7 @@
+
+#nullable enable
+
+
 class TargetTree
 {
     public Dictionary<string, TargetTree> SubTreesToUpdate = new();
