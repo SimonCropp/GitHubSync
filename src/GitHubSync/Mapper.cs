@@ -1,4 +1,6 @@
-﻿public class Mapper : MapperBase
+﻿#nullable enable
+
+public class Mapper : MapperBase
 {
     public Mapper Add(Parts from, Parts to)
     {

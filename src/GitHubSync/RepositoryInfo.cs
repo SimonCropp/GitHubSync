@@ -1,4 +1,5 @@
-﻿namespace GitHubSync;
+﻿#nullable enable
+namespace GitHubSync;
 
 using Octokit;
 

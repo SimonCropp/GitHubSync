@@ -1,3 +1,4 @@
+#nullable enable
 class RepoToSync
 {
     public override string ToString() =>
@@ -35,7 +36,7 @@ class RepoToSync
         return mapper;
     }
 
-    static string ApplyTargetPathTemplate(SyncItem syncItem)
+    static string? ApplyTargetPathTemplate(SyncItem syncItem)
     {
         var target = syncItem.Target;
         if (string.IsNullOrEmpty(target))

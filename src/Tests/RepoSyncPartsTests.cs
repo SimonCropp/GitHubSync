@@ -1,4 +1,5 @@
 ﻿using GitHubSync;
+using Octokit;
 
 [Trait("Category", "Local")]
 public class RepoSyncPartsTests :
@@ -14,8 +15,8 @@ public class RepoSyncPartsTests :
         repoSync.RemoveBlob("removed1");
         repoSync.RemoveBlob("removed2", "target2");
 
-        repoSync.AddTargetRepository(new(null, "owner1", "repo1", "branch1"));
-        repoSync.AddTargetRepository(new(null, "owner2", "repo2", "branch2"));
+        repoSync.AddTargetRepository(new(Credentials.Anonymous, "owner1", "repo1", "branch1"));
+        repoSync.AddTargetRepository(new(Credentials.Anonymous, "owner2", "repo2", "branch2"));
 
         return Verify(repoSync);
     }
@@ -61,8 +62,8 @@ public class RepoSyncPartsTests :
     {
         var repoSync = BuildRepoSync(SyncMode.IncludeAllByDefault);
 
-        repoSync.AddTargetRepository(new(null, "owner1", "repo1", "branch1"));
-        repoSync.AddTargetRepository(new(null, "owner2", "repo2", "branch2"));
+        repoSync.AddTargetRepository(new(Credentials.Anonymous, "owner1", "repo1", "branch1"));
+        repoSync.AddTargetRepository(new(Credentials.Anonymous, "owner2", "repo2", "branch2"));
 
         return Verify(repoSync);
     }

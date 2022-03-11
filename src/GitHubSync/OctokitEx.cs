@@ -1,27 +1,27 @@
-﻿using Octokit;
+﻿#nullable enable
+
+using Octokit;
 
 public static class OctokitEx
 {
-    public static async Task<List<string>> GetRecursive(Credentials credentials, string sourceOwner, string sourceRepository, string path = null, string branch = null)
+    public static async Task<List<string>> GetRecursive(Credentials credentials, string sourceOwner, string sourceRepository, string? path = null, string? branch = null)
     {
         var items = new List<string>();
         await GetRecursive(credentials, sourceOwner, sourceRepository, path, items, branch);
         return items;
     }
 
-    static Task GetRecursive(Credentials credentials, string sourceOwner, string sourceRepository, string path, List<string> items, string branch)
+    static Task GetRecursive(Credentials credentials, string sourceOwner, string sourceRepository, string? path, List<string> items, string? branch)
     {
-        var client = new GitHubClient(new ProductHeaderValue("GitHubSync"));
-
-        if (credentials != null)
+        var client = new GitHubClient(new ProductHeaderValue("GitHubSync"))
         {
-            client.Credentials = credentials;
-        }
+            Credentials = credentials
+        };
 
-        return GetRecursive(client, sourceOwner, sourceRepository, path, items,branch);
+        return GetRecursive(client, sourceOwner, sourceRepository, path, items, branch);
     }
 
-    static async Task GetRecursive(GitHubClient client, string sourceOwner, string sourceRepository, string path, List<string> items, string branch)
+    static async Task GetRecursive(GitHubClient client, string sourceOwner, string sourceRepository, string? path, List<string> items, string? branch)
     {
         foreach (var content in await client.Repository.Content.GetAllContentsEx(sourceOwner, sourceRepository, path,branch))
         {
@@ -38,7 +38,7 @@ public static class OctokitEx
         }
     }
 
-    static Task<IReadOnlyList<RepositoryContent>> GetAllContentsEx(this IRepositoryContentsClient content, string owner, string repo, string path = null, string branch = null)
+    static Task<IReadOnlyList<RepositoryContent>> GetAllContentsEx(this IRepositoryContentsClient content, string owner, string repo, string? path = null, string? branch = null)
     {
         if (branch == null)
         {

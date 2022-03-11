@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿#nullable enable
+
+using System.Net;
 using GitHubSync;
 using Octokit;
 
@@ -13,13 +15,12 @@ class Syncer :
 
     public Syncer(
         Credentials credentials,
-        IWebProxy proxy = null,
-        Action<string> log = null)
+        IWebProxy? proxy = null,
+        Action<string>? log = null)
     {
         this.log = log ?? nullLogger;
-
         this.credentials = credentials;
-        gateway = new(credentials, proxy, this.log);
+        gateway = new(this.credentials, proxy, this.log);
     }
 
     static Action<string> nullLogger = _ => { };
@@ -43,15 +44,16 @@ class Syncer :
 
                 var richDestination = await EnrichWithShas(destination, false);
 
-                if (richSource.Sha == richDestination.Sha)
+                var sourceSha = richSource.Sha!;
+                if (sourceSha == richDestination.Sha)
                 {
-                    log($"Diff - No sync required. Matching sha ({richSource.Sha.Substring(0, 7)}) between target '{destination.Url}' and source '{source.Url}.");
+                    log($"Diff - No sync required. Matching sha ({sourceSha.Substring(0, 7)}) between target '{destination.Url}' and source '{source.Url}.");
 
                     continue;
                 }
 
                 log(string.Format("Diff - {4} required. Non-matching sha ({0} vs {1}) between target '{2}' and source '{3}.",
-                    richSource.Sha.Substring(0, 7), richDestination.Sha?.Substring(0, 7) ?? "NULL", destination.Url, source.Url, richDestination.Sha == null ? "Creation" : "Updation"));
+                    sourceSha.Substring(0, 7), richDestination.Sha?.Substring(0, 7) ?? "NULL", destination.Url, source.Url, richDestination.Sha == null ? "Creation" : "Updation"));
 
                 outMapper.Add(richSource, richDestination);
             }
@@ -83,8 +85,8 @@ class Syncer :
     internal async Task<IReadOnlyList<UpdateResult>> Sync(
         Mapper diff,
         SyncOutput expectedOutput,
-        IEnumerable<string> labelsToApplyOnPullRequests = null,
-        string description = null)
+        IEnumerable<string>? labelsToApplyOnPullRequests = null,
+        string? description = null)
     {
         Guard.AgainstNull(diff, nameof(diff));
         Guard.AgainstNull(expectedOutput, nameof(expectedOutput));
@@ -112,7 +114,7 @@ class Syncer :
         SyncOutput expectedOutput,
         IList<Tuple<Parts, IParts>> updatesPerOwnerRepositoryBranch,
         string[] labels,
-        string description)
+        string? description)
     {
         var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
         var root = updatesPerOwnerRepositoryBranch.First().Item1.Root();
@@ -262,7 +264,7 @@ class Syncer :
         {
             var source = change.Item2;
             var destination = change.Item1;
-            var fullDestination = Path.Combine(temporaryPath, destination.Path.Replace('/', Path.DirectorySeparatorChar));
+            var fullDestination = Path.Combine(temporaryPath, destination.Path!.Replace('/', Path.DirectorySeparatorChar));
 
             switch (source)
             {
@@ -323,7 +325,7 @@ class Syncer :
 
         foreach (var st in tt.SubTreesToUpdate.Values)
         {
-            RemoveTreeItemFrom(newTree, st.Current.Name);
+            RemoveTreeItemFrom(newTree, st.Current.Name!);
             var sha = await BuildTargetTree(st);
 
             if (sha == TargetTree.EmptyTreeSha)
@@ -345,7 +347,7 @@ class Syncer :
 
         foreach (var l in tt.LeavesToDrop.Values)
         {
-            RemoveTreeItemFrom(newTree, l.Name);
+            RemoveTreeItemFrom(newTree, l.Name!);
         }
 
         foreach (var l in tt.LeavesToCreate.Values)
@@ -353,14 +355,19 @@ class Syncer :
             var destination = l.Item1;
             var source = l.Item2;
 
-            RemoveTreeItemFrom(newTree, destination.Name);
+            RemoveTreeItemFrom(newTree, destination.Name!);
 
             await SyncLeaf(source, destination);
 
             switch (source.Type)
             {
                 case TreeEntryTargetType.Blob:
-                    var sourceBlobItem = (await gateway.BlobFrom(source, true)).Item2;
+                    var blobFrom = await gateway.BlobFrom(source, true);
+                    if (blobFrom == null)
+                    {
+                        continue;
+                    }
+                    var sourceBlobItem = blobFrom.Item2;
                     newTree.Tree.Add(
                         new()
                         {
@@ -397,12 +404,13 @@ class Syncer :
 
     Task SyncLeaf(Parts source, Parts destination)
     {
-        var shortSha = source.Sha.Substring(0, 7);
+        var sourceSha = source.Sha!;
+        var shortSha = sourceSha.Substring(0, 7);
         switch (source.Type)
         {
             case TreeEntryTargetType.Blob:
                 log($"Sync - Determine if Blob '{shortSha}' requires to be created in '{destination.Owner}/{destination.Repository}'.");
-                return SyncBlob(source.Owner, source.Repository, source.Sha, destination.Owner, destination.Repository);
+                return SyncBlob(source.Owner, source.Repository, sourceSha, destination.Owner, destination.Repository);
             case TreeEntryTargetType.Tree:
                 log($"Sync - Determine if Tree '{shortSha}' requires to be created in '{destination.Owner}/{destination.Repository}'.");
                 return SyncTree(source, destination.Owner, destination.Repository);
@@ -456,13 +464,19 @@ class Syncer :
 
     async Task SyncTree(Parts source, string destinationOwner, string destinationRepository)
     {
-        if (gateway.IsKnownBy<TreeResponse>(source.Sha, destinationOwner, destinationRepository))
+        var sourceSha = source.Sha!;
+
+        if (gateway.IsKnownBy<TreeResponse>(sourceSha, destinationOwner, destinationRepository))
         {
             return;
         }
 
         var treeFrom = await gateway.TreeFrom(source, true);
 
+        if (treeFrom == null)
+        {
+            return;
+        }
         var newTree = new NewTree();
 
         foreach (var i in treeFrom.Item2.Tree)
@@ -494,7 +508,7 @@ class Syncer :
         // ReSharper disable once RedundantAssignment
         var sha = await gateway.CreateTree(newTree, destinationOwner, destinationRepository);
 
-        Debug.Assert(source.Sha == sha);
+        Debug.Assert(sourceSha == sha);
     }
 
     async Task<Parts> EnrichWithShas(Parts part, bool throwsIfNotFound)

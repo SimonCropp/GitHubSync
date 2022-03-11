@@ -1,3 +1,5 @@
+#nullable enable
+
 class TargetTree
 {
     public Dictionary<string, TargetTree> SubTreesToUpdate = new();
@@ -23,27 +25,28 @@ class TargetTree
             source is Parts.NullParts || toBeAdded,
             $"Unsupported 'from' type ({source.GetType().FullName}).");
 
-        var s = destination.SegmentPartsByNestingLevel(level);
+        var segmentedParts = destination.SegmentPartsByNestingLevel(level);
 
+        var segmentedPartsName = segmentedParts.Name!;
         if (destination.NumberOfPathSegments == level + 1)
         {
             if (toBeAdded)
             {
-                var leaf = new Tuple<Parts, Parts>(destination, (Parts) source);
-                LeavesToCreate.Add(s.Name, leaf);
+                var leaf = new Tuple<Parts, Parts>(destination, (Parts)source);
+                LeavesToCreate.Add(segmentedPartsName, leaf);
             }
             else
             {
-                LeavesToDrop.Add(s.Name, destination);
+                LeavesToDrop.Add(segmentedPartsName, destination);
             }
 
             return;
         }
 
-        if (!SubTreesToUpdate.TryGetValue(s.Name, out var targetTree))
+        if (!SubTreesToUpdate.TryGetValue(segmentedPartsName, out var targetTree))
         {
-            targetTree = new(s);
-            SubTreesToUpdate.Add(s.Name, targetTree);
+            targetTree = new(segmentedParts);
+            SubTreesToUpdate.Add(segmentedPartsName, targetTree);
         }
 
         targetTree.AddOrRemove(destination, source, ++level);

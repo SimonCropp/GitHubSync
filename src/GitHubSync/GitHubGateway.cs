@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Net;
 using Octokit;
 using Octokit.Internal;
@@ -15,7 +17,7 @@ class GitHubGateway :
     GitHubClient client;
     string blobStoragePath;
 
-    public GitHubGateway(Credentials credentials, IWebProxy proxy, Action<string> log)
+    public GitHubGateway(Credentials credentials, IWebProxy? proxy, Action<string> log)
     {
         client = ClientFrom(credentials, proxy);
 
@@ -27,20 +29,16 @@ class GitHubGateway :
         log($"Ctor - Create temp blob storage '{blobStoragePath}'.");
     }
 
-    static GitHubClient ClientFrom(Credentials credentials, IWebProxy proxy)
+    static GitHubClient ClientFrom(Credentials credentials, IWebProxy? proxy)
     {
         var connection = new Connection(
             new("GitHubSync"),
             new HttpClientAdapter(() => HttpMessageHandlerFactory.CreateDefault(proxy)));
 
-        var gitHubClient = new GitHubClient(connection);
-
-        if (credentials != null)
+        return new(connection)
         {
-            gitHubClient.Credentials = credentials;
-        }
-
-        return gitHubClient;
+            Credentials = credentials
+        };
     }
 
     public async Task<User> GetCurrentUser()
@@ -127,7 +125,7 @@ class GitHubGateway :
         return treeFrom;
     }
 
-    public async Task<Tuple<Parts, TreeResponse>> TreeFrom(Parts source, bool throwsIfNotFound)
+    public async Task<Tuple<Parts, TreeResponse>?> TreeFrom(Parts source, bool throwsIfNotFound)
     {
         Debug.Assert(source.Type == TreeEntryTargetType.Tree);
 
@@ -175,7 +173,7 @@ class GitHubGateway :
         var parts = new Parts(source.Owner, source.Repository, TreeEntryTargetType.Tree, source.Branch, source.Path, tree.Sha);
 
         var treeFrom = AddToPathCache(parts, tree);
-        AddToKnown<TreeResponse>(parts.Sha, parts.Owner, parts.Repository);
+        AddToKnown<TreeResponse>(parts.Sha!, parts.Owner, parts.Repository);
 
         foreach (var i in tree.Tree)
         {
@@ -199,7 +197,7 @@ class GitHubGateway :
         return treeFrom;
     }
 
-    public async Task<Tuple<Parts, TreeItem>> BlobFrom(Parts source, bool throwsIfNotFound)
+    public async Task<Tuple<Parts, TreeItem>?> BlobFrom(Parts source, bool throwsIfNotFound)
     {
         Debug.Assert(source.Type == TreeEntryTargetType.Blob);
 
@@ -221,7 +219,9 @@ class GitHubGateway :
             return null;
         }
 
-        var blobName = source.Path.Split('/').Last();
+        var sourcePath = source.Path!;
+
+        var blobName = sourcePath.Split('/').Last();
         var blobEntry = parentTree.Item2.Tree.FirstOrDefault(ti => ti.Type == TreeType.Blob && ti.Path == blobName);
 
         if (blobEntry == null)
@@ -234,11 +234,11 @@ class GitHubGateway :
             return null;
         }
 
-        var parts = new Parts(source.Owner, source.Repository, TreeEntryTargetType.Blob, source.Branch, source.Path, blobEntry.Sha);
+        var parts = new Parts(source.Owner, source.Repository, TreeEntryTargetType.Blob, source.Branch, sourcePath, blobEntry.Sha);
 
         var blobFrom = AddToPathCache(parts, blobEntry);
 
-        AddToKnown<Blob>(parts.Sha, parts.Owner, parts.Repository);
+        AddToKnown<Blob>(parts.Sha!, parts.Owner, parts.Repository);
 
         return blobFrom;
     }
@@ -381,8 +381,13 @@ class GitHubGateway :
         return reference.Ref.Substring("refs/heads/".Length);
     }
 
-    public async Task<int> CreatePullRequest(string owner, string repository, string branch, string targetBranch,
-        bool merge, string description)
+    public async Task<int> CreatePullRequest(
+        string owner,
+        string repository,
+        string branch,
+        string targetBranch,
+        bool merge,
+        string? description)
     {
         var newPullRequest = new NewPullRequest($"GitHubSync update - {targetBranch}", branch, targetBranch);
 
