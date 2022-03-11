@@ -3,12 +3,7 @@ using GitHubSync;
 
 public class Parts : IParts, IEquatable<Parts>
 {
-    public Parts(string ownerRepository, TreeEntryTargetType type, string branch, string path)
-        : this(ownerRepository.Split('/')[0], ownerRepository.Split('/')[1], type, branch, path, null)
-    {
-    }
-
-    internal Parts(string owner, string repository, TreeEntryTargetType type, string branch, string path, string sha)
+    public Parts(string owner, string repository, TreeEntryTargetType type, string branch, string path, string sha = null)
     {
         Owner = owner;
         Repository = repository;
@@ -54,20 +49,6 @@ public class Parts : IParts, IEquatable<Parts>
 
     internal Parts Combine(TreeEntryTargetType type, string name, string sha) =>
         new(Owner, Repository, type, Branch, Path == null ? name : Path + "/" + name, sha);
-
-    internal Parts SegmentPartsByNestingLevel(int level)
-    {
-        if (Path == null)
-        {
-            throw new NotSupportedException();
-        }
-
-        var s = Path.Split('/').Take(level + 1);
-
-        var p = string.Join("/", s);
-
-        return new(Owner, Repository, TreeEntryTargetType.Tree, Branch, p, null);
-    }
 
     public bool Equals(Parts other)
     {
