@@ -6,7 +6,6 @@ class RepoToSync
     public string Owner { get; }
     public string Repo { get; }
     public string TargetBranch { get; }
-    public Dictionary<string, string> ReplacementTokens { get; set; }
 
     public RepoToSync(string owner, string repo, string targetBranch)
     {
@@ -36,20 +35,12 @@ class RepoToSync
         return mapper;
     }
 
-    string ApplyTargetPathTemplate(SyncItem syncItem)
+    static string ApplyTargetPathTemplate(SyncItem syncItem)
     {
         var target = syncItem.Target;
         if (string.IsNullOrEmpty(target))
         {
             return syncItem.Parts.Path;
-        }
-
-        if (ReplacementTokens != null)
-        {
-            foreach (var token in ReplacementTokens)
-            {
-                target = target.Replace(token.Key, token.Value);
-            }
         }
 
         return target;
