@@ -7,21 +7,7 @@
       Path: file.txt,
       Name: file.txt,
       NumberOfPathSegments: 1,
-      Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/blessed-source/file.txt,
-      ParentTreePart: {
-        Owner: SimonCropp,
-        Repository: GitHubSync.TestRepository,
-        Type: Tree,
-        Branch: blessed-source,
-        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/blessed-source
-      },
-      RootTreePart: {
-        Owner: SimonCropp,
-        Repository: GitHubSync.TestRepository,
-        Type: Tree,
-        Branch: blessed-source,
-        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/blessed-source
-      }
+      Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/blessed-source/file.txt
     },
     Value: [
       {
@@ -31,21 +17,7 @@
         Path: file.txt,
         Name: file.txt,
         NumberOfPathSegments: 1,
-        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/consumer-one/file.txt,
-        ParentTreePart: {
-          Owner: SimonCropp,
-          Repository: GitHubSync.TestRepository,
-          Type: Tree,
-          Branch: consumer-one,
-          Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one
-        },
-        RootTreePart: {
-          Owner: SimonCropp,
-          Repository: GitHubSync.TestRepository,
-          Type: Tree,
-          Branch: consumer-one,
-          Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one
-        }
+        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/consumer-one/file.txt
       }
     ]
   }

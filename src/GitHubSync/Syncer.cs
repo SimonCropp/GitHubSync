@@ -116,7 +116,7 @@ class Syncer :
         string? description)
     {
         var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
-        var root = updatesPerOwnerRepositoryBranch.First().Item1.RootTreePart;
+        var root = updatesPerOwnerRepositoryBranch.First().Item1.Root();
 
         string commitSha;
 
