@@ -2,8 +2,16 @@
 
 public class UpdateResult
 {
-    public string Url { get; set; }
-    public string CommitSha { get; set; }
-    public string BranchName { get; set; }
-    public int PullRequestId { get; set; }
+    public UpdateResult(string url, string commitSha, string branchName, int? pullRequestId)
+    {
+        Url = url;
+        CommitSha = commitSha;
+        BranchName = branchName;
+        PullRequestId = pullRequestId;
+    }
+
+    public string Url { get; }
+    public string CommitSha { get; }
+    public string BranchName { get; }
+    public int? PullRequestId { get; }
 }
