@@ -1,5 +1,4 @@
-﻿
-#nullable enable
+﻿#nullable enable
 
 public class Mapper : MapperBase
 {
