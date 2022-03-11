@@ -173,7 +173,7 @@ class GitHubGateway :
         var parts = new Parts(source.Owner, source.Repository, TreeEntryTargetType.Tree, source.Branch, source.Path, tree.Sha);
 
         var treeFrom = AddToPathCache(parts, tree);
-        AddToKnown<TreeResponse>(parts.Sha, parts.Owner, parts.Repository);
+        AddToKnown<TreeResponse>(parts.Sha!, parts.Owner, parts.Repository);
 
         foreach (var i in tree.Tree)
         {
@@ -219,7 +219,9 @@ class GitHubGateway :
             return null;
         }
 
-        var blobName = source.Path.Split('/').Last();
+        var sourcePath = source.Path!;
+
+        var blobName = sourcePath.Split('/').Last();
         var blobEntry = parentTree.Item2.Tree.FirstOrDefault(ti => ti.Type == TreeType.Blob && ti.Path == blobName);
 
         if (blobEntry == null)
@@ -232,11 +234,11 @@ class GitHubGateway :
             return null;
         }
 
-        var parts = new Parts(source.Owner, source.Repository, TreeEntryTargetType.Blob, source.Branch, source.Path, blobEntry.Sha);
+        var parts = new Parts(source.Owner, source.Repository, TreeEntryTargetType.Blob, source.Branch, sourcePath, blobEntry.Sha);
 
         var blobFrom = AddToPathCache(parts, blobEntry);
 
-        AddToKnown<Blob>(parts.Sha, parts.Owner, parts.Repository);
+        AddToKnown<Blob>(parts.Sha!, parts.Owner, parts.Repository);
 
         return blobFrom;
     }

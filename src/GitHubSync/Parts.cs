@@ -3,7 +3,7 @@ using GitHubSync;
 
 public class Parts : IParts
 {
-    public Parts(string owner, string repository, TreeEntryTargetType type, string branch, string path, string sha = null)
+    public Parts(string owner, string repository, TreeEntryTargetType type, string branch, string? path, string? sha = null)
     {
         Owner = owner;
         Repository = repository;
@@ -34,9 +34,9 @@ public class Parts : IParts
     public string Repository { get; }
     public TreeEntryTargetType Type { get; }
     public string Branch { get; }
-    public string Path { get; }
+    public string? Path { get; }
 
-    public string Name { get; }
+    public string? Name { get; }
 
     // This doesn't participate as an equality contributor on purpose
     public int NumberOfPathSegments { get; }
@@ -45,7 +45,7 @@ public class Parts : IParts
     public string Url { get; }
 
     // This doesn't participate as an equality contributor on purpose
-    public string Sha { get; }
+    public string? Sha { get; }
 
     internal Parts Combine(TreeEntryTargetType type, string name, string sha) =>
         new(Owner, Repository, type, Branch, Path == null ? name : Path + "/" + name, sha);
