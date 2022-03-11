@@ -54,20 +54,6 @@ public class Parts : IParts, IEquatable<Parts>
     internal Parts Combine(TreeEntryTargetType type, string name, string sha) =>
         new(Owner, Repository, type, Branch, Path == null ? name : Path + "/" + name, sha);
 
-    internal Parts SegmentPartsByNestingLevel(int level)
-    {
-        if (Path == null)
-        {
-            throw new NotSupportedException();
-        }
-
-        var s = Path.Split('/').Take(level + 1);
-
-        var p = string.Join("/", s);
-
-        return new(Owner, Repository, TreeEntryTargetType.Tree, Branch, p, null);
-    }
-
     public bool Equals(Parts other)
     {
         if (other is null)

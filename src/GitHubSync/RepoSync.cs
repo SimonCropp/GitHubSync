@@ -143,32 +143,14 @@ public class RepoSync
             $"{source.Owner}/{source.Repository}",
             TreeEntryTargetType.Blob, source.Branch, item);
         var localManualSyncItems = manualSyncItems.Where(x => item == x.Path).ToList();
-        var isManualSyncItem = localManualSyncItems.Any();
-        if (isManualSyncItem)
+        if (localManualSyncItems.Any())
         {
-            foreach (var manualSyncItem in localManualSyncItems)
-            {
-                switch (syncMode)
-                {
-                    case SyncMode.IncludeAllByDefault:
-                        itemsToSync.Add(new(parts, false, manualSyncItem?.Target));
-                        continue;
-                    case SyncMode.ExcludeAllByDefault:
-                        itemsToSync.Add(new(parts, true, manualSyncItem?.Target));
-                        continue;
-                }
-            }
+            itemsToSync.AddRange(localManualSyncItems.Select(_ => new SyncItem(parts, syncMode == SyncMode.ExcludeAllByDefault, _.Target)));
+
             return;
         }
-        switch (syncMode)
-        {
-            case SyncMode.IncludeAllByDefault:
-                itemsToSync.Add(new(parts, true, null));
-                return;
-            case SyncMode.ExcludeAllByDefault:
-                itemsToSync.Add(new(parts, false, null));
-                return;
-        }
+
+        itemsToSync.Add(new(parts, syncMode == SyncMode.IncludeAllByDefault, null));
     }
 
     public async Task<IReadOnlyList<UpdateResult>> Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)
