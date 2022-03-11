@@ -98,7 +98,6 @@ public class RepoSync
 
     public async Task<SyncContext> CalculateSyncContext(RepositoryInfo targetRepository)
     {
-        var syncContext = new SyncContext(targetRepository);
 
         using var syncer = new Syncer(targetRepository.Credentials, null, log);
         var diffs = new List<Mapper>();
@@ -163,10 +162,7 @@ public class RepoSync
             // Note: how to deal with items to be removed
         }
 
-        syncContext.Diff = finalDiff;
-        syncContext.Description = descriptionBuilder.ToString();
-
-        return syncContext;
+        return new(targetRepository, descriptionBuilder.ToString(), finalDiff);
     }
 
     void ProcessItem(string item, List<SyncItem> itemsToSync, RepositoryInfo source)

@@ -6,6 +6,7 @@
         ToBeAdded = toBeAdded;
         Target = target;
     }
+
     public Parts Parts { get; }
     public bool ToBeAdded { get; }
     public string Target { get; }

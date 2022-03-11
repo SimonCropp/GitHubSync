@@ -138,22 +138,13 @@ class Syncer :
 
         if (expectedOutput == SyncOutput.CreateCommit)
         {
-            return new()
-            {
-                Url = $"https://github.com/{root.Owner}/{root.Repository}/commit/{commitSha}",
-                CommitSha = commitSha
-            };
+            return new($"https://github.com/{root.Owner}/{root.Repository}/commit/{commitSha}", commitSha, null, null);
         }
 
         if (expectedOutput == SyncOutput.CreateBranch)
         {
             branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, commitSha);
-            return new()
-            {
-                Url = $"https://github.com/{root.Owner}/{root.Repository}/compare/{UrlSanitize(root.Branch)}...{UrlSanitize(branchName)}",
-                CommitSha = commitSha,
-                BranchName = branchName
-            };
+            return new($"https://github.com/{root.Owner}/{root.Repository}/compare/{UrlSanitize(root.Branch)}...{UrlSanitize(branchName)}", commitSha, branchName, null);
         }
 
         if (expectedOutput is SyncOutput.CreatePullRequest or SyncOutput.MergePullRequest)
@@ -181,13 +172,7 @@ class Syncer :
                 await gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
             }
 
-            return new()
-            {
-                Url = $"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}",
-                CommitSha = commitSha,
-                BranchName = root.Branch,
-                PullRequestId = prNumber
-            };
+            return new($"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}", commitSha,  root.Branch, prNumber);
         }
 
         throw new NotSupportedException();

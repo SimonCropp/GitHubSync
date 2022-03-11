@@ -2,12 +2,16 @@
 
 public class SyncContext
 {
-    public SyncContext(RepositoryInfo targetRepository) =>
+    public SyncContext(RepositoryInfo targetRepository, string description, Mapper diff)
+    {
         TargetRepository = targetRepository;
+        Description = description;
+        Diff = diff;
+    }
 
     public RepositoryInfo TargetRepository { get; }
 
-    public string Description { get; set; }
+    public string Description { get; }
 
-    public Mapper Diff { get; set; }
+    public Mapper Diff { get; }
 }

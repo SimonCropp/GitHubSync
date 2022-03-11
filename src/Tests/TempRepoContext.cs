@@ -37,8 +37,14 @@ public class TempRepoContext :
 
     public async Task VerifyPullRequest(UpdateResult updateResult)
     {
-        var files = await Client.GitHubClient.PullRequest.Files("SimonCropp", "GitHubSync.TestRepository", updateResult.PullRequestId);
-        var branch = await Client.GitHubClient.PullRequest.Get("SimonCropp", "GitHubSync.TestRepository", updateResult.PullRequestId);
+        var pullRequestId = updateResult.PullRequestId;
+        if (pullRequestId == null)
+        {
+            throw new();
+        }
+
+        var files = await Client.GitHubClient.PullRequest.Files("SimonCropp", "GitHubSync.TestRepository", pullRequestId.Value);
+        var branch = await Client.GitHubClient.PullRequest.Get("SimonCropp", "GitHubSync.TestRepository", pullRequestId.Value);
         await Verify(new
         {
             branch.Title,
