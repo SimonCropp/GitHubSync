@@ -63,39 +63,20 @@ public class RepoSync
     public void AddSourceRepository(RepositoryInfo sourceRepository) =>
         sources.Add(sourceRepository);
 
-    public void AddSourceRepository(string owner, string repository, string branch, Credentials? credentials = null)
-    {
-        PerhapsDefault(ref credentials);
-        sources.Add(new(credentials, owner, repository, branch));
-    }
+    public void AddSourceRepository(string owner, string repository, string branch, Credentials? credentials = null) =>
+        sources.Add(new(OrDefaultCredentials(credentials), owner, repository, branch));
 
     public void AddTargetRepository(RepositoryInfo targetRepository) =>
         targets.Add(targetRepository);
 
-    public void AddTargetRepository(string owner, string repository, string branch, Credentials? credentials = null)
-    {
-        PerhapsDefault(ref credentials);
-        targets.Add(new(credentials, owner, repository, branch));
-    }
+    public void AddTargetRepository(string owner, string repository, string branch, Credentials? credentials = null) =>
+        targets.Add(new(OrDefaultCredentials(credentials), owner, repository, branch));
 
-    void PerhapsDefault(ref Credentials? credentials)
-    {
-        if (credentials != null)
-        {
-            return;
-        }
-
-        if (defaultCredentials == null)
-        {
-            throw new("defaultCredentials required");
-        }
-
-        credentials = defaultCredentials;
-    }
+    Credentials OrDefaultCredentials(Credentials credentials) =>
+        credentials ?? defaultCredentials ?? throw new("defaultCredentials required");
 
     public async Task<SyncContext> CalculateSyncContext(RepositoryInfo targetRepository)
     {
-
         using var syncer = new Syncer(targetRepository.Credentials, null, log);
         var diffs = new List<Mapper>();
         var includedPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
