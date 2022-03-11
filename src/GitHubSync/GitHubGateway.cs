@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Net;
 using Octokit;
 using Octokit.Internal;
@@ -15,7 +17,7 @@ class GitHubGateway :
     GitHubClient client;
     string blobStoragePath;
 
-    public GitHubGateway(Credentials credentials, IWebProxy proxy, Action<string> log)
+    public GitHubGateway(Credentials credentials, IWebProxy? proxy, Action<string> log)
     {
         client = ClientFrom(credentials, proxy);
 
@@ -127,7 +129,7 @@ class GitHubGateway :
         return treeFrom;
     }
 
-    public async Task<Tuple<Parts, TreeResponse>> TreeFrom(Parts source, bool throwsIfNotFound)
+    public async Task<Tuple<Parts, TreeResponse>?> TreeFrom(Parts source, bool throwsIfNotFound)
     {
         Debug.Assert(source.Type == TreeEntryTargetType.Tree);
 
@@ -200,7 +202,7 @@ class GitHubGateway :
         return treeFrom;
     }
 
-    public async Task<Tuple<Parts, TreeItem>> BlobFrom(Parts source, bool throwsIfNotFound)
+    public async Task<Tuple<Parts, TreeItem>?> BlobFrom(Parts source, bool throwsIfNotFound)
     {
         Debug.Assert(source.Type == TreeEntryTargetType.Blob);
 
