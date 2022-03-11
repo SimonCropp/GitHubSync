@@ -2,6 +2,11 @@
 
 public class ManualSyncItem
 {
-    public string Path { get; set; }
-    public string Target { get; set; }
+    public ManualSyncItem(string path, string target)
+    {
+        Path = path;
+        Target = target;
+    }
+    public string Path { get; }
+    public string Target { get; }
 }

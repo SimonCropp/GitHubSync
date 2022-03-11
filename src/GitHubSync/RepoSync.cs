@@ -56,11 +56,7 @@ public class RepoSync
             throw new NotSupportedException($"Adding items is not supported when mode is '{syncMode}'");
         }
 
-        manualSyncItems.Add(new()
-        {
-            Path = path,
-            Target = target
-        });
+        manualSyncItems.Add(new(path, target));
     }
 
     public void AddSourceRepository(RepositoryInfo sourceRepository) =>
