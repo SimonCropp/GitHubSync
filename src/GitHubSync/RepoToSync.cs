@@ -3,10 +3,17 @@ class RepoToSync
     public override string ToString() =>
         $"{Owner}/{Repo}/{TargetBranch}";
 
-    public string Owner { get; set; }
-    public string Repo { get; set; }
-    public string TargetBranch { get; set; }
+    public string Owner { get; }
+    public string Repo { get; }
+    public string TargetBranch { get; }
     public Dictionary<string, string> ReplacementTokens { get; set; }
+
+    public RepoToSync(string owner, string repo, string targetBranch)
+    {
+        Owner = owner;
+        Repo = repo;
+        TargetBranch = targetBranch;
+    }
 
     public Mapper GetMapper(List<SyncItem> syncItems)
     {

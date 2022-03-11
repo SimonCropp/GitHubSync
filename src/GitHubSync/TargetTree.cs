@@ -29,7 +29,7 @@ class TargetTree
         {
             if (toBeAdded)
             {
-                var leaf = new Tuple<Parts, Parts>(destination, source as Parts);
+                var leaf = new Tuple<Parts, Parts>(destination, (Parts) source);
                 LeavesToCreate.Add(s.Name, leaf);
             }
             else
