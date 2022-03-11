@@ -15,12 +15,12 @@ class Syncer :
     Credentials credentials;
 
     public Syncer(
-        Credentials? credentials = null,
+        Credentials credentials,
         IWebProxy? proxy = null,
         Action<string>? log = null)
     {
         this.log = log ?? nullLogger;
-        this.credentials = credentials ?? Credentials.Anonymous;
+        this.credentials = credentials;
         gateway = new(this.credentials, proxy, this.log);
     }
 
