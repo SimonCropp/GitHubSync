@@ -57,11 +57,7 @@ public class RepoSync
             throw new NotSupportedException($"Adding items is not supported when mode is '{syncMode}'");
         }
 
-        manualSyncItems.Add(new()
-        {
-            Path = path,
-            Target = target
-        });
+        manualSyncItems.Add(new(path, target));
     }
 
     public void AddSourceRepository(RepositoryInfo sourceRepository) =>
@@ -128,12 +124,7 @@ public class RepoSync
                 ProcessItem(item, itemsToSync, source);
             }
 
-            var targetRepositoryToSync = new RepoToSync
-            {
-                Owner = targetRepository.Owner,
-                Repo = targetRepository.Repository,
-                TargetBranch = targetRepository.Branch
-            };
+            var targetRepositoryToSync = new RepoToSync(targetRepository.Owner, targetRepository.Repository, targetRepository.Branch);
 
             var sourceMapper = targetRepositoryToSync.GetMapper(itemsToSync);
             var diff = await syncer.Diff(sourceMapper);
