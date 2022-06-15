@@ -1,4 +1,4 @@
-{
+﻿{
   Templates: [
     {
       name: geertvanhorrik,
@@ -21,6 +21,7 @@
       Name: CsvHelper,
       Url: https://github.com/JoshClose/CsvHelper,
       Branch: master,
+      AutoMerge: false,
       Templates: [
         geertvanhorrik
       ]
