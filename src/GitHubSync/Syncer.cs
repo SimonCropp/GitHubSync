@@ -1,4 +1,4 @@
-﻿#nullable enable
+#nullable enable
 
 using System.Net;
 using GitHubSync;
@@ -86,7 +86,8 @@ class Syncer :
         Mapper diff,
         SyncOutput expectedOutput,
         IEnumerable<string>? labelsToApplyOnPullRequests = null,
-        string? description = null)
+        string? description = null,
+        bool skipCollaboratorCheck = false)
     {
         Guard.AgainstNull(diff, nameof(diff));
         Guard.AgainstNull(expectedOutput, nameof(expectedOutput));
@@ -103,7 +104,7 @@ class Syncer :
 
         foreach (var updatesPerOwnerRepositoryBranch in t.Values)
         {
-            var updates = await ProcessUpdates(expectedOutput, updatesPerOwnerRepositoryBranch, labels, description);
+            var updates = await ProcessUpdates(expectedOutput, updatesPerOwnerRepositoryBranch, labels, description, skipCollaboratorCheck);
             results.Add(updates);
         }
 
@@ -114,14 +115,15 @@ class Syncer :
         SyncOutput expectedOutput,
         IList<Tuple<Parts, IParts>> updatesPerOwnerRepositoryBranch,
         string[] labels,
-        string? description)
+        string? description,
+        bool skipCollaboratorCheck)
     {
         var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
         var root = updatesPerOwnerRepositoryBranch.First().Item1.Root();
 
         string commitSha;
 
-        var isCollaborator = await gateway.IsCollaborator(root.Owner, root.Repository);
+        var isCollaborator = skipCollaboratorCheck || await gateway.IsCollaborator(root.Owner, root.Repository);
         if (isCollaborator)
         {
             commitSha = await ProcessUpdatesInTargetRepository(root, updatesPerOwnerRepositoryBranch);
