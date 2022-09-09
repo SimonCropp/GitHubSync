@@ -2,8 +2,20 @@
 class PartsComparer :
     IEqualityComparer<Parts>
 {
-    public bool Equals(Parts x, Parts y) =>
-        x.GetHashCode() == y.GetHashCode();
+    public bool Equals(Parts? x, Parts? y)
+    {
+        if (x is null && y is null)
+        {
+            return true;
+        }
+
+        if (x is null || y is null)
+        {
+            return false;
+        }
+
+        return x.GetHashCode() == y.GetHashCode();
+    }
 
     public int GetHashCode(Parts parts)
     {
