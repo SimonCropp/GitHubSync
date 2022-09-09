@@ -27,7 +27,7 @@ class Syncer :
 
     internal async Task<Mapper> Diff(Mapper input)
     {
-        Guard.AgainstNull(input, nameof(input));
+        Guard.AgainstNull(input);
         var outMapper = new Mapper();
 
         foreach (var kvp in input.ToBeAddedOrUpdatedEntries)
@@ -89,11 +89,12 @@ class Syncer :
         string? description = null,
         bool skipCollaboratorCheck = false)
     {
-        Guard.AgainstNull(diff, nameof(diff));
-        Guard.AgainstNull(expectedOutput, nameof(expectedOutput));
+        Guard.AgainstNull(diff);
+        Guard.AgainstNull(expectedOutput);
         var labels = labelsToApplyOnPullRequests?.ToArray() ?? new string[] { };
 
-        if (labels.Any() && expectedOutput != SyncOutput.CreatePullRequest)
+        if (labels.Any() &&
+            expectedOutput != SyncOutput.CreatePullRequest)
         {
             throw new($"Labels can only be applied in '{SyncOutput.CreatePullRequest}' mode.");
         }
@@ -123,7 +124,8 @@ class Syncer :
 
         string commitSha;
 
-        var isCollaborator = skipCollaboratorCheck || await gateway.IsCollaborator(root.Owner, root.Repository);
+        var isCollaborator = skipCollaboratorCheck ||
+                             await gateway.IsCollaborator(root.Owner, root.Repository);
         if (isCollaborator)
         {
             commitSha = await ProcessUpdatesInTargetRepository(root, updatesPerOwnerRepositoryBranch);

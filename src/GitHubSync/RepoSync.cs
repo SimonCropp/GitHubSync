@@ -53,7 +53,7 @@ public class RepoSync
 
     public void AddOrRemoveSourceItem(bool toBeAdded, TreeEntryTargetType type, string path, ResolveTarget? target)
     {
-        Guard.AgainstNullAndEmpty(path, nameof(path));
+        Guard.AgainstNullAndEmpty(path);
         //todo
         //Guard.AgainstEmpty(target, nameof(target));
 
