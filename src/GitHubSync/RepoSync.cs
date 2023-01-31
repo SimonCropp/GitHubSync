@@ -177,33 +177,40 @@ public class RepoSync
         var list = new List<UpdateResult>();
         foreach (var targetRepository in targets)
         {
-            var targetRepositoryDisplayName = $"{targetRepository.Owner}/{targetRepository.Repository}";
-
-            using var syncer = new Syncer(targetRepository.Credentials, null, log);
-            if (!await syncer.CanSynchronize(targetRepository, syncOutput, targetRepository.Branch))
+            try
             {
-                continue;
+                var targetRepositoryDisplayName = $"{targetRepository.Owner}/{targetRepository.Repository}";
+
+                using var syncer = new Syncer(targetRepository.Credentials, null, log);
+                if (!await syncer.CanSynchronize(targetRepository, syncOutput, targetRepository.Branch))
+                {
+                    continue;
+                }
+
+                var syncContext = await CalculateSyncContext(targetRepository);
+
+                if (!syncContext.Diff.ToBeAddedOrUpdatedEntries.Any())
+                {
+                    log($"Repo {targetRepositoryDisplayName} is in sync");
+                    continue;
+                }
+
+                var sync = await syncer.Sync(syncContext.Diff, syncOutput, labelsToApplyOnPullRequests, syncContext.Description, skipCollaboratorCheck);
+                var createdSyncBranch = sync.FirstOrDefault();
+
+                if (createdSyncBranch == null)
+                {
+                    log($"Repo {targetRepositoryDisplayName} is in sync");
+                }
+                else
+                {
+                    log($"Pull created for {targetRepositoryDisplayName}, click here to review and pull: {createdSyncBranch}");
+                    list.Add(createdSyncBranch);
+                }
             }
-
-            var syncContext = await CalculateSyncContext(targetRepository);
-
-            if (!syncContext.Diff.ToBeAddedOrUpdatedEntries.Any())
+            catch (Exception exception)
             {
-                log($"Repo {targetRepositoryDisplayName} is in sync");
-                continue;
-            }
-
-            var sync = await syncer.Sync(syncContext.Diff, syncOutput, labelsToApplyOnPullRequests, syncContext.Description, skipCollaboratorCheck);
-            var createdSyncBranch = sync.FirstOrDefault();
-
-            if (createdSyncBranch == null)
-            {
-                log($"Repo {targetRepositoryDisplayName} is in sync");
-            }
-            else
-            {
-                log($"Pull created for {targetRepositoryDisplayName}, click here to review and pull: {createdSyncBranch}");
-                list.Add(createdSyncBranch);
+                throw new($"Failed to sync Repository:{targetRepository.Repository} Branch:{targetRepository.Branch}", exception);
             }
         }
 
