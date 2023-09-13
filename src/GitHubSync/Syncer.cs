@@ -244,7 +244,7 @@ class Syncer :
         var originRemote = remotes["origin"];
         var upstreamRemote = remotes["upstream"] ?? remotes.Add("upstream", $"https://github.com/{root.Owner}/{root.Repository}");
 
-        LibGit2Sharp.Commands.Fetch(repository, "upstream", upstreamRemote.FetchRefSpecs.Select(x => x.Specification), null, null);
+        LibGit2Sharp.Commands.Fetch(repository, "upstream", upstreamRemote.FetchRefSpecs.Select(_ => _.Specification), null, null);
 
         // Step 3: create local branch
         var tempBranch = repository.Branches.Add(temporaryBranchName, "HEAD");

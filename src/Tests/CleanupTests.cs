@@ -6,7 +6,7 @@ public class CleanupTests
     public async Task Run()
     {
         var existing = await Client.GitHubClient.Repository.Branch.GetAll("SimonCropp", "GitHubSync.TestRepository");
-        foreach (var branch in existing.Where(x => x.Name.StartsWith("GitHubSync-")))
+        foreach (var branch in existing.Where(_ => _.Name.StartsWith("GitHubSync-")))
         {
             await Client.DeleteBranch(branch.Name);
         }

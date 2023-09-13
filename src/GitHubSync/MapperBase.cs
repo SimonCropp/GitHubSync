@@ -39,7 +39,7 @@ public abstract class MapperBase
                     throw new NotSupportedException($"Removing a '{nameof(TreeEntryTargetType.Tree)}' isn't supported.");
                 }
 
-                if (toBeAddedOrUpdatedEntries.Values.SelectMany(x => x).Contains(to))
+                if (toBeAddedOrUpdatedEntries.Values.SelectMany(_ => _).Contains(to))
                 {
                     throw new InvalidOperationException(
                         $"Cannot remove this as the target path '{to.Path}' in branch '{to.Branch}' of '{to.Owner}/{to.Repository}' as it's already scheduled for addition.");

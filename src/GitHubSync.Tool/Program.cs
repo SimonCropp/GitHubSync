@@ -71,7 +71,7 @@ static class Program
         sync.AddTargetRepository(targetInfo);
 
         foreach (var sourceRepository in targetRepository.Templates
-            .Select(_ => context.Templates.First(x => x.name == _)))
+            .Select(_ => context.Templates.First(_ => _.name == _)))
         {
             var sourceInfo = BuildInfo(sourceRepository.url, sourceRepository.branch, credentials);
             sync.AddSourceRepository(sourceInfo);

@@ -55,7 +55,7 @@ public class MapperTests :
 
         var t = m.Transpose();
 
-        Assert.Equal(3, t.Values.SelectMany(x => x.Where(p => p.Item2 is Parts.NullParts)).Count());
+        Assert.Equal(3, t.Values.SelectMany(_ => _.Where(_ => _.Item2 is Parts.NullParts)).Count());
 
         var orbs = t.Keys.ToList();
         orbs.Sort(StringComparer.Ordinal);
