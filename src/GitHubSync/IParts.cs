@@ -1,2 +1,1 @@
-﻿public interface IParts
-{ }
+﻿public interface IParts;

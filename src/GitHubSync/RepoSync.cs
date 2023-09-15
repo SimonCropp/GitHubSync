@@ -3,30 +3,17 @@ using Octokit;
 
 namespace GitHubSync;
 
-public class RepoSync
+public class RepoSync(
+    Action<string>? log = null,
+    List<string>? labelsToApplyOnPullRequests = null,
+    SyncMode? syncMode = SyncMode.IncludeAllByDefault,
+    Credentials? defaultCredentials = null,
+    bool skipCollaboratorCheck = false)
 {
-    Action<string> log;
-    List<string>? labelsToApplyOnPullRequests;
-    SyncMode? syncMode;
-    Credentials? defaultCredentials;
-    bool skipCollaboratorCheck;
+    Action<string> log = log ?? Console.WriteLine;
     List<ManualSyncItem> manualSyncItems = new();
     List<RepositoryInfo> sources = new();
     List<RepositoryInfo> targets = new();
-
-    public RepoSync(
-        Action<string>? log = null,
-        List<string>? labelsToApplyOnPullRequests = null,
-        SyncMode? syncMode = SyncMode.IncludeAllByDefault,
-        Credentials? defaultCredentials = null,
-        bool skipCollaboratorCheck = false)
-    {
-        this.log = log ?? Console.WriteLine;
-        this.labelsToApplyOnPullRequests = labelsToApplyOnPullRequests;
-        this.syncMode = syncMode;
-        this.defaultCredentials = defaultCredentials;
-        this.skipCollaboratorCheck = skipCollaboratorCheck;
-    }
 
     public void AddBlob(string path, string? target = null) =>
         AddSourceItem(TreeEntryTargetType.Blob, path, target);
