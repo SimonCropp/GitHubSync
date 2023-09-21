@@ -13,6 +13,8 @@ To change this file edit the source file and then run MarkdownSnippets.
 
 A tool to help synchronizing specific files and folders across repositories
 
+**See [Milestones](../../milestones?state=closed) for release notes.**
+
 
 ## .net API
 
