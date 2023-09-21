@@ -6,6 +6,8 @@
 
 A tool to help synchronizing specific files and folders across repositories
 
+**See [Milestones](../../milestones?state=closed) for release notes.**
+
 
 ## .net API
 
