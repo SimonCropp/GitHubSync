@@ -8,5 +8,6 @@
     <Description>A tool to help synchronizing specific files and folders across GitHub hosted repositories.</Description>
     <PackageTags>GitHub</PackageTags>
     <SignAssembly>false</SignAssembly>
+    <ResolveAssemblyReferencesSilent>true</ResolveAssemblyReferencesSilent>
   </PropertyGroup>
 </Project>
