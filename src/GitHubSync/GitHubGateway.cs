@@ -78,7 +78,7 @@ class GitHubGateway :
     {
         var pullRequests = await client.PullRequest.GetAllForRepository(owner, name);
 
-        return pullRequests.Any(x => string.Equals(x.Title, prTitle, StringComparison.OrdinalIgnoreCase));
+        return pullRequests.Any(_ => string.Equals(_.Title, prTitle, StringComparison.OrdinalIgnoreCase));
     }
 
     public async Task<Commit> RootCommitFrom(Parts source)

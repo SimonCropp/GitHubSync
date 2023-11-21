@@ -148,7 +148,7 @@ public class RepoSync(
             TreeEntryTargetType.Blob,
             source.Branch,
             item);
-        var localManualSyncItems = manualSyncItems.Where(x => item == x.Path).ToList();
+        var localManualSyncItems = manualSyncItems.Where(_ => item == _.Path).ToList();
         if (localManualSyncItems.Any())
         {
             itemsToSync.AddRange(localManualSyncItems.Select(_ => new SyncItem(parts, syncMode == SyncMode.ExcludeAllByDefault, _.Target)));
