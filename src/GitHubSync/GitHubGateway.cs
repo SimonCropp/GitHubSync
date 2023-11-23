@@ -51,7 +51,7 @@ class GitHubGateway :
     {
         // Note: checking whether a user is a collaborator requires push access
         var allRepos = await client.Repository.GetAllForCurrent();
-        return allRepos.Any(x => string.Equals(x.FullName, $"{owner}/{name}", StringComparison.OrdinalIgnoreCase));
+        return allRepos.Any(_ => string.Equals(_.FullName, $"{owner}/{name}", StringComparison.OrdinalIgnoreCase));
     }
 
     public Task<Repository> Fork(string owner, string name)
