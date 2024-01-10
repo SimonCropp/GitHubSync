@@ -91,7 +91,7 @@ class Syncer :
     {
         Guard.AgainstNull(diff);
         Guard.AgainstNull(expectedOutput);
-        var labels = labelsToApplyOnPullRequests?.ToArray() ?? new string[] { };
+        var labels = labelsToApplyOnPullRequests?.ToArray() ?? [];
 
         if (labels.Any() &&
             expectedOutput != SyncOutput.CreatePullRequest)
