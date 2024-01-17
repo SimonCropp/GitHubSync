@@ -29,7 +29,7 @@ public static class PartsExtensions
 
         var s = parts.Path.Split('/').Take(level + 1);
 
-        var p = string.Join("/", s);
+        var p = string.Join('/', s);
 
         return new(parts.Owner, parts.Repository, TreeEntryTargetType.Tree, parts.Branch, p);
     }

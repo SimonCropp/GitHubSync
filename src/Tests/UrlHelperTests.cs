@@ -1,5 +1,4 @@
-﻿[UsesVerify]
-public class UrlHelperTests
+﻿public class UrlHelperTests
 {
     [Fact]
     public Task Company() =>

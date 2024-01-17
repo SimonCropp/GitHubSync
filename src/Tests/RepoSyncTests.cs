@@ -1,7 +1,6 @@
 ﻿#if DEBUG
 using GitHubSync;
 
-[UsesVerify]
 public class RepoSyncTests :
     XunitContextBase
 {

@@ -1,5 +1,4 @@
-﻿[UsesVerify]
-public class ConfigTests
+﻿public class ConfigTests
 {
     [Fact]
     public Task Parsing()

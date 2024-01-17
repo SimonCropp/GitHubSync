@@ -12,7 +12,7 @@ public class Parts : IParts
         Path = path;
         Sha = sha;
 
-        Url = string.Join("/", "https://github.com", owner, repository, type.ToString().ToLowerInvariant(), branch);
+        Url = string.Join('/', "https://github.com", owner, repository, type.ToString().ToLowerInvariant(), branch);
 
         if (path == null)
         {
@@ -21,7 +21,7 @@ public class Parts : IParts
         }
         else
         {
-            Url = string.Join("/", Url, path);
+            Url = string.Join('/', Url, path);
             var segments = path.Split('/');
             Name = segments.Last();
             NumberOfPathSegments = segments.Length;

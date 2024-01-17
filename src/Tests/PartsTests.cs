@@ -1,6 +1,5 @@
 ﻿using GitHubSync;
 
-[UsesVerify]
 public class PartsTests :
     XunitContextBase
 {
