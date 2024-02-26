@@ -9,7 +9,7 @@
     <PackageReference Include="ConfigureAwait.Fody" Version="3.3.2" PrivateAssets="All" />
     <PackageReference Include="LibGit2Sharp" Version="0.29.0" />
     <PackageReference Include="Fody" Version="6.8.0" PrivateAssets="all" />
-    <PackageReference Include="Octokit" Version="9.1.2" />
+    <PackageReference Include="Octokit" Version="10.0.0" />
     <PackageReference Include="ProjectDefaults" Version="1.0.111" PrivateAssets="all" />
   </ItemGroup>
 
