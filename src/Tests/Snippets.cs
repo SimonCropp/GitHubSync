@@ -3,7 +3,7 @@ using Octokit;
 
 public class Snippets
 {
-    public async Task SyncPr(Credentials octokitCredentials )
+    public static async Task SyncPr(Credentials octokitCredentials )
     {
         #region usage
         // Create a new RepoSync
