@@ -149,7 +149,7 @@ public class RepoSync(
             source.Branch,
             item);
         var localManualSyncItems = manualSyncItems.Where(_ => item == _.Path).ToList();
-        if (localManualSyncItems.Any())
+        if (localManualSyncItems.Count != 0)
         {
             itemsToSync.AddRange(localManualSyncItems.Select(_ => new SyncItem(parts, syncMode == SyncMode.ExcludeAllByDefault, _.Target)));
 
@@ -183,17 +183,15 @@ public class RepoSync(
                 }
 
                 var sync = await syncer.Sync(syncContext.Diff, syncOutput, labelsToApplyOnPullRequests, syncContext.Description, skipCollaboratorCheck);
-                var createdSyncBranch = sync.FirstOrDefault();
-
-                if (createdSyncBranch == null)
+                if (sync.Count == 0)
                 {
                     log($"Repo {targetRepositoryDisplayName} is in sync");
+                    continue;
                 }
-                else
-                {
-                    log($"Pull created for {targetRepositoryDisplayName}, click here to review and pull: {createdSyncBranch}");
-                    list.Add(createdSyncBranch);
-                }
+
+                var createdSyncBranch = sync[0];
+                log($"Pull created for {targetRepositoryDisplayName}, click here to review and pull: {createdSyncBranch}");
+                list.Add(createdSyncBranch);
             }
             catch (Exception exception)
             {

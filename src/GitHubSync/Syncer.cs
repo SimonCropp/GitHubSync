@@ -93,7 +93,7 @@ class Syncer :
         Guard.AgainstNull(expectedOutput);
         var labels = labelsToApplyOnPullRequests?.ToArray() ?? [];
 
-        if (labels.Any() &&
+        if (labels.Length != 0 &&
             expectedOutput != SyncOutput.CreatePullRequest)
         {
             throw new($"Labels can only be applied in '{SyncOutput.CreatePullRequest}' mode.");
