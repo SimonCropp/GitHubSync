@@ -9,5 +9,7 @@
     <PackageTags>GitHub</PackageTags>
     <SignAssembly>false</SignAssembly>
     <ResolveAssemblyReferencesSilent>true</ResolveAssemblyReferencesSilent>
+    <NuGetAuditMode>all</NuGetAuditMode>
+    <NuGetAuditLevel>low</NuGetAuditLevel>
   </PropertyGroup>
 </Project>
