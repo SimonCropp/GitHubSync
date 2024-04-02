@@ -18,7 +18,7 @@
     <PackageReference Include="MarkdownSnippets.MsBuild" Version="27.0.2" PrivateAssets="all" />
     <ProjectReference Include="..\GitHubSync.Tool\GitHubSync.Tool.csproj" />
     <ProjectReference Include="..\GitHubSync\GitHubSync.csproj" />
-    <PackageReference Include="ProjectDefaults" Version="1.0.125" PrivateAssets="all" />
+    <PackageReference Include="ProjectDefaults" Version="1.0.126" PrivateAssets="all" />
   </ItemGroup>
 
 </Project>
