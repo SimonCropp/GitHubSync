@@ -10,7 +10,7 @@
     <PackageVersion Include="LibGit2Sharp" Version="0.30.0" />
     <PackageVersion Include="MarkdownSnippets.MsBuild" Version="27.0.2" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
-    <PackageVersion Include="Octokit" Version="13.0.0" />
+    <PackageVersion Include="Octokit" Version="13.0.1" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.128" />
     <PackageVersion Include="Verify.Xunit" Version="25.3.0" />
     <PackageVersion Include="Xunit" Version="2.8.1" />
