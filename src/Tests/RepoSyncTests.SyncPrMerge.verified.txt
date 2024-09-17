@@ -4,7 +4,7 @@
 This is an automated synchronization PR.
 
 The following source template repositories were used:
-* SimonCropp/GitHubSync.TestRepository
+* OWNER/GitHubSync.TestRepository
 ,
   Commits: 1,
   Additions: 1,

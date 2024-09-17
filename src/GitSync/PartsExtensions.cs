@@ -1,5 +1,3 @@
-using GitHubSync;
-
 public static class PartsExtensions
 {
 

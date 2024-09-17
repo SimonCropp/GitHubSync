@@ -2,12 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable></Nullable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GitSync\GitSync.csproj" />
     <PackageReference Include="ConfigureAwait.Fody" PrivateAssets="All" />
-    <PackageReference Include="LibGit2Sharp" />
     <PackageReference Include="Fody" PrivateAssets="all" />
     <PackageReference Include="Octokit" />
     <PackageReference Include="ProjectDefaults" PrivateAssets="all" />

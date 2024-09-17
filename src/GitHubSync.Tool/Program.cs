@@ -1,7 +1,4 @@
-﻿using GitHubSync;
-using Octokit;
-
-static class Program
+﻿static class Program
 {
     static Task<int> Main(string[] args)
     {
@@ -12,7 +9,7 @@ static class Program
             return Task.FromResult(1);
         }
 
-        var credentials = new Credentials(githubToken);
+        var credentials = new GitHubCredentials(githubToken);
 
         if (args.Length == 1)
         {
@@ -29,7 +26,7 @@ static class Program
         return SynchronizeRepositoriesAsync("githubsync.yaml", credentials);
     }
 
-    static async Task<int> SynchronizeRepositoriesAsync(string fileName, Credentials credentials)
+    static async Task<int> SynchronizeRepositoriesAsync(string fileName, ICredentials credentials)
     {
         var context = ContextLoader.Load(fileName);
 
@@ -39,7 +36,7 @@ static class Program
         {
             var targetRepository = repositories[i];
 
-            var prefix = $"({i + 1} / {repositories.Count})]";
+            var prefix = $"[({i + 1} / {repositories.Count})]";
 
             Console.WriteLine($"{prefix} Setting up synchronization for '{targetRepository}'");
             var stopwatch = Stopwatch.StartNew();
@@ -63,7 +60,7 @@ static class Program
         return returnValue;
     }
 
-    static Task SyncRepository(Context context, Repository targetRepository, Credentials credentials)
+    static Task SyncRepository(Context context, Repository targetRepository, ICredentials credentials)
     {
         var sync = new RepoSync(Console.WriteLine);
 
@@ -87,7 +84,7 @@ static class Program
         return sync.Sync(syncOutput);
     }
 
-    static RepositoryInfo BuildInfo(string url, string branch, Credentials credentials)
+    static RepositoryInfo BuildInfo(string url, string branch, ICredentials credentials)
     {
         var company = UrlHelper.GetCompany(url);
         var project = UrlHelper.GetProject(url);
