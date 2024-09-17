@@ -9,6 +9,6 @@
     public static string GetProject(string url)
     {
         var uri = new Uri(url);
-        return uri.PathAndQuery.Split('/').Last();
+        return uri.PathAndQuery.Split('/', 3).Last();
     }
 }

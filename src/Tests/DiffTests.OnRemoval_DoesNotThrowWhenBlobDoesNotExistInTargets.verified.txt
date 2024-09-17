@@ -1,20 +1,20 @@
 ﻿[
   {
-    Owner: SimonCropp,
+    Owner: OWNER,
     Repository: GitHubSync.TestRepository,
     Branch: consumer-one,
     Path: new-new-file.txt,
     Name: new-new-file.txt,
     NumberOfPathSegments: 1,
-    Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/consumer-one/new-new-file.txt
+    Url: https://github.com/OWNER/GitHubSync.TestRepository/blob/consumer-one/new-new-file.txt
   },
   {
-    Owner: SimonCropp,
+    Owner: OWNER,
     Repository: GitHubSync.TestRepository,
     Branch: consumer-one,
     Path: IDoNotExist/MeNeither/new-file.txt,
     Name: new-file.txt,
     NumberOfPathSegments: 3,
-    Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/consumer-one/IDoNotExist/MeNeither/new-file.txt
+    Url: https://github.com/OWNER/GitHubSync.TestRepository/blob/consumer-one/IDoNotExist/MeNeither/new-file.txt
   }
 ]

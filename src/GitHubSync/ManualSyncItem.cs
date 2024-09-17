@@ -1,14 +1,5 @@
-﻿#nullable enable
-namespace GitHubSync;
-
-public class ManualSyncItem
+﻿public class ManualSyncItem(string path, ResolveTarget? target)
 {
-    public ManualSyncItem(string path, ResolveTarget? target)
-    {
-        Path = path;
-        Target = target;
-    }
-
-    public string Path { get; }
-    public ResolveTarget? Target { get; }
+    public string Path { get; } = path;
+    public ResolveTarget? Target { get; } = target;
 }

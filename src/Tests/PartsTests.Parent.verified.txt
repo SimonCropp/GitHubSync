@@ -1,10 +1,10 @@
 ﻿{
-  Owner: SimonCropp,
+  Owner: OWNER,
   Repository: Fake,
   Type: Tree,
   Branch: develop,
   Path: level1/level2,
   Name: level2,
   NumberOfPathSegments: 2,
-  Url: https://github.com/SimonCropp/Fake/tree/develop/level1/level2
+  Url: https://github.com/OWNER/Fake/tree/develop/level1/level2
 }

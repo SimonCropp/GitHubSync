@@ -5,5 +5,6 @@
     {
         VerifierSettings.IgnoreMembersThatThrow(_ => _.Message == "Cannot escape out of a Tree.");
         VerifierSettings.IgnoreMember<Parts>(_ => _.Sha);
+        VerifierSettings.AddScrubber(sb => sb.Replace(Client.RepositoryOwner, "OWNER"));
     }
 }

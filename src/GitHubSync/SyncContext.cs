@@ -1,18 +1,8 @@
-﻿#nullable enable
-namespace GitHubSync;
-
-public class SyncContext
+﻿public class SyncContext(RepositoryInfo targetRepository, string description, Mapper diff)
 {
-    public SyncContext(RepositoryInfo targetRepository, string description, Mapper diff)
-    {
-        TargetRepository = targetRepository;
-        Description = description;
-        Diff = diff;
-    }
+    public RepositoryInfo TargetRepository { get; } = targetRepository;
 
-    public RepositoryInfo TargetRepository { get; }
+    public string Description { get; } = description;
 
-    public string Description { get; }
-
-    public Mapper Diff { get; }
+    public Mapper Diff { get; } = diff;
 }

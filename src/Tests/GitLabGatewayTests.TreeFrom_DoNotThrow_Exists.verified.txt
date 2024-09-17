@@ -1,0 +1,18 @@
+﻿{
+  Path: ,
+  Tree: [
+    {
+      Mode: 100644,
+      Path: readme.md,
+      Name: readme.md,
+      Sha: FEF009EFE5BFA528EFF0D44D41D8F7F6016518FE
+    },
+    {
+      Mode: 040000,
+      Path: subFolder,
+      Name: subFolder,
+      Sha: 79321ED405490E585CD9A2B79F18A915D6D68A96,
+      Type: Tree
+    }
+  ]
+}

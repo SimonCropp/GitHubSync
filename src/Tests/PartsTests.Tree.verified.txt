@@ -1,10 +1,10 @@
 ﻿{
-  Owner: SimonCropp,
+  Owner: OWNER,
   Repository: Fake,
   Type: Tree,
   Branch: develop,
   Path: buildSupport,
   Name: buildSupport,
   NumberOfPathSegments: 1,
-  Url: https://github.com/SimonCropp/Fake/tree/develop/buildSupport
+  Url: https://github.com/OWNER/Fake/tree/develop/buildSupport
 }

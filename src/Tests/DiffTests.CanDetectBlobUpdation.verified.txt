@@ -1,23 +1,25 @@
 ﻿[
   {
     Key: {
-      Owner: SimonCropp,
+      Owner: OWNER,
       Repository: GitHubSync.TestRepository,
       Branch: blessed-source,
       Path: file.txt,
       Name: file.txt,
       NumberOfPathSegments: 1,
-      Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/blessed-source/file.txt
+      Url: https://github.com/OWNER/GitHubSync.TestRepository/blob/blessed-source/file.txt,
+      Mode: 100644
     },
     Value: [
       {
-        Owner: SimonCropp,
+        Owner: OWNER,
         Repository: GitHubSync.TestRepository,
         Branch: consumer-one,
         Path: file.txt,
         Name: file.txt,
         NumberOfPathSegments: 1,
-        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/blob/consumer-one/file.txt
+        Url: https://github.com/OWNER/GitHubSync.TestRepository/blob/consumer-one/file.txt,
+        Mode: 100644
       }
     ]
   }

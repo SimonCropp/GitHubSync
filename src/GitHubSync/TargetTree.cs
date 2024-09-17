@@ -1,15 +1,10 @@
-#nullable enable
-
-class TargetTree
+class TargetTree(Parts root)
 {
-    public Dictionary<string, TargetTree> SubTreesToUpdate = new();
-    public Dictionary<string, Tuple<Parts, Parts>> LeavesToCreate = new();
-    public Dictionary<string, Parts> LeavesToDrop = new();
-    public Parts Current;
+    public readonly Dictionary<string, TargetTree> SubTreesToUpdate = new();
+    public readonly Dictionary<string, Tuple<Parts, Parts>> LeavesToCreate = new();
+    public readonly Dictionary<string, Parts> LeavesToDrop = new();
+    public readonly Parts Current = root;
     public static string EmptyTreeSha = "4b825dc642cb6eb9a060e54bf8d69288fbee4904";
-
-    public TargetTree(Parts root) =>
-        Current = root;
 
     public void Add(Parts destination, Parts source) =>
         AddOrRemove(destination, source, 0);

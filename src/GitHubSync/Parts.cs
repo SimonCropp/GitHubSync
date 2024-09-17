@@ -1,9 +1,6 @@
-﻿#nullable enable
-using GitHubSync;
-
-public class Parts : IParts
+﻿public class Parts : IParts
 {
-    public Parts(string owner, string repository, TreeEntryTargetType type, string branch, string? path, string? sha = null)
+    public Parts(string owner, string repository, TreeEntryTargetType type, string branch, string? path, string? sha = null, string? mode = null)
     {
         Owner = owner;
         Repository = repository;
@@ -11,6 +8,7 @@ public class Parts : IParts
         Branch = branch;
         Path = path;
         Sha = sha;
+        Mode = mode;
 
         Url = string.Join('/', "https://github.com", owner, repository, type.ToString().ToLowerInvariant(), branch);
 
@@ -47,8 +45,11 @@ public class Parts : IParts
     // This doesn't participate as an equality contributor on purpose
     public string? Sha { get; }
 
-    internal Parts Combine(TreeEntryTargetType type, string name, string sha) =>
-        new(Owner, Repository, type, Branch, Path == null ? name : Path + "/" + name, sha);
+    // This doesn't participate as an equality contributor on purpose
+    public string? Mode { get; }
+
+    internal Parts Combine(TreeEntryTargetType type, string name, string sha, string mode) =>
+        new(Owner, Repository, type, Branch, Path == null ? name : Path + "/" + name, sha, mode);
 
     public class NullParts : IParts
     {

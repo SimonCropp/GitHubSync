@@ -1,19 +1,11 @@
-#nullable enable
-class RepoToSync
+class RepoToSync(string owner, string repo, string targetBranch)
 {
     public override string ToString() =>
         $"{Owner}/{Repo}/{TargetBranch}";
 
-    public string Owner { get; }
-    public string Repo { get; }
-    public string TargetBranch { get; }
-
-    public RepoToSync(string owner, string repo, string targetBranch)
-    {
-        Owner = owner;
-        Repo = repo;
-        TargetBranch = targetBranch;
-    }
+    public string Owner { get; } = owner;
+    public string Repo { get; } = repo;
+    public string TargetBranch { get; } = targetBranch;
 
     public Mapper GetMapper(List<SyncItem> syncItems)
     {

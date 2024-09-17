@@ -1,20 +1,7 @@
-﻿#nullable enable
-namespace GitHubSync;
-
-using Octokit;
-
-public class RepositoryInfo
+﻿public class RepositoryInfo(ICredentials credentials, string owner, string repository, string branch)
 {
-    public RepositoryInfo(Credentials credentials, string owner, string repository, string branch)
-    {
-        Credentials = credentials;
-        Owner = owner;
-        Repository = repository;
-        Branch = branch;
-    }
-
-    public Credentials Credentials { get; }
-    public string Owner { get; }
-    public string Repository { get; }
-    public string Branch { get; }
+    public ICredentials Credentials { get; } = credentials;
+    public string Owner { get; } = owner;
+    public string Repository { get; } = repository;
+    public string Branch { get; } = branch;
 }
