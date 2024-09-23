@@ -13,7 +13,7 @@
     <PackageVersion Include="Octokit" Version="13.0.1" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.135" />
     <PackageVersion Include="Verify.Xunit" Version="26.5.0" />
-    <PackageVersion Include="Xunit" Version="2.9.0" />
+    <PackageVersion Include="Xunit" Version="2.9.1" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0-pre.30" />
     <PackageVersion Include="XunitContext" Version="3.3.2" />
     <PackageVersion Include="YamlDotNet" Version="16.1.2" />
