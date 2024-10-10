@@ -1,5 +1,4 @@
-﻿using GitHubSync;
-using Octokit;
+﻿using Octokit;
 
 public class TempRepoContext :
     IAsyncDisposable
@@ -22,13 +21,13 @@ public class TempRepoContext :
         var newReference = new NewReference($"refs/heads/{tempBranchName}", "af72f8e44eb53d26969b1316491a294f3401f203");
 
         await Client.DeleteBranch(tempBranchName);
-        var tempBranchReference = await Client.GitHubClient.Git.Reference.Create("SimonCropp", "GitHubSync.TestRepository", newReference);
+        var tempBranchReference = await Client.GitHubClient.Git.Reference.Create(Client.RepositoryOwner, "GitHubSync.TestRepository", newReference);
         return new(tempBranchReference, tempBranchName, $"refs/heads/{tempBranchName}", verifyBase);
     }
 
     public async Task VerifyCommit(UpdateResult updateResult)
     {
-        var commit = await Client.GitHubClient.Git.Commit.Get("SimonCropp", "GitHubSync.TestRepository", updateResult.CommitSha);
+        var commit = await Client.GitHubClient.Git.Commit.Get(Client.RepositoryOwner, "GitHubSync.TestRepository", updateResult.CommitSha);
         await Verify(new
         {
             commit.Message
@@ -43,8 +42,8 @@ public class TempRepoContext :
             throw new();
         }
 
-        var files = await Client.GitHubClient.PullRequest.Files("SimonCropp", "GitHubSync.TestRepository", pullRequestId.Value);
-        var branch = await Client.GitHubClient.PullRequest.Get("SimonCropp", "GitHubSync.TestRepository", pullRequestId.Value);
+        var files = await Client.GitHubClient.PullRequest.Files(Client.RepositoryOwner, "GitHubSync.TestRepository", pullRequestId.Value);
+        var branch = await Client.GitHubClient.PullRequest.Get(Client.RepositoryOwner, "GitHubSync.TestRepository", pullRequestId.Value);
         await Verify(new
         {
             branch.Title,

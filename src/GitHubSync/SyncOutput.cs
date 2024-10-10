@@ -1,5 +1,3 @@
-namespace GitHubSync;
-
 public enum SyncOutput
 {
     CreateCommit,

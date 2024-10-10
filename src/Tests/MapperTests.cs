@@ -1,6 +1,4 @@
-﻿using GitHubSync;
-
-public class MapperTests :
+﻿public class MapperTests :
     XunitContextBase
 {
     [Fact]

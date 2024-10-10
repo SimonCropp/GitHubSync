@@ -2,13 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <Nullable></Nullable>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="ConfigureAwait.Fody" PrivateAssets="All" />
     <PackageReference Include="LibGit2Sharp" />
     <PackageReference Include="Fody" PrivateAssets="all" />
+    <PackageReference Include="NGitLab" />
     <PackageReference Include="Octokit" />
     <PackageReference Include="ProjectDefaults" PrivateAssets="all" />
   </ItemGroup>

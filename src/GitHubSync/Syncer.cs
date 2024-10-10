@@ -1,26 +1,22 @@
-#nullable enable
-
 using System.Net;
-using GitHubSync;
-using Octokit;
 
 class Syncer :
     IDisposable
 {
-    const string PullRequestTitle = "GitHubSync update";
+    const string pullRequestTitle = "GitHubSync update";
 
-    GitHubGateway gateway;
+    IGitProviderGateway gateway;
     Action<string> log;
-    Credentials credentials;
+    ICredentials credentials;
 
     public Syncer(
-        Credentials credentials,
+        ICredentials credentials,
         IWebProxy? proxy = null,
         Action<string>? log = null)
     {
         this.log = log ?? nullLogger;
         this.credentials = credentials;
-        gateway = new(this.credentials, proxy, this.log);
+        gateway = this.credentials.CreateGateway(proxy, this.log);
     }
 
     static Action<string> nullLogger = _ => { };
@@ -45,7 +41,8 @@ class Syncer :
                 var richDestination = await EnrichWithShas(destination, false);
 
                 var sourceSha = richSource.Sha!;
-                if (sourceSha == richDestination.Sha)
+                if (sourceSha == richDestination.Sha &&
+                    richSource.Mode == richDestination.Mode)
                 {
                     log($"Diff - No sync required. Matching sha ({sourceSha.Substring(0, 7)}) between target '{destination.Url}' and source '{source.Url}.");
 
@@ -71,7 +68,7 @@ class Syncer :
     {
         if (expectedOutput is SyncOutput.CreatePullRequest or SyncOutput.MergePullRequest)
         {
-            var hasOpenPullRequests = await gateway.HasOpenPullRequests(targetRepository.Owner, targetRepository.Repository, $"{PullRequestTitle} - {branch}");
+            var hasOpenPullRequests = await gateway.HasOpenPullRequests(targetRepository.Owner, targetRepository.Repository, $"{pullRequestTitle} - {branch}");
             if (hasOpenPullRequests)
             {
                 log("Cannot create pull request, there is an existing open pull request, close or merge that first");
@@ -160,7 +157,7 @@ class Syncer :
 
             if (isCollaborator)
             {
-                branchName = await gateway.CreateBranch(root.Owner, root.Repository, branchName, commitSha);
+                await gateway.CreateBranch(root.Owner, root.Repository, branchName, commitSha);
             }
             else
             {
@@ -178,7 +175,7 @@ class Syncer :
                 await gateway.ApplyLabels(root.Owner, root.Repository, prNumber, labels);
             }
 
-            return new($"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}", commitSha,  root.Branch, prNumber);
+            return new($"https://github.com/{root.Owner}/{root.Repository}/pull/{prNumber}", commitSha, root.Branch, prNumber);
         }
 
         throw new NotSupportedException();
@@ -274,7 +271,7 @@ class Syncer :
             {
                 case Parts parts:
                     // Directly download raw bytes into file
-                    await using (var fileStream = new FileStream(fullDestination, System.IO.FileMode.Create))
+                    await using (var fileStream = new FileStream(fullDestination, FileMode.Create))
                     {
                         await gateway.DownloadBlob(parts, fileStream);
                     }
@@ -298,12 +295,7 @@ class Syncer :
 
         repository.Network.Push(tempBranch, new()
         {
-            CredentialsProvider = (_, _, _) => new LibGit2Sharp.UsernamePasswordCredentials
-            {
-                // Since we are using tokens, the username should be the token
-                Username = credentials.Password,
-                Password = string.Empty
-            }
+            CredentialsProvider = (_, _, _) => credentials.CreateLibGit2SharpCredentials()
         });
 
         return commit.Sha;
@@ -316,10 +308,10 @@ class Syncer :
     {
         var treeFrom = await gateway.TreeFrom(tt.Current, false);
 
-        NewTree newTree;
+        INewTree newTree;
         if (treeFrom == null)
         {
-            newTree = new();
+            newTree = gateway.CreateNewTree(tt.Current.Path);
         }
         else
         {
@@ -332,21 +324,17 @@ class Syncer :
             RemoveTreeItemFrom(newTree, st.Current.Name!);
             var sha = await BuildTargetTree(st);
 
-            if (sha == TargetTree.EmptyTreeSha)
+            if (string.Equals(sha, TargetTree.EmptyTreeSha, StringComparison.OrdinalIgnoreCase))
             {
                 // Resulting tree contains no items
                 continue;
             }
 
-            var newTreeItem = new NewTreeItem
-            {
-                Mode = "040000",
-                Path = st.Current.Name,
-                Sha = sha,
-                Type = TreeType.Tree
-            };
-
-            newTree.Tree.Add(newTreeItem);
+            newTree.Tree.Add(
+                "040000",
+                st.Current.Name!,
+                sha,
+                TreeType.Tree);
         }
 
         foreach (var l in tt.LeavesToDrop.Values)
@@ -373,24 +361,18 @@ class Syncer :
                     }
                     var sourceBlobItem = blobFrom.Item2;
                     newTree.Tree.Add(
-                        new()
-                        {
-                            Mode = sourceBlobItem.Mode,
-                            Path = destination.Name,
-                            Sha = source.Sha,
-                            Type = TreeType.Blob
-                        });
+                        sourceBlobItem.Mode,
+                        destination.Name!,
+                        source.Sha!,
+                        TreeType.Blob);
                     break;
 
                 case TreeEntryTargetType.Tree:
                     newTree.Tree.Add(
-                        new()
-                        {
-                            Mode = "040000",
-                            Path = destination.Name,
-                            Sha = source.Sha,
-                            Type = TreeType.Tree
-                        });
+                        "040000",
+                        destination.Name!,
+                        source.Sha!,
+                        TreeType.Tree);
                     break;
 
                 default:
@@ -423,7 +405,7 @@ class Syncer :
         }
     }
 
-    static void RemoveTreeItemFrom(NewTree tree, string name)
+    static void RemoveTreeItemFrom(INewTree tree, string name)
     {
         var existing = tree.Tree.SingleOrDefault(ti => ti.Path == name);
 
@@ -435,21 +417,17 @@ class Syncer :
         tree.Tree.Remove(existing);
     }
 
-    static NewTree BuildNewTreeFrom(TreeResponse destinationParentTree)
+    INewTree BuildNewTreeFrom(ITreeResponse destinationParentTree)
     {
-        var newTree = new NewTree();
+        var newTree = gateway.CreateNewTree(destinationParentTree.Path);
 
         foreach (var treeItem in destinationParentTree.Tree)
         {
-            var newTreeItem = new NewTreeItem
-            {
-                Mode = treeItem.Mode,
-                Path = treeItem.Path,
-                Sha = treeItem.Sha,
-                Type = treeItem.Type.Value
-            };
-
-            newTree.Tree.Add(newTreeItem);
+            newTree.Tree.Add(
+                treeItem.Mode,
+                treeItem.Name,
+                treeItem.Sha,
+                treeItem.Type);
         }
 
         return newTree;
@@ -457,7 +435,7 @@ class Syncer :
 
     async Task SyncBlob(string sourceOwner, string sourceRepository, string sha, string destinationOwner, string destinationRepository)
     {
-        if (gateway.IsKnownBy<Blob>(sha, destinationOwner, destinationRepository))
+        if (gateway.IsKnownBy<IBlob>(sha, destinationOwner, destinationRepository))
         {
             return;
         }
@@ -470,7 +448,7 @@ class Syncer :
     {
         var sourceSha = source.Sha!;
 
-        if (gateway.IsKnownBy<TreeResponse>(sourceSha, destinationOwner, destinationRepository))
+        if (gateway.IsKnownBy<ITreeResponse>(sourceSha, destinationOwner, destinationRepository))
         {
             return;
         }
@@ -481,11 +459,12 @@ class Syncer :
         {
             return;
         }
-        var newTree = new NewTree();
+
+        var newTree = gateway.CreateNewTree(source.Path ?? string.Empty);
 
         foreach (var i in treeFrom.Item2.Tree)
         {
-            var value = i.Type.Value;
+            var value = i.Type;
             switch (value)
             {
                 case TreeType.Blob:
@@ -493,20 +472,14 @@ class Syncer :
                     break;
 
                 case TreeType.Tree:
-                    await SyncTree(treeFrom.Item1.Combine(TreeEntryTargetType.Tree, i.Path, i.Sha), destinationOwner, destinationRepository);
+                    await SyncTree(treeFrom.Item1.Combine(TreeEntryTargetType.Tree, i.Path, i.Sha, i.Mode), destinationOwner, destinationRepository);
                     break;
 
                 default:
                     throw new NotSupportedException();
             }
 
-            newTree.Tree.Add(new()
-            {
-                Type = value,
-                Path = i.Path,
-                Sha = i.Sha,
-                Mode = i.Mode
-            });
+            newTree.Tree.Add(i.Mode, i.Name, i.Sha, value);
         }
 
         // ReSharper disable once RedundantAssignment

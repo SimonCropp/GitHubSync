@@ -65,7 +65,7 @@ repoSync.AddTargetRepository(new(
 // Run the sync
 await repoSync.Sync(syncOutput: SyncOutput.MergePullRequest);
 ```
-<sup><a href='/src/Tests/Snippets.cs#L8-L45' title='Snippet source file'>snippet source</a> | <a href='#snippet-usage' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/Snippets.cs#L5-L42' title='Snippet source file'>snippet source</a> | <a href='#snippet-usage' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
@@ -87,6 +87,12 @@ dotnet tool install -g GitHubSync.Tool
 
 
 ### Usage
+
+You will need to define either a `Ockokit_OAuthToken` (GitHub) or `GitLab_OAuthToken` (GitLab) environment variable to log in to your git provider.
+
+When using GitLab, you can optionally define a `GitLab_HostUrl` environment variable to specify the host of your GitLab instance. If not defined, the default value is `https://gitlab.com`.
+
+Syncing between GitHub and GitLab is not currently supported.
 
 Run against the current directory will use `githubsync.yaml` in the current directory:
 

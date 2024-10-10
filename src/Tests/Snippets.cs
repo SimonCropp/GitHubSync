@@ -1,9 +1,6 @@
-﻿using GitHubSync;
-using Octokit;
-
-public class Snippets
+﻿public class Snippets
 {
-    public static async Task SyncPr(Credentials octokitCredentials )
+    public static async Task SyncPr(ICredentials octokitCredentials)
     {
         #region usage
         // Create a new RepoSync

@@ -1,7 +1,4 @@
-﻿using GitHubSync;
-using Octokit;
-
-[Trait("Category", "Local")]
+﻿[Trait("Category", "Local")]
 public class RepoSyncPartsTests :
     XunitContextBase
 {
@@ -15,8 +12,8 @@ public class RepoSyncPartsTests :
         repoSync.RemoveBlob("removed1");
         repoSync.RemoveBlob("removed2", "target2");
 
-        repoSync.AddTargetRepository(new(Credentials.Anonymous, "owner1", "repo1", "branch1"));
-        repoSync.AddTargetRepository(new(Credentials.Anonymous, "owner2", "repo2", "branch2"));
+        repoSync.AddTargetRepository(new(GitHubCredentials.Anonymous, "owner1", "repo1", "branch1"));
+        repoSync.AddTargetRepository(new(GitHubCredentials.Anonymous, "owner2", "repo2", "branch2"));
 
         return Verify(repoSync);
     }
@@ -62,15 +59,15 @@ public class RepoSyncPartsTests :
     {
         var repoSync = BuildRepoSync(SyncMode.IncludeAllByDefault);
 
-        repoSync.AddTargetRepository(new(Credentials.Anonymous, "owner1", "repo1", "branch1"));
-        repoSync.AddTargetRepository(new(Credentials.Anonymous, "owner2", "repo2", "branch2"));
+        repoSync.AddTargetRepository(new(GitHubCredentials.Anonymous, "owner1", "repo1", "branch1"));
+        repoSync.AddTargetRepository(new(GitHubCredentials.Anonymous, "owner2", "repo2", "branch2"));
 
         return Verify(repoSync);
     }
 
     static RepoSync BuildRepoSync(SyncMode syncMode)
     {
-        var credentials = CredentialsHelper.Credentials;
+        var credentials = CredentialsHelper.GitHubCredentials;
 
         var repoSync = new RepoSync(syncMode: syncMode);
         repoSync.AddSourceRepository(new(credentials, "owner", "GitHubSync.TestRepository", "source"));

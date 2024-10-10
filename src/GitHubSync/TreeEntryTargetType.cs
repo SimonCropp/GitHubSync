@@ -1,6 +1,4 @@
-﻿namespace GitHubSync;
-
-public enum TreeEntryTargetType
+﻿public enum TreeEntryTargetType
 {
     Blob,
     Tree,

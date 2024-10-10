@@ -1,5 +1,4 @@
 ﻿#if DEBUG
-using GitHubSync;
 
 public class RepoSyncTests :
     XunitContextBase
@@ -7,12 +6,12 @@ public class RepoSyncTests :
     [Fact]
     public async Task SyncPrIncludeAllByDefault()
     {
-        var credentials = CredentialsHelper.Credentials;
+        var credentials = CredentialsHelper.GitHubCredentials;
         var repoSync = new RepoSync(WriteLine);
         await using var repoContext = await TempRepoContext.Create(Context.MethodName, this);
-        repoSync.AddSourceRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+        repoSync.AddSourceRepository(new(credentials, Client.RepositoryOwner, "GitHubSync.TestRepository", "source"));
         repoSync.RemoveBlob("README.md");
-        repoSync.AddTargetRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
+        repoSync.AddTargetRepository(new(credentials, Client.RepositoryOwner, "GitHubSync.TestRepository", repoContext.TempBranchName));
 
         var sync = await repoSync.Sync();
         await repoContext.VerifyPullRequest(sync.Single());
@@ -21,13 +20,13 @@ public class RepoSyncTests :
     [Fact]
     public async Task SyncPrExcludeAllByDefault()
     {
-        var credentials = CredentialsHelper.Credentials;
+        var credentials = CredentialsHelper.GitHubCredentials;
         var repoSync = new RepoSync(WriteLine, syncMode: SyncMode.ExcludeAllByDefault);
         await using var repoContext = await TempRepoContext.Create(Context.MethodName, this);
-        repoSync.AddSourceRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+        repoSync.AddSourceRepository(new(credentials, Client.RepositoryOwner, "GitHubSync.TestRepository", "source"));
         repoSync.AddBlob("sourceFile.txt");
         repoSync.AddSourceItem(TreeEntryTargetType.Blob,"sourceFile.txt", "nested/sourceFile.txt");
-        repoSync.AddTargetRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
+        repoSync.AddTargetRepository(new(credentials, Client.RepositoryOwner, "GitHubSync.TestRepository", repoContext.TempBranchName));
 
         var sync = await repoSync.Sync();
         await repoContext.VerifyPullRequest(sync.Single());
@@ -36,12 +35,12 @@ public class RepoSyncTests :
     [Fact]
     public async Task SyncPrMerge()
     {
-        var credentials = CredentialsHelper.Credentials;
+        var credentials = CredentialsHelper.GitHubCredentials;
         var repoSync = new RepoSync(WriteLine);
         await using var repoContext = await TempRepoContext.Create(Context.MethodName, this);
-        repoSync.AddSourceRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+        repoSync.AddSourceRepository(new(credentials, Client.RepositoryOwner, "GitHubSync.TestRepository", "source"));
         repoSync.RemoveBlob("README.md");
-        repoSync.AddTargetRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
+        repoSync.AddTargetRepository(new(credentials, Client.RepositoryOwner, "GitHubSync.TestRepository", repoContext.TempBranchName));
 
         var sync = await repoSync.Sync(SyncOutput.MergePullRequest);
         await repoContext.VerifyPullRequest(sync.Single());
@@ -50,13 +49,13 @@ public class RepoSyncTests :
     [Fact]
     public async Task SyncCommit()
     {
-        var credentials = CredentialsHelper.Credentials;
+        var credentials = CredentialsHelper.GitHubCredentials;
         var repoSync = new RepoSync(WriteLine);
 
         await using var repoContext = await TempRepoContext.Create(Context.MethodName, this);
-        repoSync.AddSourceRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", "source"));
+        repoSync.AddSourceRepository(new(credentials, Client.RepositoryOwner, "GitHubSync.TestRepository", "source"));
         repoSync.RemoveBlob("README.md");
-        repoSync.AddTargetRepository(new(credentials, "SimonCropp", "GitHubSync.TestRepository", repoContext.TempBranchName));
+        repoSync.AddTargetRepository(new(credentials, Client.RepositoryOwner, "GitHubSync.TestRepository", repoContext.TempBranchName));
 
         var sync = await repoSync.Sync(SyncOutput.CreateCommit);
         await repoContext.VerifyCommit(sync.Single());

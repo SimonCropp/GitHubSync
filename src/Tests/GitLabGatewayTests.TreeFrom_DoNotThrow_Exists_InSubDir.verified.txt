@@ -1,0 +1,11 @@
+﻿{
+  Path: subFolder,
+  Tree: [
+    {
+      Mode: 100644,
+      Path: subFolder/hello.txt,
+      Name: hello.txt,
+      Sha: B45EF6FEC89518D314F546FD6C3025367B721684
+    }
+  ]
+}

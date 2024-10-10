@@ -1,9 +1,9 @@
 ﻿{
-  Owner: SimonCropp,
+  Owner: OWNER,
   Repository: Fake,
   Branch: develop,
   Path: src/settings,
   Name: settings,
   NumberOfPathSegments: 2,
-  Url: https://github.com/SimonCropp/Fake/blob/develop/src/settings
+  Url: https://github.com/OWNER/Fake/blob/develop/src/settings
 }

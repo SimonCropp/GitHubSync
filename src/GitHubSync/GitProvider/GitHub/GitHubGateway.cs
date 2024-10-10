@@ -1,17 +1,14 @@
-#nullable enable
-
 using System.Net;
 using Octokit;
 using Octokit.Internal;
-using GitHubSync;
 
-class GitHubGateway :
-    IDisposable
+class GitHubGateway
+    : IGitProviderGateway
 {
     Action<string> log;
-    Dictionary<string, Commit> commitCachePerOwnerRepositoryBranch = new();
-    Dictionary<string, Tuple<Parts, TreeItem>> blobCachePerPath = new();
-    Dictionary<string, Tuple<Parts, TreeResponse>> treeCachePerPath = new();
+    Dictionary<string, GitHubCommit> commitCachePerOwnerRepositoryBranch = new();
+    Dictionary<string, Tuple<Parts, ITreeItem>> blobCachePerPath = new();
+    Dictionary<string, Tuple<Parts, ITreeResponse>> treeCachePerPath = new();
     Dictionary<string, IList<string>> knownBlobsPerRepository = new();
     Dictionary<string, IList<string>> knownTreesPerRepository = new();
     GitHubClient client;
@@ -41,10 +38,10 @@ class GitHubGateway :
         };
     }
 
-    public async Task<User> GetCurrentUser()
+    public async Task<IUser> GetCurrentUser()
     {
         var currentUser = await client.User.Current();
-        return currentUser;
+        return new GitHubUser(currentUser);
     }
 
     public async Task<bool> IsCollaborator(string owner, string name)
@@ -54,12 +51,12 @@ class GitHubGateway :
         return allRepos.Any(_ => string.Equals(_.FullName, $"{owner}/{name}", StringComparison.OrdinalIgnoreCase));
     }
 
-    public Task<Repository> Fork(string owner, string name)
+    public async Task<IRepository> Fork(string owner, string name)
     {
         var apiConnection = new ApiConnection(client.Connection);
         var forkClient = new RepositoryForksClient(apiConnection);
 
-        return forkClient.Create(owner, name, new());
+        return new GitHubRepository(await forkClient.Create(owner, name, new()));
     }
 
     public async Task DownloadBlob(Parts source, Stream targetStream)
@@ -81,7 +78,7 @@ class GitHubGateway :
         return pullRequests.Any(_ => string.Equals(_.Title, prTitle, StringComparison.OrdinalIgnoreCase));
     }
 
-    public async Task<Commit> RootCommitFrom(Parts source)
+    public async Task<ICommit> RootCommitFrom(Parts source)
     {
         var orb = $"{source.Owner}/{source.Repository}/{source.Branch}";
         if (commitCachePerOwnerRepositoryBranch.TryGetValue(orb, out var commit))
@@ -95,13 +92,13 @@ class GitHubGateway :
 
         log($"API Query - Retrieve commit '{refBranch.Object.Sha.Substring(0, 7)}' details from '{source.Owner}/{source.Repository}'.");
 
-        commit = await client.Git.Commit.Get(source.Owner, source.Repository, refBranch.Object.Sha);
+        commit = new(await client.Git.Commit.Get(source.Owner, source.Repository, refBranch.Object.Sha));
 
         commitCachePerOwnerRepositoryBranch.Add(orb, commit);
         return commit;
     }
 
-    Tuple<Parts, TreeItem> AddToPathCache(Parts parts, TreeItem blobEntry)
+    Tuple<Parts, ITreeItem> AddToPathCache(Parts parts, ITreeItem blobEntry)
     {
         if (blobCachePerPath.TryGetValue(parts.Url, out var blobFrom))
         {
@@ -113,7 +110,7 @@ class GitHubGateway :
         return blobFrom;
     }
 
-    Tuple<Parts, TreeResponse> AddToPathCache(Parts parts, TreeResponse treeEntry)
+    Tuple<Parts, ITreeResponse> AddToPathCache(Parts parts, ITreeResponse treeEntry)
     {
         if (treeCachePerPath.TryGetValue(parts.Url, out var treeFrom))
         {
@@ -125,7 +122,7 @@ class GitHubGateway :
         return treeFrom;
     }
 
-    public async Task<Tuple<Parts, TreeResponse>?> TreeFrom(Parts source, bool throwsIfNotFound)
+    public async Task<Tuple<Parts, ITreeResponse>?> TreeFrom(Parts source, bool throwsIfNotFound)
     {
         Debug.Assert(source.Type == TreeEntryTargetType.Tree);
 
@@ -172,21 +169,21 @@ class GitHubGateway :
         var tree = await client.Git.Tree.Get(source.Owner, source.Repository, sha);
         var parts = new Parts(source.Owner, source.Repository, TreeEntryTargetType.Tree, source.Branch, source.Path, tree.Sha);
 
-        var treeFrom = AddToPathCache(parts, tree);
-        AddToKnown<TreeResponse>(parts.Sha!, parts.Owner, parts.Repository);
+        var treeFrom = AddToPathCache(parts, new GitHubTreeResponse(tree));
+        AddToKnown<ITreeResponse>(parts.Sha!, parts.Owner, parts.Repository);
 
         foreach (var i in tree.Tree)
         {
             switch (i.Type.Value)
             {
-                case TreeType.Blob:
-                    var p = parts.Combine(TreeEntryTargetType.Blob, i.Path, i.Sha);
-                    AddToPathCache(p, i);
-                    AddToKnown<Blob>(i.Sha, source.Owner, source.Repository);
+                case Octokit.TreeType.Blob:
+                    var p = parts.Combine(TreeEntryTargetType.Blob, i.Path, i.Sha, i.Mode);
+                    AddToPathCache(p, new GitHubTreeItem(i));
+                    AddToKnown<IBlob>(i.Sha, source.Owner, source.Repository);
                     break;
 
-                case TreeType.Tree:
-                    AddToKnown<TreeResponse>(i.Sha, parts.Owner, parts.Repository);
+                case Octokit.TreeType.Tree:
+                    AddToKnown<ITreeResponse>(i.Sha, parts.Owner, parts.Repository);
                     break;
 
                 default:
@@ -197,7 +194,7 @@ class GitHubGateway :
         return treeFrom;
     }
 
-    public async Task<Tuple<Parts, TreeItem>?> BlobFrom(Parts source, bool throwsIfNotFound)
+    public async Task<Tuple<Parts, ITreeItem>?> BlobFrom(Parts source, bool throwsIfNotFound)
     {
         Debug.Assert(source.Type == TreeEntryTargetType.Blob);
 
@@ -234,11 +231,11 @@ class GitHubGateway :
             return null;
         }
 
-        var parts = new Parts(source.Owner, source.Repository, TreeEntryTargetType.Blob, source.Branch, sourcePath, blobEntry.Sha);
+        var parts = new Parts(source.Owner, source.Repository, TreeEntryTargetType.Blob, source.Branch, sourcePath, blobEntry.Sha, blobEntry.Mode);
 
         var blobFrom = AddToPathCache(parts, blobEntry);
 
-        AddToKnown<Blob>(parts.Sha!, parts.Owner, parts.Repository);
+        AddToKnown<IBlob>(parts.Sha!, parts.Owner, parts.Repository);
 
         return blobFrom;
     }
@@ -281,11 +278,11 @@ class GitHubGateway :
     {
         IDictionary<string, IList<string>> dic;
 
-        if (typeof(T) == typeof(Blob))
+        if (typeof(T) == typeof(IBlob))
         {
             dic = knownBlobsPerRepository;
         }
-        else if (typeof(T) == typeof(TreeResponse))
+        else if (typeof(T) == typeof(ITreeResponse))
         {
             dic = knownTreesPerRepository;
         }
@@ -299,7 +296,7 @@ class GitHubGateway :
 
     public async Task<string> CreateCommit(string treeSha, string owner, string repo, string parentCommitSha, string branch)
     {
-        var newCommit = new NewCommit($"GitHubSync update - {branch}", treeSha, new[] { parentCommitSha });
+        var newCommit = new NewCommit($"GitHubSync update - {branch}", treeSha, [parentCommitSha]);
 
         var createdCommit = await client.Git.Commit.Create(owner, repo, newCommit);
 
@@ -309,13 +306,13 @@ class GitHubGateway :
         return createdCommit.Sha;
     }
 
-    public async Task<string> CreateTree(NewTree newTree, string owner, string repo)
+    public async Task<string> CreateTree(INewTree newTree, string owner, string repo)
     {
-        var createdTree = await client.Git.Tree.Create(owner, repo, newTree);
+        var createdTree = await client.Git.Tree.Create(owner, repo, ((GitHubNewTree)newTree).OriginalTree);
 
         log($"API Query - Create tree '{createdTree.Sha.Substring(0, 7)}' in '{owner}/{repo}'.");
 
-        AddToKnown<TreeResponse>(createdTree.Sha, owner, repo);
+        AddToKnown<ITreeResponse>(createdTree.Sha, owner, repo);
 
         return createdTree.Sha;
     }
@@ -339,7 +336,7 @@ class GitHubGateway :
         var createdBlob = await client.Git.Blob.Create(owner, repository, newBlob);
         Debug.Assert(sha == createdBlob.Sha);
 
-        AddToKnown<Blob>(sha, owner, repository);
+        AddToKnown<IBlob>(sha, owner, repository);
     }
 
     public async Task FetchBlob(string owner, string repository, string sha)
@@ -422,10 +419,15 @@ class GitHubGateway :
         log($"Dispose - Remove temp blob storage '{blobStoragePath}'.");
     }
 
-    public Task<IReadOnlyList<Label>> ApplyLabels(string owner, string repository, int issueNumber, string[] labels)
+    public async Task<IReadOnlyList<ILabel>> ApplyLabels(string owner, string repository, int issueNumber, string[] labels)
     {
         log(string.Format("API Query - Apply labels '{3}' to request '#{0}' in '{1}/{2}'.", issueNumber, owner, repository, string.Join(", ", labels)));
 
-        return client.Issue.Labels.AddToIssue(owner, repository, issueNumber, labels);
+        var gitLabels = await client.Issue.Labels.AddToIssue(owner, repository, issueNumber, labels);
+
+        return gitLabels.Select(_ => new GitHubLabel(_)).ToList();
     }
+
+    public INewTree CreateNewTree(string? path) =>
+        new GitHubNewTree(string.IsNullOrWhiteSpace(path) ? "" : $"{path}/", new());
 }

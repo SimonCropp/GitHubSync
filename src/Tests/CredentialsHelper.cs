@@ -12,7 +12,9 @@ public static class CredentialsHelper
         }
 
         Credentials = new(githubToken);
+        GitHubCredentials = new(githubToken);
     }
 
-    public static Credentials Credentials;
+    public static readonly Credentials Credentials;
+    public static readonly GitHubCredentials GitHubCredentials;
 }

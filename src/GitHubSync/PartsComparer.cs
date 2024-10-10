@@ -1,4 +1,3 @@
-#nullable enable
 class PartsComparer :
     IEqualityComparer<Parts>
 {
