@@ -1,25 +1,25 @@
 ﻿[
   {
     Key: {
-      Owner: SimonCropp,
+      Owner: OWNER,
       Repository: GitHubSync.TestRepository,
       Type: Tree,
       Branch: blessed-source,
       Path: folder,
       Name: folder,
       NumberOfPathSegments: 1,
-      Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/blessed-source/folder
+      Url: https://github.com/OWNER/GitHubSync.TestRepository/tree/blessed-source/folder
     },
     Value: [
       {
-        Owner: SimonCropp,
+        Owner: OWNER,
         Repository: GitHubSync.TestRepository,
         Type: Tree,
         Branch: consumer-one,
         Path: folder,
         Name: folder,
         NumberOfPathSegments: 1,
-        Url: https://github.com/SimonCropp/GitHubSync.TestRepository/tree/consumer-one/folder
+        Url: https://github.com/OWNER/GitHubSync.TestRepository/tree/consumer-one/folder
       }
     ]
   }

@@ -2,17 +2,19 @@
 
 public static class Client
 {
-    public static GitHubClient GitHubClient = new(new ProductHeaderValue("GitHubSync"))
+    public const string RepositoryOwner = "SimonCropp";
+
+    public static readonly GitHubClient GitHubClient = new(new ProductHeaderValue("GitHubSync"))
     {
         Credentials = CredentialsHelper.Credentials
     };
 
     public static async Task DeleteBranch(string branchName)
     {
-        var existing = await GitHubClient.Repository.Branch.GetAll("SimonCropp", "GitHubSync.TestRepository");
+        var existing = await GitHubClient.Repository.Branch.GetAll(RepositoryOwner, "GitHubSync.TestRepository");
         if (existing.Any(_ => _.Name == branchName))
         {
-            await GitHubClient.Git.Reference.Delete("SimonCropp", "GitHubSync.TestRepository", $"heads/{branchName}");
+            await GitHubClient.Git.Reference.Delete(RepositoryOwner, "GitHubSync.TestRepository", $"heads/{branchName}");
         }
     }
 }

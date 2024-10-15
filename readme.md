@@ -65,7 +65,7 @@ repoSync.AddTargetRepository(new(
 // Run the sync
 await repoSync.Sync(syncOutput: SyncOutput.MergePullRequest);
 ```
-<sup><a href='/src/Tests/Snippets.cs#L8-L45' title='Snippet source file'>snippet source</a> | <a href='#snippet-usage' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/Snippets.cs#L5-L42' title='Snippet source file'>snippet source</a> | <a href='#snippet-usage' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 

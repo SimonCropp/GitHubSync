@@ -1,13 +1,8 @@
-#nullable enable
-using Octokit;
-
-namespace GitHubSync;
-
 public class RepoSync(
     Action<string>? log = null,
     List<string>? labelsToApplyOnPullRequests = null,
     SyncMode? syncMode = SyncMode.IncludeAllByDefault,
-    Credentials? defaultCredentials = null,
+    ICredentials? defaultCredentials = null,
     bool skipCollaboratorCheck = false)
 {
     Action<string> log = log ?? Console.WriteLine;
@@ -65,16 +60,16 @@ public class RepoSync(
     public void AddSourceRepository(RepositoryInfo sourceRepository) =>
         sources.Add(sourceRepository);
 
-    public void AddSourceRepository(string owner, string repository, string branch, Credentials? credentials = null) =>
+    public void AddSourceRepository(string owner, string repository, string branch, ICredentials? credentials = null) =>
         sources.Add(new(OrDefaultCredentials(credentials), owner, repository, branch));
 
     public void AddTargetRepository(RepositoryInfo targetRepository) =>
         targets.Add(targetRepository);
 
-    public void AddTargetRepository(string owner, string repository, string branch, Credentials? credentials = null) =>
+    public void AddTargetRepository(string owner, string repository, string branch, ICredentials? credentials = null) =>
         targets.Add(new(OrDefaultCredentials(credentials), owner, repository, branch));
 
-    Credentials OrDefaultCredentials(Credentials? credentials) =>
+    ICredentials OrDefaultCredentials(ICredentials? credentials) =>
         credentials ?? defaultCredentials ?? throw new("defaultCredentials required");
 
     public async Task<SyncContext> CalculateSyncContext(RepositoryInfo targetRepository)
@@ -95,7 +90,8 @@ public class RepoSync(
             var displayName = $"{source.Owner}/{source.Repository}";
             var itemsToSync = new List<SyncItem>();
 
-            foreach (var item in await OctokitEx.GetRecursive(source.Credentials, source.Owner, source.Repository, null, source.Branch))
+            using var gateway = source.Credentials.CreateGateway(null, log);
+            foreach (var item in await GitProviderGatewayExtensions.GetRecursive(gateway, source.Owner, source.Repository, null, source.Branch))
             {
                 if (includedPaths.Contains(item))
                 {
