@@ -17,7 +17,7 @@ static class Guard
         }
     }
 
-    public static void AgainstEmpty(string value, [CallerArgumentExpression("value")] string paramName = "")
+    public static void AgainstEmpty(string? value, [CallerArgumentExpression("value")] string paramName = "")
     {
         if (value == null)
         {
