@@ -3,8 +3,6 @@ using System.Net;
 class Syncer :
     IDisposable
 {
-    const string pullRequestTitle = "GitHubSync update";
-
     IGitProviderGateway gateway;
     Action<string> log;
     ICredentials credentials;
@@ -64,11 +62,11 @@ class Syncer :
         return outMapper;
     }
 
-    internal async Task<bool> CanSynchronize(RepositoryInfo targetRepository, SyncOutput expectedOutput, string branch)
+    internal async Task<bool> CanSynchronize(RepositoryInfo targetRepository, SyncOutput expectedOutput, string pullRequestTitle)
     {
         if (expectedOutput is SyncOutput.CreatePullRequest or SyncOutput.MergePullRequest)
         {
-            var hasOpenPullRequests = await gateway.HasOpenPullRequests(targetRepository.Owner, targetRepository.Repository, $"{pullRequestTitle} - {branch}");
+            var hasOpenPullRequests = await gateway.HasOpenPullRequests(targetRepository.Owner, targetRepository.Repository, pullRequestTitle);
             if (hasOpenPullRequests)
             {
                 log("Cannot create pull request, there is an existing open pull request, close or merge that first");
@@ -82,6 +80,9 @@ class Syncer :
     internal async Task<IReadOnlyList<UpdateResult>> Sync(
         Mapper diff,
         SyncOutput expectedOutput,
+        string branchName,
+        string commitMessage,
+        string pullRequestTitle,
         IEnumerable<string>? labelsToApplyOnPullRequests = null,
         string? description = null,
         bool skipCollaboratorCheck = false)
@@ -102,7 +103,7 @@ class Syncer :
 
         foreach (var updatesPerOwnerRepositoryBranch in t.Values)
         {
-            var updates = await ProcessUpdates(expectedOutput, updatesPerOwnerRepositoryBranch, labels, description, skipCollaboratorCheck);
+            var updates = await ProcessUpdates(expectedOutput, updatesPerOwnerRepositoryBranch, labels, description, skipCollaboratorCheck, branchName, pullRequestTitle, commitMessage);
             results.Add(updates);
         }
 
@@ -114,9 +115,11 @@ class Syncer :
         IList<Tuple<Parts, IParts>> updatesPerOwnerRepositoryBranch,
         string[] labels,
         string? description,
-        bool skipCollaboratorCheck)
+        bool skipCollaboratorCheck,
+        string branchName,
+        string pullRequestTitle,
+        string commitMessage)
     {
-        var branchName = $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}";
         var root = updatesPerOwnerRepositoryBranch.First().Item1.Root();
 
         string commitSha;
@@ -125,7 +128,7 @@ class Syncer :
                              await gateway.IsCollaborator(root.Owner, root.Repository);
         if (isCollaborator)
         {
-            commitSha = await ProcessUpdatesInTargetRepository(root, updatesPerOwnerRepositoryBranch);
+            commitSha = await ProcessUpdatesInTargetRepository(root, updatesPerOwnerRepositoryBranch, commitMessage);
         }
         else
         {
@@ -136,7 +139,7 @@ class Syncer :
                 throw new NotSupportedException($"User is not a collaborator, sync output '{expectedOutput}' is not supported, only creating PRs is supported");
             }
 
-            commitSha = await ProcessUpdatesInFork(root, branchName, updatesPerOwnerRepositoryBranch);
+            commitSha = await ProcessUpdatesInFork(root, branchName, updatesPerOwnerRepositoryBranch, commitMessage);
         }
 
         if (expectedOutput == SyncOutput.CreateCommit)
@@ -168,7 +171,7 @@ class Syncer :
                 prSourceBranch = $"{forkedRepository.Owner.Login}:{prSourceBranch}";
             }
 
-            var prNumber = await gateway.CreatePullRequest(root.Owner, root.Repository, prSourceBranch, root.Branch, merge, description);
+            var prNumber = await gateway.CreatePullRequest(root.Owner, root.Repository, prSourceBranch, root.Branch, pullRequestTitle, merge, description);
 
             if (isCollaborator)
             {
@@ -181,7 +184,7 @@ class Syncer :
         throw new NotSupportedException();
     }
 
-    async Task<string> ProcessUpdatesInTargetRepository(Parts root, IList<Tuple<Parts, IParts>> updatesPerOwnerRepositoryBranch)
+    async Task<string> ProcessUpdatesInTargetRepository(Parts root, IList<Tuple<Parts, IParts>> updatesPerOwnerRepositoryBranch, string commitMessage)
     {
         var tt = new TargetTree(root);
 
@@ -209,11 +212,11 @@ class Syncer :
 
         var parentCommit = await gateway.RootCommitFrom(root);
 
-        var commitSha = await gateway.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha, root.Branch);
+        var commitSha = await gateway.CreateCommit(btt, root.Owner, root.Repository, parentCommit.Sha, root.Branch, commitMessage);
         return commitSha;
     }
 
-    async Task<string> ProcessUpdatesInFork(Parts root, string temporaryBranchName, IList<Tuple<Parts, IParts>> updatesPerOwnerRepositoryBranch)
+    async Task<string> ProcessUpdatesInFork(Parts root, string temporaryBranchName, IList<Tuple<Parts, IParts>> updatesPerOwnerRepositoryBranch, string commitMessage)
     {
         var forkedRepository = await gateway.Fork(root.Owner, root.Repository);
 
@@ -290,7 +293,7 @@ class Syncer :
         LibGit2Sharp.Commands.Stage(repository, "*");
 
         // Step 7: create & push commit
-        var commit = repository.Commit("Apply GitHubSync changes", commitSignature, commitSignature,
+        var commit = repository.Commit(commitMessage, commitSignature, commitSignature,
             new());
 
         repository.Network.Push(tempBranch, new()
