@@ -155,7 +155,7 @@ public class RepoSync(
         itemsToSync.Add(new(parts, syncMode == SyncMode.IncludeAllByDefault, null));
     }
 
-    public async Task<IReadOnlyList<UpdateResult>> Sync(SyncOutput syncOutput = SyncOutput.CreatePullRequest)
+    public async Task<IReadOnlyList<UpdateResult>> Sync(string pullRequestTitle, string branchName, string commitMessage, SyncOutput syncOutput = SyncOutput.CreatePullRequest)
     {
         var list = new List<UpdateResult>();
         foreach (var targetRepository in targets)
@@ -165,7 +165,7 @@ public class RepoSync(
                 var targetRepositoryDisplayName = $"{targetRepository.Owner}/{targetRepository.Repository}";
 
                 using var syncer = new Syncer(targetRepository.Credentials, null, log);
-                if (!await syncer.CanSynchronize(targetRepository, syncOutput, targetRepository.Branch))
+                if (!await syncer.CanSynchronize(targetRepository, syncOutput, pullRequestTitle))
                 {
                     continue;
                 }
@@ -178,7 +178,7 @@ public class RepoSync(
                     continue;
                 }
 
-                var sync = await syncer.Sync(syncContext.Diff, syncOutput, labelsToApplyOnPullRequests, syncContext.Description, skipCollaboratorCheck);
+                var sync = await syncer.Sync(syncContext.Diff, syncOutput, branchName, commitMessage, pullRequestTitle, labelsToApplyOnPullRequests, syncContext.Description, skipCollaboratorCheck);
                 if (sync.Count == 0)
                 {
                     log($"Repo {targetRepositoryDisplayName} is in sync");
