@@ -6,7 +6,7 @@
   <ItemGroup>
     <PackageVersion Include="CommandLineParser" Version="2.9.1" />
     <PackageVersion Include="ConfigureAwait.Fody" Version="3.3.2" />
-    <PackageVersion Include="Fody" Version="6.9.1" />
+    <PackageVersion Include="Fody" Version="6.9.2" />
     <PackageVersion Include="LibGit2Sharp" Version="0.31.0" />
     <PackageVersion Include="MarkdownSnippets.MsBuild" Version="27.0.2" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
