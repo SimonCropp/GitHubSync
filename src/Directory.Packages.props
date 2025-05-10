@@ -11,7 +11,7 @@
     <PackageVersion Include="MarkdownSnippets.MsBuild" Version="28.0.0-beta.2" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.13.0" />
     <PackageVersion Include="Octokit" Version="14.0.0" />
-    <PackageVersion Include="ProjectDefaults" Version="1.0.150" />
+    <PackageVersion Include="ProjectDefaults" Version="1.0.152" />
     <PackageVersion Include="System.Text.Json" Version="9.0.4" />
     <PackageVersion Include="Verify.Xunit" Version="30.0.0" />
     <PackageVersion Include="Xunit" Version="2.9.3" />
