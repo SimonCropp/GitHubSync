@@ -13,7 +13,10 @@ public class RepoSyncTests :
         repoSync.RemoveBlob("README.md");
         repoSync.AddTargetRepository(new(credentials, Client.RepositoryOwner, "GitHubSync.TestRepository", repoContext.TempBranchName));
 
-        var sync = await repoSync.Sync();
+        var sync = await repoSync.Sync(
+            $"GitHubSync update - {repoContext.TempBranchName}",
+            $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}",
+            $"GitHubSync update - {repoContext.TempBranchName}");
         await repoContext.VerifyPullRequest(sync.Single());
     }
 
@@ -28,7 +31,10 @@ public class RepoSyncTests :
         repoSync.AddSourceItem(TreeEntryTargetType.Blob,"sourceFile.txt", "nested/sourceFile.txt");
         repoSync.AddTargetRepository(new(credentials, Client.RepositoryOwner, "GitHubSync.TestRepository", repoContext.TempBranchName));
 
-        var sync = await repoSync.Sync();
+        var sync = await repoSync.Sync(
+            $"GitHubSync update - {repoContext.TempBranchName}",
+            $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}",
+            $"GitHubSync update - {repoContext.TempBranchName}");
         await repoContext.VerifyPullRequest(sync.Single());
     }
 
@@ -42,7 +48,11 @@ public class RepoSyncTests :
         repoSync.RemoveBlob("README.md");
         repoSync.AddTargetRepository(new(credentials, Client.RepositoryOwner, "GitHubSync.TestRepository", repoContext.TempBranchName));
 
-        var sync = await repoSync.Sync(SyncOutput.MergePullRequest);
+        var sync = await repoSync.Sync(
+            $"GitHubSync update - {repoContext.TempBranchName}",
+            $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}",
+            $"GitHubSync update - {repoContext.TempBranchName}",
+            SyncOutput.MergePullRequest);
         await repoContext.VerifyPullRequest(sync.Single());
     }
 
@@ -57,7 +67,11 @@ public class RepoSyncTests :
         repoSync.RemoveBlob("README.md");
         repoSync.AddTargetRepository(new(credentials, Client.RepositoryOwner, "GitHubSync.TestRepository", repoContext.TempBranchName));
 
-        var sync = await repoSync.Sync(SyncOutput.CreateCommit);
+        var sync = await repoSync.Sync(
+            $"GitHubSync update - {repoContext.TempBranchName}",
+            $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}",
+            $"GitHubSync update - {repoContext.TempBranchName}",
+            SyncOutput.CreateCommit);
         await repoContext.VerifyCommit(sync.Single());
     }
 
