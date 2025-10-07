@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="appveyor.yml" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Project Path="GitHubSync.Tool/GitHubSync.Tool.csproj" />
+  <Project Path="GitHubSync/GitHubSync.csproj" />
+  <Project Path="GitSync/GitSync.csproj" />
+  <Project Path="Tests/Tests.csproj" />
+</Solution>
