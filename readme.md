@@ -7,7 +7,7 @@ To change this file edit the source file and then run MarkdownSnippets.
 
 # <img src="/src/icon.png" height="30px"> GitHubSync
 
-[![Build status](https://img.shields.io/appveyor/build/SimonCropp/GitHubSync)](https://ci.appveyor.com/project/SimonCropp/GitHubSync)
+[![Build status](https://ci.appveyor.com/api/projects/status/sjkccpx6avnw8vbv/branch/main?svg=true)](https://ci.appveyor.com/project/SimonCropp/GitHubSync)
 [![NuGet Status](https://img.shields.io/nuget/v/GitHubSync.svg?label=GitHubSync)](https://www.nuget.org/packages/GitHubSync/)
 [![NuGet Status](https://img.shields.io/nuget/v/GitHubSync.Tool.svg?label=dotnet%20tool)](https://www.nuget.org/packages/GitHubSync.Tool/)
 
