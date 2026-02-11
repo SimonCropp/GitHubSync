@@ -1,6 +1,5 @@
 ﻿[Trait("Category", "Local")]
-public class RepoSyncPartsTests :
-    XunitContextBase
+public class RepoSyncPartsTests
 {
     [Fact]
     public Task Simple()
@@ -95,8 +94,4 @@ public class RepoSyncPartsTests :
         //}
     }
 
-    public RepoSyncPartsTests(ITestOutputHelper output) :
-        base(output)
-    {
-    }
 }

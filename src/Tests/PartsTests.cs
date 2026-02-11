@@ -1,5 +1,4 @@
-﻿public class PartsTests :
-    XunitContextBase
+﻿public class PartsTests
 {
     [Fact]
     public Task Tree()
@@ -43,8 +42,4 @@
         });
     }
 
-    public PartsTests(ITestOutputHelper output) :
-        base(output)
-    {
-    }
 }

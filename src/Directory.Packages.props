@@ -9,15 +9,12 @@
     <PackageVersion Include="Fody" Version="6.9.3" />
     <PackageVersion Include="LibGit2Sharp" Version="0.31.0" />
     <PackageVersion Include="MarkdownSnippets.MsBuild" Version="28.0.0" />
-    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
     <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.1.5" />
     <PackageVersion Include="Octokit" Version="14.0.0" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.172" />
     <PackageVersion Include="System.Text.Json" Version="10.0.3" />
-    <PackageVersion Include="Verify.Xunit" Version="31.12.4" />
-    <PackageVersion Include="Xunit" Version="2.9.3" />
-    <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.5" />
-    <PackageVersion Include="XunitContext" Version="3.3.2" />
+    <PackageVersion Include="Verify.XunitV3" Version="31.12.4" />
+    <PackageVersion Include="xunit.v3" Version="3.2.2" />
     <PackageVersion Include="YamlDotNet" Version="16.3.0" />
   </ItemGroup>
 </Project>

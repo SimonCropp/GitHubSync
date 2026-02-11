@@ -1,5 +1,4 @@
-﻿public class MapperTests :
-    XunitContextBase
+﻿public class MapperTests
 {
     [Fact]
     public Task CanAddAndEnumerate()
@@ -102,8 +101,4 @@
         Assert.Throws<InvalidOperationException>(() => m.Add(from, to));
     }
 
-    public MapperTests(ITestOutputHelper output) :
-        base(output)
-    {
-    }
 }

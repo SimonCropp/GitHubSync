@@ -1,10 +1,9 @@
 ﻿#if DEBUG
 
-public class DiffTests :
-    XunitContextBase
+public class DiffTests(ITestOutputHelper output)
 {
     Syncer BuildSyncer() =>
-        new(CredentialsHelper.GitHubCredentials, null, WriteLine);
+        new(CredentialsHelper.GitHubCredentials, null, output.WriteLine);
 
     [Fact]
     public async Task NothingToUpdateWhenSourceBlobAndDestinationBlobHaveTheSameSha()
@@ -144,9 +143,5 @@ public class DiffTests :
         await Verify(diff.ToBeRemovedEntries);
     }
 
-    public DiffTests(ITestOutputHelper output) :
-        base(output)
-    {
-    }
 }
 #endif
