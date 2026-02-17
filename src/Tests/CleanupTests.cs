@@ -1,5 +1,5 @@
 ﻿#if DEBUG
-[Trait("Category", "Integration")]
+[Explicit]
 public class CleanupTests
 {
     [Fact]
