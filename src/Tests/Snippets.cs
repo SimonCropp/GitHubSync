@@ -37,7 +37,11 @@
             branch: "master"));
 
         // Run the sync
-        await repoSync.Sync(syncOutput: SyncOutput.MergePullRequest);
+        await repoSync.Sync(
+            pullRequestTitle: "Pull request title",
+            branchName: "GitBranchName",
+            commitMessage: "Commit message",
+            syncOutput: SyncOutput.MergePullRequest);
 
         #endregion
     }
