@@ -63,9 +63,13 @@ repoSync.AddTargetRepository(new(
     branch: "master"));
 
 // Run the sync
-await repoSync.Sync(syncOutput: SyncOutput.MergePullRequest);
+await repoSync.Sync(
+    pullRequestTitle: "Pull request title",
+    branchName: "GitBranchName",
+    commitMessage: "Commit message",
+    syncOutput: SyncOutput.MergePullRequest);
 ```
-<sup><a href='/src/Tests/Snippets.cs#L5-L42' title='Snippet source file'>snippet source</a> | <a href='#snippet-usage' title='Start of snippet'>anchor</a></sup>
+<sup><a href='/src/Tests/Snippets.cs#L5-L46' title='Snippet source file'>snippet source</a> | <a href='#snippet-usage' title='Start of snippet'>anchor</a></sup>
 <!-- endSnippet -->
 
 
