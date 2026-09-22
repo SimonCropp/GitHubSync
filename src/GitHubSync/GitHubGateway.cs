@@ -294,9 +294,9 @@ class GitHubGateway
         return dic;
     }
 
-    public async Task<string> CreateCommit(string treeSha, string owner, string repo, string parentCommitSha, string branch)
+    public async Task<string> CreateCommit(string treeSha, string owner, string repo, string parentCommitSha, string branch, string commitMessage)
     {
-        var newCommit = new NewCommit($"GitHubSync update - {branch}", treeSha, [parentCommitSha]);
+        var newCommit = new NewCommit(commitMessage, treeSha, [parentCommitSha]);
 
         var createdCommit = await client.Git.Commit.Create(owner, repo, newCommit);
 
@@ -383,10 +383,11 @@ class GitHubGateway
         string repository,
         string branch,
         string targetBranch,
+        string title,
         bool merge,
         string? description)
     {
-        var newPullRequest = new NewPullRequest($"GitHubSync update - {targetBranch}", branch, targetBranch);
+        var newPullRequest = new NewPullRequest(title, branch, targetBranch);
 
         if (!string.IsNullOrWhiteSpace(description))
         {
