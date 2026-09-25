@@ -9,9 +9,9 @@
     <PackageVersion Include="Fody" Version="6.9.3" />
     <PackageVersion Include="LibGit2Sharp" Version="0.32.0" />
     <PackageVersion Include="MarkdownSnippets.MsBuild" Version="28.4.4" />
-    <PackageVersion Include="Microsoft.Sbom.Targets" Version="4.1.13" />
     <PackageVersion Include="Octokit" Version="14.0.0" />
     <PackageVersion Include="ProjectDefaults" Version="1.0.181" />
+    <PackageVersion Include="Sbom" Version="0.2.0" />
     <PackageVersion Include="System.Text.Json" Version="10.0.12" />
     <PackageVersion Include="Verify.XunitV3" Version="33.1.4" />
     <PackageVersion Include="xunit.v3" Version="4.0.1" />
