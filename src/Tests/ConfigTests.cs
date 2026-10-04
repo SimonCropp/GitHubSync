@@ -3,7 +3,7 @@
     [Fact]
     public Task Parsing()
     {
-        var context = ContextLoader.Load(@".\ConfigImport.yaml");
+        var context = ContextLoader.Load(ProjectFiles.ConfigImport_yaml);
         return Verify(context);
     }
 }
