@@ -13,14 +13,14 @@
     <PackageVersion Include="ProjectDefaults" Version="1.0.184" />
     <PackageVersion Include="ProjectFiles" Version="1.6.0" />
     <PackageVersion Include="Sbom" Version="0.3.1" />
-    <PackageVersion Include="System.Text.Json" Version="10.0.12" />
-    <PackageVersion Include="Verify.XunitV3" Version="33.3.2" />
-    <PackageVersion Include="xunit.v3" Version="4.0.1" />
+    <PackageVersion Include="System.Text.Json" Version="10.0.13" />
+    <PackageVersion Include="Verify.XunitV3" Version="33.3.3" />
+    <PackageVersion Include="xunit.v3" Version="4.0.2" />
     <PackageVersion Include="YamlDotNet" Version="18.1.0" />
     <PackageVersion Include="Argon" Version="0.38.2" />
-    <PackageVersion Include="DiffEngine" Version="20.7.2" />
+    <PackageVersion Include="DiffEngine" Version="20.8.1" />
     <PackageVersion Include="EmptyFiles" Version="8.20.1" />
     <PackageVersion Include="SimpleInfoName" Version="3.2.1" />
-    <PackageVersion Include="Verify" Version="33.3.2" />
+    <PackageVersion Include="Verify" Version="33.3.3" />
   </ItemGroup>
 </Project>
