@@ -81,7 +81,11 @@
             syncOutput = SyncOutput.MergePullRequest;
         }
 
-        return sync.Sync(syncOutput);
+        return sync.Sync(
+            $"GitHubSync update - {targetRepository.Branch}",
+            $"GitHubSync-{DateTimeOffset.UtcNow:yyyyMMdd-HHmmss}",
+            $"GitHubSync update - {targetRepository.Branch}",
+            syncOutput);
     }
 
     static RepositoryInfo BuildInfo(string url, string branch, ICredentials credentials)
